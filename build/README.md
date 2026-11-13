@@ -110,6 +110,7 @@ saved-variables replay and golden-snapshot options used to verify refactors.
 | Task | Command |
 | --- | --- |
 | Check that Core has no class/spec leakage | `.\build\lint-core.ps1` |
+| Check that locale strings are only added at the end | `.\build\locale-check.ps1 [-Base <ref>]` (defaults to `origin/main`; a stacked branch passes the branch below it) |
 | Smoke-load every flavor for every class | `.\build\smoke.ps1 -Lua <lua5.1>` |
 | Build every options tab and run the Textures, media, color, and range checks | `.\build\drivers.ps1 -Lua <lua5.1>` |
 | Type-check with LuaLS against the baseline | `.\build\luals-check.ps1` (finds the VS Code extensions; `-UpdateBaseline` rewrites it) |
@@ -159,6 +160,8 @@ pandoc`); clone the packager and run `release.sh -d -m .pkgmeta` from the checko
 it before staging a tag. Each check is its own job:
 
 - **Lint Core:** `lint-core.ps1`.
+- **Locale order:** `locale-check.ps1`, measured from the pull request's base branch. A locale file may only gain
+  strings at its end; a changed string is removed and added again there. Removals are fine anywhere.
 - **Lua syntax:** `luac5.1 -p` on every tracked Lua file outside `Libs\`.
 - **Smoke load:** `smoke.ps1`, both flavors, every class. A run that loads no files fails.
 - **Harness drivers:** `drivers.ps1`, every driver.
