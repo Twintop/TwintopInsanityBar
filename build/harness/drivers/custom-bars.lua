@@ -1457,19 +1457,19 @@ function hooks.afterEvents(ctx)
 			return true, signals[signal], false
 		end
 		local attachedTo = {}
-		AuraEngine.Attach = function(_, node, unit, filter, spellId)
+		rawset(AuraEngine, "Attach", function(_, node, unit, filter, spellId)
 			attached[node] = spellId
 			attachedTo[node] = unit .. ":" .. filter
 			node.engineDriven = true
 			return true
-		end
+		end)
 		local isSpellHarmful = desktop.C_Spell.IsSpellHarmful
 		rawset(desktop.C_Spell, "IsSpellHarmful", function(id) return id == 990071 or id == 990073 end)
-		AuraEngine.Park = function(_, node)
+		rawset(AuraEngine, "Park", function(_, node)
 			parked[node] = true
 			attached[node] = nil
 			node.engineDriven = nil
-		end
+		end)
 		rawset(desktop.C_Spell, "GetSpellMaxCumulativeAuraApplications", function(id) return (id == 990070 or id == 990074) and 4 or 0 end)
 		layout[#layout + 1] = { cooldownID = 85, spellID = 990073, name = "Driver Linked Buff", icon = 125, group = CDM.LayoutGroup.DISPLAYED,
 			state = CDM.EntryState.TRACKED, displayed = true, isPotion = false }
@@ -1632,12 +1632,12 @@ function hooks.afterEvents(ctx)
 			essentialViewer.GetItemFrames = function() return { dotItem } end
 			local attachReal, parkReal = AuraEngine.Attach, AuraEngine.Park
 			local engineIds = {}
-			AuraEngine.Attach = function(_, node, _, _, spellId)
+			rawset(AuraEngine, "Attach", function(_, node, _, _, spellId)
 				engineIds[node] = spellId
 				node.engineDriven = true
 				return true
-			end
-			AuraEngine.Park = function(_, node) node.engineDriven = nil end
+			end)
+			rawset(AuraEngine, "Park", function(_, node) node.engineDriven = nil end)
 			local isSecretValue = desktop.issecretvalue
 			desktop.issecretvalue = function(value) return value == SECRET end
 			CDM:MarkIndexDirty()
