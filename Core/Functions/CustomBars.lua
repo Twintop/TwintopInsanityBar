@@ -1602,9 +1602,12 @@ local cdmProvider = {
 		end
 		local kinds = CustomBars.kinds
 		for _, ability in ipairs(TRB.Functions.CooldownManager:GetAbilityEntries() or {}) do
-			local offered = { kinds.cooldownTime }
+			-- An ability with no cooldown beyond the global one, and no charges, has nothing to track.
+			local offered = {}
 			if ability.hasCharges or C_Spell.GetSpellCharges(ability.spellID) ~= nil then
 				offered = { kinds.charges, kinds.rechargeTime }
+			elseif (GetSpellBaseCooldown(ability.spellID) or 0) > 0 then
+				offered = { kinds.cooldownTime }
 			end
 			local section, sectionOrder = L["CustomBarsCdmSectionAbilities"], 1
 			if not ability.known then

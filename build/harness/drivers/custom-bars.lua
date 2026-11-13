@@ -1251,7 +1251,14 @@ function hooks.afterEvents(ctx)
 		local CDM = TRB.Functions.CooldownManager
 		local getAbilityEntries = CDM.GetAbilityEntries
 		local api = { GetSpellCharges = desktop.C_Spell.GetSpellCharges, GetSpellName = desktop.C_Spell.GetSpellName }
-		local names = { [990060] = "Driver Shown Ability", [990061] = "Driver Hidden Charges", [990062] = "Driver Unlearned" }
+		local names = { [990060] = "Driver Shown Ability", [990061] = "Driver Hidden Charges", [990062] = "Driver Unlearned", [990063] = "Driver Instant" }
+		local getSpellBaseCooldown = desktop.GetSpellBaseCooldown
+		desktop.GetSpellBaseCooldown = function(id)
+			if id == 990060 or id == 990062 then
+				return 30000, 1500
+			end
+			return 0, 1500
+		end
 		rawset(desktop.C_Spell, "GetSpellName", function(id) return names[id] or api.GetSpellName(id) end)
 		rawset(desktop.C_Spell, "GetSpellCharges", function(id)
 			if names[id] ~= nil then
@@ -1264,6 +1271,7 @@ function hooks.afterEvents(ctx)
 				{ cooldownID = 71, spellID = 990060, name = "Driver Shown Ability", icon = 111, known = true, displayed = true, hasCharges = false },
 				{ cooldownID = 72, spellID = 990061, name = "Driver Hidden Charges", icon = 112, known = true, displayed = false, hasCharges = true },
 				{ cooldownID = 73, spellID = 990062, name = "Driver Unlearned", icon = 113, known = false, displayed = true, hasCharges = false },
+				{ cooldownID = 74, spellID = 990063, name = "Driver Instant", icon = 114, known = true, displayed = true, hasCharges = false },
 			}
 		end
 		local byKey = {}
@@ -1275,6 +1283,8 @@ function hooks.afterEvents(ctx)
 		local shown, hiddenCharges = byKey["990060:cooldownTime"], byKey["990061:charges"]
 		check("a Cooldown Manager ability is offered as a Cooldown, or as Charges and a Recharge", shown ~= nil and shown.cooldownID == 71
 			and shown.icon == "|T111:0|t" and hiddenCharges ~= nil and byKey["990061:rechargeTime"] ~= nil and byKey["990061:cooldownTime"] == nil)
+		check("an ability with no cooldown of its own and no charges isn't offered", byKey["990063:cooldownTime"] == nil
+			and byKey["990063:charges"] == nil)
 		check("under headings for displayed, not displayed, and not learned", shown ~= nil and hiddenCharges ~= nil
 			and shown.section == TRB.Localization["CustomBarsCdmSectionAbilities"]
 			and hiddenCharges.section == TRB.Localization["CustomBarsCdmSectionAbilitiesNotDisplayed"]
@@ -1304,6 +1314,7 @@ function hooks.afterEvents(ctx)
 			try("render without it", function() CustomBars:Render() end)
 		end
 		CDM.GetAbilityEntries = getAbilityEntries
+		desktop.GetSpellBaseCooldown = getSpellBaseCooldown
 		rawset(desktop.C_Spell, "GetSpellName", api.GetSpellName)
 		rawset(desktop.C_Spell, "GetSpellCharges", api.GetSpellCharges)
 	end
