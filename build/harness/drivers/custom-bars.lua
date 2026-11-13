@@ -943,7 +943,9 @@ function hooks.afterEvents(ctx)
 
 	-- An ability named by spell ID: the client says what it can be tracked as, and its cooldown is read like any other.
 	do
-		local names = { [990030] = "Driver Typed Cooldown", [990031] = "Driver Typed Charges", [990032] = "Driver Typed Passive" }
+		-- 990033 is another rank of the typed cooldown: the same name under another ID.
+		local names = { [990030] = "Driver Typed Cooldown", [990031] = "Driver Typed Charges", [990032] = "Driver Typed Passive",
+			[990033] = "Driver Typed Cooldown" }
 		local api = {
 			GetSpellName = desktop.C_Spell.GetSpellName,
 			GetSpellCharges = desktop.C_Spell.GetSpellCharges,
@@ -1008,12 +1010,12 @@ function hooks.afterEvents(ctx)
 			check("a ready typed cooldown is hidden, and typed charges show", not Shows(EntryFor(barGroups[typedCooldownKey]))
 				and barGroups[typedChargeKey] ~= nil and barGroups[typedChargeKey].maxNodes == 3 and Shows(EntryFor(barGroups[typedChargeKey])))
 			typedCooldown = { isActive = true, isOnGCD = false, isEnabled = true, modRate = 1, startTime = desktop.GetTime(), duration = 30 }
-			stubs.fireEvents("SPELL_UPDATE_COOLDOWN:990030", ctx.addonName)
+			stubs.fireEvents("SPELL_UPDATE_COOLDOWN:990033", ctx.addonName)
 			try("render a running typed cooldown", function()
 				CustomBars:Render()
 				CustomBars:Render()
 			end)
-			check("a running typed cooldown shows", Shows(EntryFor(barGroups[typedCooldownKey])))
+			check("a typed cooldown shows when the event names another rank of it", Shows(EntryFor(barGroups[typedCooldownKey])))
 			local listed = 0
 			for _, source in ipairs(CustomBars:GetSources(classId, specId)) do
 				if source.provider == "spell" then

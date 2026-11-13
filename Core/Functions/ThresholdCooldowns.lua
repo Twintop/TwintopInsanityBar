@@ -13,6 +13,9 @@ local tracked = {}
 -- Tracked cooldowns by every spell id a cooldown event can name them by.
 ---@type table<integer, TRB.Classes.SnapshotCooldown[]>
 local trackedById = {}
+-- Spell name -> the cooldowns of spells a custom bar names by ID, since a cooldown event names the rank that was cast.
+---@type table<string, TRB.Classes.SnapshotCooldown[]>
+local trackedByName = {}
 -- No event marks a cooldown's natural end, so an invisible Cooldown frame per cooldown reports it.
 ---@type table<TRB.Classes.SnapshotCooldown, Cooldown>
 local endWidgets = {}
@@ -171,6 +174,10 @@ eventFrame:SetScript("OnEvent", function(_, event, spellID, baseSpellID)
 		baseSpellID = nil
 	end
 	local matches = trackedById[spellID] or (baseSpellID ~= nil and trackedById[baseSpellID]) or nil
+	if matches == nil and next(trackedByName) ~= nil then
+		local name = C_Spell.GetSpellName(spellID)
+		matches = name ~= nil and trackedByName[name] or nil
+	end
 	if matches ~= nil then
 		for _, cooldown in ipairs(matches) do
 			ApplyCooldownEvent(cooldown, now)
@@ -222,6 +229,18 @@ local function Track(spell, snapshots, ownSnapshot)
 	-- Lines sharing a snapshot, such as Execute's, are named by their own ids as well as the snapshot's.
 	AddSpellIds(spell --[[@as TRB.Classes.SpellBase]], cooldown)
 	AddSpellIds(snapshot.spell, cooldown)
+	-- A spell the user named by ID carries no ranks, so any rank of its name is it.
+	local name = ownSnapshot ~= nil and C_Spell.GetSpellName(snapshot.spell.id) or nil
+	if name ~= nil then
+		local list = trackedByName[name]
+		if list == nil then
+			list = {}
+			trackedByName[name] = list
+		end
+		if not tContains(list, cooldown) then
+			list[#list + 1] = cooldown
+		end
+	end
 end
 
 ---The settings the live spec's lines can draw with, and the lines its On Cooldown Color Indicators follow.
@@ -291,6 +310,7 @@ function ThresholdCooldowns:Sync()
 	local previous = tracked
 	tracked = {}
 	wipe(trackedById)
+	wipe(trackedByName)
 
 	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData?]]
 	if enabled and snapshotData ~= nil then
