@@ -44,14 +44,14 @@ TRB.Details.coreNewsContent = [====[
 
 ## Options
 
-- The options menu lists sections under Global Options and under each specialization, each holding its own tabs: General, Visibility and Behavior, Thresholds, Custom Bars, Cast Bars, Timer Bars, Pet Bars, Skyriding, and Reset Defaults.
-- A class with one specialization lists these sections directly under the class.
-- General holds each bar's tab. Visibility and Behavior holds Visibility, Textures, Color Indicators, Audio Cues, Font & Text, and Bar Text. Thresholds holds Threshold Shared Settings, Threshold Lines, and Custom Thresholds.
-- Move the Cast Bars, Pet Bars, Totems, and Skyriding screens under Global Options.
-- Rename Other Bars to Timer Bars.
-- Add an IO and Profiles group to the options menu, holding Import/Export and Profile Defaults.
-- Global Options' Bar Display and Manage Presets are tabs of Visibility and Behavior.
-- Remove the Textures, Visibility, and Bar Text tabs of a specialization's own Totems bar. Its tab is in General, and the specialization's Textures, Visibility, and Bar Text tabs list it.
+- [#996](#996) The options menu lists sections under Global Options and under each specialization, each holding its own tabs: General, Visibility and Behavior, Thresholds, Custom Bars, Cast Bars, Timer Bars, Pet Bars, Skyriding, and Reset Defaults.
+- [#996](#996) A class with one specialization lists these sections directly under the class.
+- [#996](#996) General holds each bar's tab. Visibility and Behavior holds Visibility, Textures, Color Indicators, Audio Cues, Font & Text, and Bar Text. Thresholds holds Threshold Shared Settings, Threshold Lines, and Custom Thresholds.
+- [#996](#996) Move the Cast Bars, Pet Bars, Totems, and Skyriding screens under Global Options.
+- [#996](#996) Rename Other Bars to Timer Bars.
+- [#996](#996) Add an IO and Profiles group to the options menu, holding Import/Export and Profile Defaults.
+- [#996](#996) Global Options' Bar Display and Manage Presets are tabs of Visibility and Behavior.
+- [#996](#996) Remove the Textures, Visibility, and Bar Text tabs of a specialization's own Totems bar. Its tab is in General, and the specialization's Textures, Visibility, and Bar Text tabs list it.
 
 ## Preview Mode
 
