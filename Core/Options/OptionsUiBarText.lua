@@ -117,7 +117,8 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	controls.checkBoxes = controls.checkBoxes or {}
 	-- Re-reads the flag into this tab's box, so a click on a sibling tab's box shows here too.
 	local RefreshUseGlobalCheckbox = function() end
-	if classId ~= nil and specId ~= nil then
+	-- Custom bars belong to their specialization, so their bar text has no Global Options to follow.
+	if classId ~= nil and specId ~= nil and groupKey ~= "customBars" then
 		local lowerClassName = string.lower(className)
 		-- SetAllSpecsGlobalSetting finds the spec tab's box by name; the other tabs' boxes follow through the registry.
 		local checkboxName = "TwintopResourceBar_" .. className .. "_" .. specName .. "_useGlobal_globalBarText" .. (groupKey == "spec" and "" or "_" .. groupKey)

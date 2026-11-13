@@ -3066,8 +3066,8 @@ function TRB.Classes.BarTypeRegistry:AppendUserBars(list, classId, specId)
 	end
 end
 
----The grouping a bar's options live under, also the shared grouping's tab key and nav category; anything unlisted is the
----spec's own. The Totems bar follows the spec's placement, and Global Options' Totems screen without a spec.
+---The grouping a bar's options live under, also the shared grouping's nav section; anything unlisted is the spec's
+---own. The Totems bar follows the spec's placement, and Global Options' Totems screen without a spec.
 ---@param barKey string?
 ---@param classId integer? # The scope; nil is Global Options
 ---@param specId integer?
@@ -3088,8 +3088,8 @@ function TRB.Classes.BarTypeRegistry:GetBarGroup(barKey, classId, specId)
 		return "petBars"
 	end
 	if self:IsTotemBar(barKey) then
-		if classId ~= nil and self:GetTotemPlacement(classId, specId) == "otherBars" then
-			return "otherBars"
+		if classId ~= nil then
+			return self:GetTotemPlacement(classId, specId) == "otherBars" and "otherBars" or "spec"
 		end
 		return "totems"
 	end

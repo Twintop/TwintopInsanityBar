@@ -375,12 +375,13 @@ function hooks.afterEvents(ctx)
 
 	-- Bar text: each slot's variables, their bare checks, and the anchor on the node showing the slot.
 	check("totem slot anchors are offered on a spec with totems", HasAnchor(BarText:GetAnchorCatalog(character.classId, character.specId), "TotemSlot1"))
-	-- Its rows list on the spec's Totems tab, or Other Bars where the spec puts it, and never on the spec's own tabs.
-	local home = optIn and "otherBars" or "totems"
+	-- Its rows list on the spec's own tabs, or Timer Bars where the spec puts it there, and never on both.
+	local home = optIn and "otherBars" or "spec"
+	local away = optIn and "spec" or "otherBars"
 	local classId, specId = character.classId, character.specId
 	check("the Totems bar groups by the spec's placement, and as Totems on Global Options", registry:GetBarGroup("totems") == "totems"
 		and registry:GetBarGroup("totems", classId, specId) == home and registry:IsBarInGroupScope("totems", home, false, classId, specId)
-		and not registry:IsBarInGroupScope("totems", "spec", false, classId, specId))
+		and not registry:IsBarInGroupScope("totems", away, false, classId, specId))
 	check("totem slot text lists under that grouping", BarText:GetAnchorCatalog(classId, specId).groupByFrame["TotemSlot1"] == home)
 	check("totem slot text is in scope on a spec with totems", BarText:IsEntryInScope(slotOneEntry, character.classId, character.specId))
 	BarText:RefreshTotemLookupData()

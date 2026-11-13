@@ -3362,12 +3362,7 @@ L["PriestHolyAudioCueSourceLightweaverDescription"] = "Plays whenever your Light
 L["ResourceGcd"] = "Global Cooldown"
 L["ResourceFatigue"] = "Fatigue"
 L["ResourceBreath"] = "Breath"
--- REMOVED: L["ResourceDeathTimer"] - the Death mirror timer bar was retired
 L["ResourceFeignDeath"] = "Feign Death"
-
--- Other Bars: tab + screen labels
-L["TabOtherBars"] = "Other Bars"
-L["OtherBarsGlobalOptionsHeader"] = "Global Other Bars Options"
 
 -- Other Bars: panel sections and options
 L["OtherBarsColorsHeader"] = "Colors"
@@ -3379,10 +3374,6 @@ L["MirrorTimerDisableBlizzard"] = "Hide Blizzard's bar"
 L["MirrorTimerDisableBlizzardTooltip"] = "Hides the default Blizzard timer for this one while it is being shown here. Blizzard groups these under 'Duration Bars' in Edit Mode and offers no per-timer toggle, so only the timer this tab replaces is hidden -- the others are left alone."
 
 -- Other Bars: global settings
-L["CheckboxUseGlobalOtherBars"] = "Use global Other Bars settings"
-L["CheckboxUseGlobalTooltipOtherBars"] = "When checked, this section uses the settings from the global Other Bars screen instead of this specialization's own."
-L["OpenGlobalOtherBarsSettings"] = "Open Global Other Bars Settings"
-L["OpenGlobalOtherBarsSettingsTooltip"] = "Opens the global Other Bars options screen, where these settings are configured for every specialization at once."
 
 -- Other Bars: copy menu section labels
 L["CopyMenuSection_gcdDimensions"] = "Global Cooldown Bar - Dimensions"
@@ -3403,9 +3394,6 @@ L["ShowBarVisibilityWhenActive"] = "When active"
 L["ShowBarVisibilityGroupTimer"] = "Timer"
 
 -- Other Bars: Use Global tooltips for the shared dimensions rows (looked up by section key)
-L["CheckboxUseGlobalTooltip_GcdDimensions"] = "When checked, this bar's position and size come from the global Other Bars screen instead of this specialization's own settings."
-L["CheckboxUseGlobalTooltip_FatigueDimensions"] = "When checked, this bar's position and size come from the global Other Bars screen instead of this specialization's own settings."
-L["CheckboxUseGlobalTooltip_BreathDimensions"] = "When checked, this bar's position and size come from the global Other Bars screen instead of this specialization's own settings."
 -- REMOVED: L["CheckboxUseGlobalTooltip_DeathDimensions"] - the Death mirror timer bar was retired
 
 -- Other Bars: bar text variables and the shared precision slider
@@ -4101,7 +4089,6 @@ L["BarVisibilityApplyNoneGlobal"] = "None of the checked bars can use Global Opt
 L["BarVisibilityPresetDeleteConfirm"] = "Delete the preset %s? Every bar using it (%d) keeps its current settings."
 L["BarVisibilityPresetKindConfirm"] = "Change the preset %s from %s to %s? Every bar using it (%d) keeps its current settings but stops using the preset."
 L["BarDisplayHeaderCastbar"] = "Cast Bar Display"
-L["BarDisplayHeaderOtherBars"] = "Other Bar Display"
 L["BarDisplayHeaderPetBars"] = "Pet Bar Display"
 L["BarDisplayHeaderSkyriding"] = "Skyriding Bar Display"
 L["BarVisibilityEnabledTooltip"] = "Uncheck to disable this bar. This is the same as Never Show under Show Bar When and the box at the top of the bar's own tab, and it works while the bar uses a preset."
@@ -4114,7 +4101,6 @@ L["BarTextGlobalBadgeTooltip"] = "This bar text comes from Global Options. Chang
 L["CheckboxUseGlobalBarText"] = "Display Global Bar Text on this specialization's bars"
 L["CheckboxUseGlobalTooltip_GlobalBarText"] = "When checked, the bar text set in Global Options is shown on this specialization's bars along with its own, and is listed on its Bar Text tabs in light blue. When unchecked, only this specialization's own bar text is shown."
 L["BarDisplayTextCustomizationHeaderCastbar"] = "Cast Bar Display Text Customization"
-L["BarDisplayTextCustomizationHeaderOtherBars"] = "Other Bar Display Text Customization"
 L["BarDisplayTextCustomizationHeaderPetBars"] = "Pet Bar Display Text Customization"
 L["BarDisplayTextCustomizationHeaderSkyriding"] = "Skyriding Bar Display Text Customization"
 L["TextureLockBar"] = "Use the same bar texture for all bars"
@@ -4141,7 +4127,6 @@ L["BarTexturesLockedGlobalTooltip"] = "Locked: '%s' is checked in Global Options
 L["TextureLockGlobalTooltip"] = "The %s row uses Global settings, so this specialization uses the locks set in Global Options. Uncheck Use Global settings for that row to set its own."
 L["BarTexturesUsingGlobal"] = "This bar uses the textures from Global Options. The textures shown are the global ones."
 L["BarTexturesHeaderCastbar"] = "Cast Bar Textures"
-L["BarTexturesHeaderOtherBars"] = "Other Bar Textures"
 L["BarTexturesHeaderPetBars"] = "Pet Bar Textures"
 L["BarTexturesHeaderSkyriding"] = "Skyriding Bar Textures"
 L["CheckboxIncludeAllTextureGroups"] = "Include bars from the other Textures tabs"
@@ -4497,3 +4482,23 @@ L["CustomBarsCdmNotTracked"] = "Not Tracked"
 L["CustomBarsSourceNoteFormat"] = "%s - %s"
 L["CustomBarsCdmNotDisplayedNote"] = "This buff isn't displayed in the Cooldown Manager, so this bar can't tell when it is up or show its time as text. Its fill still follows the buff. Set the bar to Always Show, or add the buff to Tracked Bars."
 L["CustomBarsCdmEngineNote"] = "This buff isn't in the Cooldown Manager's Tracked Bars, so this bar can't show an End Cap or use Smooth. Move it to Tracked Bars to get them."
+
+-- Options navigation: the sections listed under Global Options and each specialization
+L["NavSectionGeneral"] = "General"
+L["NavSectionVisibilityAndBehavior"] = "Visibility and Behavior"
+L["NavSectionThresholds"] = "Thresholds"
+L["NavIOAndProfiles"] = "IO and Profiles"
+
+-- Timer Bars, renamed from Other Bars
+L["TabOtherBars"] = "Timer Bars"
+L["OtherBarsGlobalOptionsHeader"] = "Global Timer Bars Options"
+L["CheckboxUseGlobalOtherBars"] = "Use global Timer Bars settings"
+L["CheckboxUseGlobalTooltipOtherBars"] = "When checked, this section uses the settings from the global Timer Bars screen instead of this specialization's own."
+L["OpenGlobalOtherBarsSettings"] = "Open Global Timer Bars Settings"
+L["OpenGlobalOtherBarsSettingsTooltip"] = "Opens the global Timer Bars options screen, where these settings are configured for every specialization at once."
+L["CheckboxUseGlobalTooltip_GcdDimensions"] = "When checked, this bar's position and size come from the global Timer Bars screen instead of this specialization's own settings."
+L["CheckboxUseGlobalTooltip_FatigueDimensions"] = "When checked, this bar's position and size come from the global Timer Bars screen instead of this specialization's own settings."
+L["CheckboxUseGlobalTooltip_BreathDimensions"] = "When checked, this bar's position and size come from the global Timer Bars screen instead of this specialization's own settings."
+L["BarDisplayHeaderOtherBars"] = "Timer Bar Display"
+L["BarDisplayTextCustomizationHeaderOtherBars"] = "Timer Bar Display Text Customization"
+L["BarTexturesHeaderOtherBars"] = "Timer Bar Textures"

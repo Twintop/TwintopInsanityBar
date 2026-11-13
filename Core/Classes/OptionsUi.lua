@@ -67,6 +67,19 @@ TRB.Classes.OptionsUi = TRB.Classes.OptionsUi or {}
 ---@field public lastTabId string
 ---@field public tabOrder string[]
 ---@field public tabConstructors table<string, function> # Built on first show
+---@field public sectionNavKey string? # The nav entry of the section this strip is on
+
+---One nav section of a sectioned panel.
+---@class TRB.Classes.OptionsUi.PanelSection
+---@field public frame TRB.Classes.OptionsUi.TabbedPanel # Holds the section's tab strip
+---@field public build fun()? # Builds the strip on first show; nil once built
+
+---A panel whose tabs are split into nav sections, from Tabs:BuildSectionedTabGroup.
+---@class TRB.Classes.OptionsUi.SectionedPanel : Frame
+---@field public navKey string # The nav entry its sections are listed under
+---@field public sections table<string, TRB.Classes.OptionsUi.PanelSection>
+---@field public tabSections table<string, string> # Tab key -> the key of the section holding it
+---@field public activeSection string?
 
 ---An audio cue editor config control: a checkbox, a labeled dropdown, or a slider.
 ---@class TRB.Classes.OptionsUi.CueConfigControl : Frame
