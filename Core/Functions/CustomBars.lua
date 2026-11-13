@@ -1464,24 +1464,26 @@ end
 -- An ability by the spell ID the user typed, read through a snapshot of its own.
 CustomBars.spellProvider = "spell"
 
----@type table<integer, TRB.Classes.Snapshot>
-local spellSnapshots = {}
+-- Kept apart for a spell read with and without charges, since a talent can give it charges.
+---@type table<boolean, table<integer, TRB.Classes.Snapshot>>
+local spellSnapshots = { [true] = {}, [false] = {} }
 
 ---@param source TRB.Classes.Settings.CustomBarSource
 ---@return TRB.Classes.Snapshot
 local function GetSpellSnapshot(source)
-	local snapshot = spellSnapshots[source.spellId]
+	local hasCharges = source.kind ~= CustomBars.kinds.cooldownTime
+	local snapshot = spellSnapshots[hasCharges][source.spellId]
 	if snapshot == nil then
 		-- A spell with no global cooldown never reads as off it at its cast, so the tracker has to be told.
 		local _, globalCooldown = GetSpellBaseCooldown(source.spellId)
 		local spell = TRB.Classes.SpellBase:New({
 			id = source.spellId,
 			hasCooldown = true,
-			hasCharges = source.kind ~= CustomBars.kinds.cooldownTime,
+			hasCharges = hasCharges,
 			offGcd = globalCooldown == 0
 		})
 		snapshot = TRB.Classes.Snapshot:New(spell)
-		spellSnapshots[source.spellId] = snapshot
+		spellSnapshots[hasCharges][source.spellId] = snapshot
 	end
 	return snapshot
 end

@@ -174,13 +174,21 @@ eventFrame:SetScript("OnEvent", function(_, event, spellID, baseSpellID)
 		baseSpellID = nil
 	end
 	local matches = trackedById[spellID] or (baseSpellID ~= nil and trackedById[baseSpellID]) or nil
-	if matches == nil and next(trackedByName) ~= nil then
-		local name = C_Spell.GetSpellName(spellID)
-		matches = name ~= nil and trackedByName[name] or nil
-	end
 	if matches ~= nil then
 		for _, cooldown in ipairs(matches) do
 			ApplyCooldownEvent(cooldown, now)
+		end
+	end
+	-- A spell ID bar's spell also matches by name, beside the spec's own tracking of a rank of it.
+	if next(trackedByName) ~= nil then
+		local name = C_Spell.GetSpellName(spellID)
+		local named = name ~= nil and trackedByName[name] or nil
+		if named ~= nil then
+			for _, cooldown in ipairs(named) do
+				if matches == nil or not tContains(matches, cooldown) then
+					ApplyCooldownEvent(cooldown, now)
+				end
+			end
 		end
 	end
 end)

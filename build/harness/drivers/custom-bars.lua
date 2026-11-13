@@ -1005,6 +1005,25 @@ function hooks.afterEvents(ctx)
 			end
 			check("an ability with no global cooldown is tracked as off it, and one with it isn't", offGcdById[990030] == true
 				and offGcdById[990031] == false)
+			-- A bar on the same spell without charges, as before a talent gave it them, reads it apart.
+			local unchargedGuid = CustomBars:Add(spec, classId, specId,
+				{ kind = "cooldownTime", spellId = 990031, spellName = "Driver Typed Charges", provider = "spell" })
+			local bothSpells = {}
+			CustomBars:AppendCooldownSpells(bothSpells)
+			local chargedRead, unchargedRead = false, false
+			for _, typedSpell in ipairs(bothSpells) do
+				if typedSpell.id == 990031 then
+					chargedRead = chargedRead or typedSpell.hasCharges == true
+					unchargedRead = unchargedRead or typedSpell.hasCharges ~= true
+				end
+			end
+			check("bars on one spell with and without charges read it apart", #bothSpells == 3 and chargedRead and unchargedRead)
+			CustomBars:Delete(spec, classId, specId, unchargedGuid)
+			-- The spec's own tracking of a ranked spell of the typed cooldown's name, whose rank 990033 it claims by ID.
+			names[990034] = "Driver Typed Cooldown"
+			snapshots[990034] = TRB.Classes.Snapshot:New(TRB.Classes.SpellBase:New({ id = 990034, rankIds = { 990034, 990033 },
+				hasCooldown = true }))
+			local rankedGuid = CustomBars:Add(spec, classId, specId, { kind = "cooldownTime", spellId = 990034, spellName = "Driver Typed Cooldown" })
 			try("lay out the typed bars", Relayout)
 			try("render the typed bars", function() CustomBars:Render() end)
 			check("a ready typed cooldown is hidden, and typed charges show", not Shows(EntryFor(barGroups[typedCooldownKey]))
@@ -1015,7 +1034,11 @@ function hooks.afterEvents(ctx)
 				CustomBars:Render()
 				CustomBars:Render()
 			end)
-			check("a typed cooldown shows when the event names another rank of it", Shows(EntryFor(barGroups[typedCooldownKey])))
+			check("a typed cooldown shows when the event names another rank of it, which the spec's own tracking also claims",
+				Shows(EntryFor(barGroups[typedCooldownKey])))
+			CustomBars:Delete(spec, classId, specId, rankedGuid)
+			snapshots[990034] = nil
+			names[990034] = nil
 			local listed = 0
 			for _, source in ipairs(CustomBars:GetSources(classId, specId)) do
 				if source.provider == "spell" then
@@ -1023,13 +1046,18 @@ function hooks.afterEvents(ctx)
 				end
 			end
 			check("abilities the specialization's bars name are listed with its sources", listed == 3)
+			local typedSnapshot = typedSnapshots[typedSpells[1].id == 990030 and typedSpells[1] or typedSpells[2]]
 			CustomBars:Delete(spec, classId, specId, typedCooldownGuid)
 			CustomBars:Delete(spec, classId, specId, typedChargeGuid)
 			try("lay out without the typed bars", Relayout)
 			try("render without them", function() CustomBars:Render() end)
 			local stillTyped = {}
 			CustomBars:AppendCooldownSpells(stillTyped)
-			check("deleted typed bars leave the cooldown tracker", #stillTyped == 0)
+			local startedBefore = typedSnapshot.cooldown.startTime
+			typedCooldown = { isActive = true, isOnGCD = false, isEnabled = true, modRate = 1, startTime = desktop.GetTime() + 5, duration = 30 }
+			stubs.fireEvents("SPELL_UPDATE_COOLDOWN:990030", ctx.addonName)
+			check("deleted typed bars leave the cooldown tracker", #stillTyped == 0 and typedSnapshot.cooldown.startTime == startedBefore)
+			typedCooldown = nil
 		end
 		rawset(desktop.C_Spell, "GetSpellName", api.GetSpellName)
 		rawset(desktop.C_Spell, "GetSpellCharges", api.GetSpellCharges)

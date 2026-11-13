@@ -123,25 +123,38 @@ local function FillSourceMenu(rootDescription, classId, specId, onPick, onSpellI
 	end
 end
 
----The sources a typed spell ID gives, after telling the user when there are none or more than one.
+---The source a typed spell ID gives, after telling the user when there is none or more than one. A bar being
+---changed keeps its kind when the spell offers it.
 ---@param spellId integer
----@return TRB.Classes.CustomBarSourceOption? first # nil when the ability has nothing to track
-local function ResolveSpellId(spellId)
+---@param current TRB.Classes.Settings.CustomBarSource? # The source of the bar being changed, nil for a new bar
+---@return TRB.Classes.CustomBarSourceOption? picked # nil when the ability has nothing to track or nothing changes
+local function ResolveSpellId(spellId, current)
 	local options = CustomBars:GetSpellIdSources(spellId)
 	if #options == 0 then
 		StaticPopup_Show("TwintopResourceBar_CustomBarsMessage",
 			string.format(L["CustomBarsSpellIdNoCooldown"], C_Spell.GetSpellName(spellId) or tostring(spellId)))
 		return nil
 	end
+	local picked = options[1]
+	if current ~= nil then
+		for _, option in ipairs(options) do
+			if option.kind == current.kind then
+				picked = option
+			end
+		end
+		if GetSourceKey(picked) == GetSourceKey(current) then
+			return nil
+		end
+	end
 	if #options > 1 then
 		local labels = {}
 		for index, option in ipairs(options) do
 			labels[index] = option.label
 		end
-		StaticPopup_Show("TwintopResourceBar_CustomBarsMessage",
-			string.format(L["CustomBarsSpellIdChoices"], options[1].label, table.concat(labels, "\n")))
+		local message = current ~= nil and L["CustomBarsSpellIdChoicesChanged"] or L["CustomBarsSpellIdChoices"]
+		StaticPopup_Show("TwintopResourceBar_CustomBarsMessage", string.format(message, picked.label, table.concat(labels, "\n")))
 	end
-	return options[1]
+	return picked
 end
 
 ---Builds the Custom Bars tab's Bars sub-tab.
@@ -362,7 +375,7 @@ function TRB.Functions.OptionsUi.CustomBars:ConstructPanel(parent, classId, spec
 			end)
 			tracks:SetupMenu(function(_, rootDescription)
 				FillSourceMenu(rootDescription, classId, specId, Track, function(spellId)
-					Track(ResolveSpellId(spellId))
+					Track(ResolveSpellId(spellId, bar.source))
 				end, GetSourceKey(bar.source))
 			end)
 		end
