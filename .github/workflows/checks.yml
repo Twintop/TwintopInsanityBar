@@ -25,6 +25,24 @@ jobs:
         shell: pwsh
         run: ./build/lint-core.ps1
 
+  locale:
+    name: Locale order
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # A pull request is measured from its base branch, a push to main from the commit before it.
+      - name: Check that locale strings are only added at the end
+        shell: pwsh
+        env:
+          PUSH_BEFORE: ${{ github.event.before }}
+        run: |
+          $base = ""
+          if ($env:GITHUB_EVENT_NAME -eq "push" -and $env:PUSH_BEFORE -and $env:PUSH_BEFORE -notmatch '^0+$') { $base = $env:PUSH_BEFORE }
+          ./build/locale-check.ps1 -Base $base
+
   syntax:
     name: Lua syntax
     runs-on: ubuntu-latest
