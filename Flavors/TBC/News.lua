@@ -17,11 +17,11 @@ TRB.Flavor.newsContent = [====[
 
 ### Color Indicators
 
-- A custom Color Indicator or Buff Alert by spell ID can follow your debuff on your target, such as a damage over time effect.
+- [#991](#991) A custom Color Indicator or Buff Alert by spell ID can follow your debuff on your target, such as a damage over time effect.
 
 ### Custom Bars
 
-- A custom bar can track the duration or stacks of a buff on you, or of your debuff on your target, by its spell ID, counting any rank of the spell.
+- [#991](#991) A custom bar can track the duration or stacks of a buff on you, or of your debuff on your target, by its spell ID, counting any rank of the spell.
 
 ## Mage
 
