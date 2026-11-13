@@ -253,7 +253,7 @@ function TRB.Functions.OptionsUi.AudioCues:GenerateAudioCuesPanel(parent, contro
 			local entry = cdm:ResolveCondition(condition)
 			if entry == nil then
 				return L["AudioCueBuffMissingTooltip"], nil
-			elseif entry.state ~= cdm.EntryState.TRACKED then
+			elseif not cdm:IsEntryTracked(entry) then
 				return table.concat(TRB.Functions.OptionsUi.Primitives:GetCdmEntryNotes(entry, pickerWording), "\n\n"), entry
 			end
 			return nil, entry

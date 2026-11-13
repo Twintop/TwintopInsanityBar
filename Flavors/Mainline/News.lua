@@ -10,9 +10,15 @@ TRB.Flavor.newsContent = [====[
 
 # 12.1.5.13-release (2026-11-11)
 ## General
+### Color Indicators
+
+- A custom Color Indicator or Buff Alert on a buff or debuff under Not Displayed now works when its ability is in Essential Cooldowns or Utility Cooldowns, such as a damage over time effect on your target.
+
 ### Custom Bars
 
 - [#992](#992) A custom bar can track the cooldown, recharge, or charges of an ability in your Cooldown Manager, including the ones under Not Displayed.
+- A custom bar can track the duration or stacks of a buff, enemy debuff, trinket buff, or combat potion buff in your Cooldown Manager.
+- A buff in Tracked Bars keeps End Cap and Smooth on its custom bar. One in Tracked Buffs fills without them, and one that isn't displayed needs Always Show.
 
 ## Druid
 

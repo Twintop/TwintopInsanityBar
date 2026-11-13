@@ -403,6 +403,12 @@ function TRB.Functions.OptionsUi.CustomBars:ConstructPanel(parent, classId, spec
 			end)
 		end
 		barY = barY - 70
+		-- What its source can't do where it sits, such as an End Cap on a buff outside Tracked Bars.
+		local _, optionsNote = CustomBars:GetSourceNotes(bar.source)
+		if optionsNote ~= nil then
+			TRB.Functions.OptionsUi.Primitives:BuildLabel(frame, optionsNote, oUi.xCoord, barY, oUi.maxOptionsWidth, 40)
+			barY = barY - 50
+		end
 
 		if CustomBars:IsCountKind(bar.source.kind) then
 			TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(frame, barPrefix .. "_Segmented", L["CustomBarsSegmented"], L["CustomBarsSegmentedTooltip"], barY,
@@ -485,6 +491,18 @@ function TRB.Functions.OptionsUi.CustomBars:ConstructPanel(parent, classId, spec
 	---@type table<string, integer>
 	local rowByGuid = {}
 
+	---What a bar tracks, with any state its source reports, such as Not Tracked.
+	---@param source TRB.Classes.Settings.CustomBarSource
+	---@return string
+	local function TracksText(source)
+		local label = CustomBars:GetSourceLabel(classId, specId, source)
+		local note = CustomBars:GetSourceNotes(source)
+		if note ~= nil then
+			return string.format(L["CustomBarsSourceNoteFormat"], label, note)
+		end
+		return label
+	end
+
 	SetTableValues = function()
 		local dataTable = {}
 		wipe(rowByGuid)
@@ -494,7 +512,7 @@ function TRB.Functions.OptionsUi.CustomBars:ConstructPanel(parent, classId, spec
 				cols = {
 					{ value = bar.guid },
 					{ value = bar.name or "" },
-					{ value = CustomBars:GetSourceLabel(classId, specId, bar.source) },
+					{ value = TracksText(bar.source) },
 					{ value = "X", color = deleteActionTextColor, DoCellUpdate = UpdateActionCell },
 				}
 			})

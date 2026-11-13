@@ -1388,6 +1388,207 @@ function hooks.afterEvents(ctx)
 		desktop.GetSpellBaseCooldown = getSpellBaseCooldown
 		rawset(desktop.C_Spell, "GetSpellName", api.GetSpellName)
 		rawset(desktop.C_Spell, "GetSpellCharges", api.GetSpellCharges)
+
+		-- The layout's buffs: read from the buff viewers by cooldownID, filled by the viewer or the aura engine.
+		local AuraEngine = TRB.Functions.AuraEngine
+		local saved = {
+			GetLayoutStatus = CDM.GetLayoutStatus, GetLayoutEntries = CDM.GetLayoutEntries, GetLayoutEntry = CDM.GetLayoutEntry,
+			IsCooldownActive = CDM.IsCooldownActive, GetCooldownSourceKind = CDM.GetCooldownSourceKind, ReadCooldown = CDM.ReadCooldown,
+			GetAbilityEntries = CDM.GetAbilityEntries, IsSpellAuraActive = CDM.IsSpellAuraActive, IsTracked = CDM.IsTracked, Read = CDM.Read,
+		}
+		local attach, detach = AuraEngine.Attach, AuraEngine.Detach
+		local getMax = desktop.C_Spell.GetSpellMaxCumulativeAuraApplications
+		local layout = {
+			{ cooldownID = 81, spellID = 990070, name = "Driver Bar Buff", icon = 121, group = CDM.LayoutGroup.DISPLAYED, state = CDM.EntryState.TRACKED, displayed = true, isPotion = false },
+			{ cooldownID = 82, spellID = 990071, name = "Driver Icon Buff", icon = 122, group = CDM.LayoutGroup.DISPLAYED, state = CDM.EntryState.TRACKED, displayed = true, isPotion = false },
+			{ cooldownID = 83, name = "Trinket 1: Driver", icon = 123, group = CDM.LayoutGroup.NOT_DISPLAYED, state = CDM.EntryState.NOT_DISPLAYED, displayed = false, isPotion = false },
+		}
+		local viewerKind = { [81] = CDM.SourceKind.BUFF_BAR, [82] = CDM.SourceKind.BUFF_ICON }
+		local up = { [81] = false, [82] = false }
+		local signals = { [CDM.Signal.DURATION] = 30, [CDM.Signal.REMAINING] = 12, [CDM.Signal.APPLICATIONS] = 3, [CDM.Signal.REMAINING_TEXT] = "12.3" }
+		local attached, detached = {}, 0
+		CDM.GetLayoutStatus = function() return CDM.LayoutStatus.READY end
+		CDM.GetLayoutEntries = function() return layout end
+		rawset(CDM, "GetAbilityEntries", function() return {} end)
+		-- A DoT whose buff entry isn't displayed, while its ability sits in a cooldown viewer.
+		local dotUp = nil
+		CDM.IsSpellAuraActive = function(_, spellId)
+			if spellId == 990072 then
+				return dotUp
+			end
+			return nil
+		end
+		CDM.IsTracked = function(_, spellId) return spellId == 990072 end
+		local isEntryTracked = CDM.IsEntryTracked
+		CDM.IsEntryTracked = function(_, layoutEntry) return layoutEntry.state == CDM.EntryState.TRACKED or layoutEntry.spellID == 990072 end
+		CDM.Read = function(_, spellId, signal)
+			if spellId == 990072 and signal == CDM.Signal.REMAINING_TEXT then
+				return true, "9.9", false
+			end
+			return false, nil, false
+		end
+		layout[#layout + 1] = { cooldownID = 84, spellID = 990072, name = "Driver Dot", icon = 124, group = CDM.LayoutGroup.NOT_DISPLAYED,
+			state = CDM.EntryState.NOT_DISPLAYED, displayed = false, isPotion = false }
+		CDM.GetLayoutEntry = function(_, cooldownID)
+			for _, layoutEntry in ipairs(layout) do
+				if layoutEntry.cooldownID == cooldownID then
+					return layoutEntry
+				end
+			end
+			return nil
+		end
+		CDM.IsCooldownActive = function(_, cooldownID) return up[cooldownID] end
+		CDM.GetCooldownSourceKind = function(_, cooldownID) return viewerKind[cooldownID] end
+		CDM.ReadCooldown = function(_, cooldownID, signal)
+			if viewerKind[cooldownID] == nil then
+				return false, nil, false
+			end
+			return true, signals[signal], false
+		end
+		local attachedTo = {}
+		AuraEngine.Attach = function(_, node, unit, filter, spellId)
+			attached[node] = spellId
+			attachedTo[node] = unit .. ":" .. filter
+			return true
+		end
+		local isSpellHarmful = desktop.C_Spell.IsSpellHarmful
+		rawset(desktop.C_Spell, "IsSpellHarmful", function(id) return id == 990071 end)
+		AuraEngine.Detach = function() detached = detached + 1 end
+		rawset(desktop.C_Spell, "GetSpellMaxCumulativeAuraApplications", function(id) return id == 990070 and 4 or 0 end)
+
+		local buffByKey = {}
+		for _, source in ipairs(CustomBars:GetSources(classId, specId)) do
+			if source.provider == "cdm" then
+				buffByKey[source.cooldownID .. ":" .. source.kind] = source
+			end
+		end
+		check("a Cooldown Manager buff is offered as a Duration, and as Stacks when the client says it stacks", buffByKey["81:buffTime"] ~= nil
+			and buffByKey["81:buffStacks"] ~= nil and buffByKey["82:buffTime"] ~= nil and buffByKey["82:buffStacks"] == nil)
+		check("an entry with no spell of its own, such as a trinket buff, is a Duration keyed by its entry", buffByKey["83:buffTime"] ~= nil
+			and buffByKey["83:buffTime"].spellId == -83 and buffByKey["83:buffStacks"] == nil
+			and buffByKey["83:buffTime"].section == TRB.Localization["CustomIndicatorPickerNotDisplayed"]
+			and buffByKey["81:buffTime"].section == TRB.Localization["CustomIndicatorPickerDisplayed"])
+		if buffByKey["81:buffTime"] ~= nil and buffByKey["81:buffStacks"] ~= nil and buffByKey["82:buffTime"] ~= nil and buffByKey["83:buffTime"] ~= nil then
+			local barTimeGuid = CustomBars:Add(spec, classId, specId, buffByKey["81:buffTime"])
+			local barStackGuid = CustomBars:Add(spec, classId, specId, buffByKey["81:buffStacks"])
+			local iconTimeGuid = CustomBars:Add(spec, classId, specId, buffByKey["82:buffTime"])
+			local trinketGuid = CustomBars:Add(spec, classId, specId, buffByKey["83:buffTime"])
+			local barTimeKey, barStackKey = CustomBars:GetBarKey(barTimeGuid), CustomBars:GetBarKey(barStackGuid)
+			local iconTimeKey, trinketKey = CustomBars:GetBarKey(iconTimeGuid), CustomBars:GetBarKey(trinketGuid)
+			check("a buff timer is written as values, so Smooth applies, and its stacks can be secret",
+				definitions:Get(barTimeKey).timerDrivenFill == false and definitions:Get(barStackKey).usesSecretValue == true
+				and definitions:Get(barStackKey).maxNodes == 4)
+			local barSpells = {}
+			CustomBars:AppendCooldownSpells(barSpells)
+			check("buff bars stay out of the cooldown tracker", #barSpells == 0)
+			try("lay out the Cooldown Manager buff bars", Relayout)
+			local ranges, written = {}, {}
+			local setMinMax, setNodeValue = BarNode.SetMinMax, BarNode.SetValue
+			BarNode.SetMinMax = function(self, min, max)
+				ranges[self] = max
+				return setMinMax(self, min, max)
+			end
+			BarNode.SetValue = function(self, value, ...)
+				written[self] = value
+				return setNodeValue(self, value, ...)
+			end
+			try("render with the buffs down", function() CustomBars:Render() end)
+			local lookup = {}
+			CustomBars:WriteLookup(lookup)
+			check("a buff that is down hides its bars, and the junk its entry holds is not drawn", not Shows(EntryFor(barGroups[barTimeKey]))
+				and not Shows(EntryFor(barGroups[barStackKey])) and lookup["$" .. barStackKey .. "Stacks"] == "0"
+				and lookup["$" .. barTimeKey .. "Time"] == "")
+			up[81], up[82] = true, true
+			try("render with the buffs up", function() CustomBars:Render() end)
+			CustomBars:WriteLookup(lookup)
+			local barTimeNode, barStackGroup = barGroups[barTimeKey].nodes[1], barGroups[barStackKey]
+			check("a buff in Tracked Bars is written the viewer's remaining time against its length", ranges[barTimeNode] == 30
+				and written[barTimeNode] == 12 and attached[barTimeNode] == nil and Shows(EntryFor(barGroups[barTimeKey]))
+				and lookup["$" .. barTimeKey .. "Time"] == "12.3")
+			check("and its stacks fill the segments", written[barStackGroup.nodes[1]] == 1 and written[barStackGroup.nodes[3]] == 3 and written[barStackGroup.nodes[4]] == 3
+				and lookup["$" .. barStackKey .. "Stacks"] == "3" and lookup["$" .. barStackKey .. "StacksMax"] == "4" and Shows(EntryFor(barStackGroup)))
+			local iconNode = barGroups[iconTimeKey].nodes[1]
+			check("an aura in Tracked Buffs is filled by the aura engine from its spell, and shows while it is up", attached[iconNode] == 990071
+				and Shows(EntryFor(barGroups[iconTimeKey])))
+			check("a harmful spell's aura is looked for on the target, as the player's own debuff", attachedTo[iconNode] == "target:HARMFUL|PLAYER")
+			check("an entry no viewer shows is never active, has no spell for the engine, and reads as unknown", not Shows(EntryFor(barGroups[trinketKey]))
+				and attached[barGroups[trinketKey].nodes[1]] == nil and lookup["$" .. trinketKey .. "Time"] == TRB.Localization["CustomBarsCdmUnknownValue"])
+			local barNote, barOptionsNote = CustomBars:GetSourceNotes(spec.customBars.bars[barTimeGuid].source)
+			local _, iconOptionsNote = CustomBars:GetSourceNotes(spec.customBars.bars[iconTimeGuid].source)
+			local trinketNote, trinketOptionsNote = CustomBars:GetSourceNotes(spec.customBars.bars[trinketGuid].source)
+			check("the options say what a buff's place in the Cooldown Manager costs its bar", barNote == nil and barOptionsNote == nil
+				and iconOptionsNote == TRB.Localization["CustomBarsCdmEngineNote"] and trinketNote == TRB.Localization["CustomBarsCdmNotTracked"]
+				and trinketOptionsNote == TRB.Localization["CustomBarsCdmNotDisplayedNote"])
+			-- The DoT: no buff viewer shows it, so its ability's cooldown viewer item answers.
+			local dotGuid = CustomBars:Add(spec, classId, specId, buffByKey["84:buffTime"])
+			local dotKey = CustomBars:GetBarKey(dotGuid)
+			try("lay out the DoT bar", Relayout)
+			dotUp = false
+			try("render the DoT down", function() CustomBars:Render() end)
+			local dotDownShows = Shows(EntryFor(barGroups[dotKey]))
+			dotUp = true
+			try("render the DoT up", function() CustomBars:Render() end)
+			CustomBars:WriteLookup(lookup)
+			local dotNote, dotOptionsNote = CustomBars:GetSourceNotes(spec.customBars.bars[dotGuid].source)
+			check("an aura no buff viewer shows follows its ability's cooldown viewer item: active state, time text, and no Not Tracked",
+				not dotDownShows and Shows(EntryFor(barGroups[dotKey])) and lookup["$" .. dotKey .. "Time"] == "9.9"
+				and attached[barGroups[dotKey].nodes[1]] == 990072 and dotNote == nil
+				and dotOptionsNote == TRB.Localization["CustomBarsCdmEngineNote"])
+			CustomBars:Delete(spec, classId, specId, dotGuid)
+			try("lay out without the DoT bar", Relayout)
+			viewerKind[82] = CDM.SourceKind.BUFF_BAR
+			try("render after moving the buff to Tracked Bars", function() CustomBars:Render() end)
+			check("moving a buff to Tracked Bars takes its bar back from the aura engine", detached == 1 and written[iconNode] == 12)
+			up[81] = false
+			try("render after the buff drops", function() CustomBars:Render() end)
+			check("a dropped buff empties and hides its bar", written[barTimeNode] == 0 and not Shows(EntryFor(barGroups[barTimeKey])))
+			BarNode.SetMinMax, BarNode.SetValue = setMinMax, setNodeValue
+			for _, guid in ipairs({ barTimeGuid, barStackGuid, iconTimeGuid, trinketGuid }) do
+				CustomBars:Delete(spec, classId, specId, guid)
+			end
+			try("lay out without the buff bars", Relayout)
+			try("render without them", function() CustomBars:Render() end)
+		end
+		for name, fn in pairs(saved) do
+			CDM[name] = fn
+		end
+		AuraEngine.Attach, AuraEngine.Detach = attach, detach
+		CDM.IsEntryTracked = isEntryTracked
+
+		-- A custom Color Indicator's or Buff Alert's condition falls back the same way.
+		local isCooldownActive, isSpellAuraActive, getAbilities = CDM.IsCooldownActive, CDM.IsSpellAuraActive, CDM.GetAbilityEntries
+		local auraUp = nil
+		rawset(CDM, "IsCooldownActive", function(_, cooldownID) return cooldownID == 91 and true or nil end)
+		rawset(CDM, "IsSpellAuraActive", function(_, spellId)
+			if spellId == 990080 then
+				return auraUp
+			end
+			return nil
+		end)
+		local shownCondition = { source = CDM.CONDITION_SOURCE, state = CDM.ConditionState.ACTIVE, cooldownID = 91, spellID = 990081 }
+		local dotCondition = { source = CDM.CONDITION_SOURCE, state = CDM.ConditionState.ACTIVE, cooldownID = 92, spellID = 990080 }
+		local noSpellCondition = { source = CDM.CONDITION_SOURCE, state = CDM.ConditionState.ACTIVE, cooldownID = 93 }
+		local unknownBefore = CDM:ReadCondition(dotCondition)
+		auraUp = true
+		local metWhenUp = CDM:IsConditionMet(dotCondition)
+		auraUp = false
+		check("a condition on an aura no buff viewer shows follows its ability's cooldown viewer item", unknownBefore == nil and metWhenUp
+			and CDM:ReadCondition(dotCondition) == false and CDM:IsConditionMet(shownCondition) and CDM:ReadCondition(noSpellCondition) == nil)
+		rawset(CDM, "GetAbilityEntries", function()
+			return { { cooldownID = 61, spellID = 990080, name = "Driver Dot Ability", known = true, displayed = true, hasCharges = false },
+				{ cooldownID = 62, spellID = 990082, name = "Driver Hidden Ability", known = true, displayed = false, hasCharges = false } }
+		end)
+		local function Passive(spellID, state)
+			return { cooldownID = 1, spellID = spellID, state = state, group = CDM.LayoutGroup.NOT_DISPLAYED, displayed = false, isPotion = false }
+		end
+		check("an entry under Not Displayed counts as tracked when its ability is displayed in a cooldown viewer",
+			CDM:IsEntryTracked(Passive(990080, CDM.EntryState.NOT_DISPLAYED)) and not CDM:IsEntryTracked(Passive(990082, CDM.EntryState.NOT_DISPLAYED))
+			and not CDM:IsEntryTracked(Passive(990080, CDM.EntryState.NOT_LEARNED)) and not CDM:IsEntryTracked(Passive(nil, CDM.EntryState.NOT_DISPLAYED))
+			and CDM:IsEntryTracked(Passive(990083, CDM.EntryState.TRACKED)))
+		CDM.IsCooldownActive, CDM.IsSpellAuraActive = isCooldownActive, isSpellAuraActive
+		rawset(CDM, "GetAbilityEntries", getAbilities)
+		rawset(desktop.C_Spell, "IsSpellHarmful", isSpellHarmful)
+		rawset(desktop.C_Spell, "GetSpellMaxCumulativeAuraApplications", getMax)
 	end
 
 	-- Another provider's bars draw and read through it, and a bar whose provider is missing is left alone.

@@ -840,6 +840,62 @@ function CDM:IsCooldownActive(cooldownID)
 	return entry.frame.auraDataCached ~= nil
 end
 
+---Whether the aura a cooldown viewer's item tracks for its spell is up, such as a DoT on the target: nil when no
+---usable cooldown viewer holds the spell.
+---@param spellId integer
+---@return boolean?
+function CDM:IsSpellAuraActive(spellId)
+	local entry = GetSource(spellId, CDM.SourceGroup.COOLDOWN)
+	if entry == nil then
+		return nil
+	end
+	return entry.frame.auraDataCached ~= nil
+end
+
+---Which buff viewer holds an entry, or nil when no usable one does.
+---@param cooldownID integer
+---@return TRB.CdmSourceKind?
+function CDM:GetCooldownSourceKind(cooldownID)
+	if not TRB.Functions.Number:IsPlainNumber(cooldownID) then
+		return nil
+	end
+	if indexDirty or ShownStateChanged() then
+		self:RebuildIndex()
+	end
+	local entry = cooldownSources[cooldownID]
+	if entry == nil or quarantined[entry.frame] then
+		return nil
+	end
+	return entry.kind
+end
+
+---Reads a signal from the buff viewer entry with this cooldownID, which stays plain where a spell ID goes secret.
+---@param cooldownID integer
+---@param signal TRB.CdmSignal
+---@return boolean ok # False means "no data"
+---@return any value
+---@return boolean isSecret
+function CDM:ReadCooldown(cooldownID, signal)
+	if signal == nil or not TRB.Functions.Number:IsPlainNumber(cooldownID) then
+		return false, nil, false
+	end
+	if indexDirty or ShownStateChanged() then
+		self:RebuildIndex()
+	end
+	local entry = cooldownSources[cooldownID]
+	if entry == nil or quarantined[entry.frame] or not SupportsSignal(entry, signal) then
+		return false, nil, false
+	end
+	local ok, value = pcall(ReadSignal, entry, signal)
+	if not ok then
+		if not nonQuarantiningSignals[signal] then
+			quarantined[entry.frame] = true
+		end
+		return false, nil, false
+	end
+	return true, value, issecretvalue(value)
+end
+
 ---A custom Color Indicator's or Buff Alert's condition: which source it reads and what must hold.
 ---@class TRB.CustomIndicatorCondition
 ---@field source string # CDM.CONDITION_SOURCE, Threshold.CONDITION_SOURCE for a threshold line's state, or Aura.CONDITION_SOURCE for a player buff
@@ -864,7 +920,12 @@ function CDM:ReadCondition(condition)
 	if condition.source ~= CDM.CONDITION_SOURCE or condition.state ~= CDM.ConditionState.ACTIVE or cooldownID == nil then
 		return false
 	end
-	return self:IsCooldownActive(cooldownID)
+	local isActive = self:IsCooldownActive(cooldownID)
+	-- With no buff viewer showing it, an ability's own aura is followed from its cooldown viewer item.
+	if isActive == nil and condition.spellID ~= nil then
+		isActive = self:IsSpellAuraActive(condition.spellID)
+	end
+	return isActive
 end
 
 ---Whether one custom indicator condition holds right now. Unknown answers count as not met.
@@ -1153,6 +1214,25 @@ function CDM:GetAbilityEntries()
 		end
 	end
 	return entries
+end
+
+---Whether a passive entry can be followed: it is displayed, or it is the aura of an ability the user displays in a
+---cooldown viewer, whose item follows that aura.
+---@param entry TRB.CdmLayoutEntry
+---@return boolean
+function CDM:IsEntryTracked(entry)
+	if entry.state == CDM.EntryState.TRACKED then
+		return true
+	end
+	if entry.state ~= CDM.EntryState.NOT_DISPLAYED or entry.spellID == nil then
+		return false
+	end
+	for _, ability in ipairs(self:GetAbilityEntries() or {}) do
+		if ability.spellID == entry.spellID and ability.displayed and ability.known then
+			return true
+		end
+	end
+	return false
 end
 
 ---One passive entry by cooldownID; nil when it isn't in the layout. Callers check GetLayoutStatus first,
