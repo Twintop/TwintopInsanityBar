@@ -17,7 +17,7 @@ TRB.Flavor.newsContent = [====[
 
 ### Custom Bars
 
-- A custom bar can track the cooldown, recharge, or charges of an ability in your Cooldown Manager, including the ones under Not Displayed.
+- [#992](#992) A custom bar can track the cooldown, recharge, or charges of an ability in your Cooldown Manager, including the ones under Not Displayed.
 
 ## Mage
 
