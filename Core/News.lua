@@ -23,7 +23,7 @@ TRB.Details.coreNewsContent = [====[
 - [#988](#988) A custom bar tracking charges can fill the recharging charge as it recharges, on by default.
 - [#988](#988) Bar text bound to a custom bar can use `$abilityTime`, `$abilityStacks`, and `$abilityStacksMax` for what that bar tracks, and each new bar gets centered default bar text.
 - [#988](#988) Custom bars belong to their specialization and have no Use Global options, threshold lines, or Color Indicator targets.
-- A custom bar can track the cooldown, recharge, or charges of any ability by its spell ID.
+- [#990](#990) A custom bar can track the cooldown, recharge, or charges of any ability by its spell ID.
 
 ## Edit Mode
 
