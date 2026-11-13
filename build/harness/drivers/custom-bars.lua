@@ -1075,7 +1075,7 @@ function hooks.afterEvents(ctx)
 			GetMax = desktop.C_Spell.GetSpellMaxCumulativeAuraApplications,
 			GetAura = desktop.C_UnitAuras.GetAuraDataBySpellName,
 		}
-		local live = nil
+		local live, plainLive = nil, nil
 		-- The stub calls every spell harmful; only the typed debuff is.
 		local isSpellHarmful = desktop.C_Spell.IsSpellHarmful
 		rawset(desktop.C_Spell, "IsSpellHarmful", function(id) return id == 990052 end)
@@ -1084,6 +1084,8 @@ function hooks.afterEvents(ctx)
 		rawset(desktop.C_UnitAuras, "GetAuraDataBySpellName", function(unit, name, filter)
 			if name == "Driver Typed Buff" then
 				return live
+			elseif name == "Driver Typed Plain Buff" then
+				return plainLive
 			end
 			return api.GetAura(unit, name, filter)
 		end)
@@ -1122,22 +1124,46 @@ function hooks.afterEvents(ctx)
 			Aura:UpdateConditionAuras({ removedAuraInstanceIDs = { 77 } })
 			try("render with the buff gone", function() CustomBars:Render() end)
 			check("and both bars hide when it drops", not Shows(EntryFor(barGroups[buffTimeKey])) and not Shows(EntryFor(barGroups[buffStackKey])))
+			-- A buff with no duration, such as a stance or form, fills its Duration bar while it is up.
+			local plainGuid = CustomBars:Add(spec, classId, specId, CustomBars:GetAuraIdSources(990051)[1])
+			local plainKey = CustomBars:GetBarKey(plainGuid)
+			try("lay out the untimed buff bar", Relayout)
+			plainLive = { auraInstanceID = 78, name = "Driver Typed Plain Buff", isHelpful = true, expirationTime = 0, duration = 0, applications = 0 }
+			Aura:UpdateConditionAuras({ addedAuras = { plainLive } })
+			try("render the untimed buff", function() CustomBars:Render() end)
+			local plainEntry = RuntimeEntry(plainKey)
+			check("an untimed buff's Duration bar is full and active while it is up", plainEntry ~= nil and plainEntry.active
+				and plainEntry.untimed == true and Shows(EntryFor(barGroups[plainKey])))
+			plainLive = nil
+			Aura:UpdateConditionAuras({ removedAuraInstanceIDs = { 78 } })
+			try("render the untimed buff gone", function() CustomBars:Render() end)
+			check("and empties and hides when it drops", plainEntry ~= nil and not plainEntry.active and not Shows(EntryFor(barGroups[plainKey])))
+			CustomBars:Delete(spec, classId, specId, plainGuid)
 			CustomBars:Delete(spec, classId, specId, buffTimeGuid)
 			CustomBars:Delete(spec, classId, specId, buffStackGuid)
 			try("lay out without the typed buff bars", Relayout)
 			try("render without them", function() CustomBars:Render() end)
 			local followed, followedDebuffs = {}, {}
 			CustomBars:AppendAuraSpellIds(followed, followedDebuffs)
+			-- Up again, a buff nothing follows reads as down.
+			live = { auraInstanceID = 79, name = "Driver Typed Buff", isHelpful = true, expirationTime = now + 30, duration = 30, applications = 1 }
+			stubs.fireEventWith("UNIT_AURA", "player", { isFullUpdate = true })
 			check("deleted buff bars stop being followed", #followed == 0 and #followedDebuffs == 0 and Aura:GetFollowedAura(990050) == false)
+			live = nil
 
 			-- A harmful spell is the player's own debuff on the target.
 			names[990052] = "Driver Typed Debuff"
 			local onTarget = nil
 			local asked = nil
 			local getAura = desktop.C_UnitAuras.GetAuraDataBySpellName
+			-- Another player's copy of the debuff, which the client returns only without the PLAYER filter.
+			local othersCopy = nil
 			rawset(desktop.C_UnitAuras, "GetAuraDataBySpellName", function(unit, name, filter)
 				if name == "Driver Typed Debuff" then
 					asked = unit .. ":" .. filter
+					if filter:find("PLAYER", 1, true) == nil then
+						return othersCopy or onTarget
+					end
 					return onTarget
 				end
 				return getAura(unit, name, filter)
@@ -1152,11 +1178,41 @@ function hooks.afterEvents(ctx)
 				and asked == "target:HARMFUL|PLAYER" and not Shows(EntryFor(barGroups[debuffKey])))
 			local debuffNow = desktop.GetTime()
 			onTarget = { auraInstanceID = 88, name = "Driver Typed Debuff", isHarmful = true, expirationTime = debuffNow + 18, duration = 18, applications = 0 }
-			stubs.fireEvents("UNIT_AURA", ctx.addonName)
+			stubs.fireEventWith("UNIT_AURA", "target", { addedAuras = { onTarget } })
 			try("render with the debuff on the target", function() CustomBars:Render() end)
 			local debuffEntry = RuntimeEntry(debuffKey)
-			check("its bar runs on the debuff's own time", debuffEntry ~= nil and debuffEntry.active
+			check("its bar runs on the debuff's own time once it is applied", debuffEntry ~= nil and debuffEntry.active
 				and math.abs(debuffEntry.endTime - (debuffNow + 18)) < 0.001 and Shows(EntryFor(barGroups[debuffKey])))
+			onTarget = { auraInstanceID = 88, name = "Driver Typed Debuff", isHarmful = true, expirationTime = debuffNow + 24, duration = 18, applications = 0 }
+			stubs.fireEventWith("UNIT_AURA", "target", { updatedAuraInstanceIDs = { 88 } })
+			try("render a refreshed debuff", function() CustomBars:Render() end)
+			check("a refresh is followed", debuffEntry ~= nil and math.abs(debuffEntry.endTime - (debuffNow + 24)) < 0.001)
+			-- Another player's copy coming and going leaves the player's own alone.
+			othersCopy = { auraInstanceID = 90, name = "Driver Typed Debuff", isHarmful = true, expirationTime = debuffNow + 6, duration = 18, applications = 0 }
+			stubs.fireEventWith("UNIT_AURA", "target", { addedAuras = { othersCopy } })
+			try("render with another player's copy added", function() CustomBars:Render() end)
+			local keptOwn = debuffEntry ~= nil and debuffEntry.active and math.abs(debuffEntry.endTime - (debuffNow + 24)) < 0.001
+			othersCopy = nil
+			stubs.fireEventWith("UNIT_AURA", "target", { removedAuraInstanceIDs = { 90 } })
+			try("render beside another player's copy", function() CustomBars:Render() end)
+			check("another player's copy neither replaces nor clears the player's own", keptOwn and debuffEntry ~= nil and debuffEntry.active
+				and math.abs(debuffEntry.endTime - (debuffNow + 24)) < 0.001)
+			-- An aura that isn't followed leaves bar text alone, since a raid boss's auras change constantly.
+			TRB.Data.lookupDirty = false
+			stubs.fireEventWith("UNIT_AURA", "target", { addedAuras = { { auraInstanceID = 91, name = "Driver Someone Else's", isHarmful = true } } })
+			check("an aura change on the target that isn't followed doesn't rebuild bar text", TRB.Data.lookupDirty == false)
+			-- A disabled spec stops listening to the target; enabled, it listens again.
+			Aura:DisableUnitAura()
+			local _, whileDisabled = stubs.fireEventWith("UNIT_AURA", "target", { isFullUpdate = true })
+			Aura:EnableUnitAura()
+			local _, whileEnabled = stubs.fireEventWith("UNIT_AURA", "target", { isFullUpdate = true })
+			check("a disabled spec stops following the target, and an enabled one follows it again", whileDisabled == 0 and whileEnabled == 1)
+			onTarget = nil
+			stubs.fireEventWith("UNIT_AURA", "target", { removedAuraInstanceIDs = { 88 } })
+			try("render with the debuff dropped", function() CustomBars:Render() end)
+			check("and a drop", debuffEntry ~= nil and not debuffEntry.active and not Shows(EntryFor(barGroups[debuffKey])))
+			onTarget = { auraInstanceID = 92, name = "Driver Typed Debuff", isHarmful = true, expirationTime = debuffNow + 18, duration = 18, applications = 0 }
+			stubs.fireEventWith("UNIT_AURA", "target", { addedAuras = { onTarget } })
 			onTarget = nil
 			stubs.fireEvents("PLAYER_TARGET_CHANGED", ctx.addonName)
 			try("render after changing target", function() CustomBars:Render() end)

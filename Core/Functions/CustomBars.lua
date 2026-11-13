@@ -59,6 +59,7 @@ local L = TRB.Localization
 ---@field public endTime number?
 ---@field public duration number?
 ---@field public pausedRemaining number? # The frozen time a paused buff's bar holds
+---@field public untimed boolean? # Whether a typed buff with no duration is drawn full while it is up
 ---@field public version integer?
 ---@field public count number?
 ---@field public max number?
@@ -1669,6 +1670,24 @@ local function ReadAuraCount(entry)
 	return math.max(applications, 1)
 end
 
+---Holds a typed buff that has no duration, such as a stance or form, full while it is up.
+---@param entry TRB.Classes.CustomBarRuntime
+---@param node TRB.Classes.BarNode
+---@param redraw boolean
+local function RenderUntimedTimer(entry, node, redraw)
+	entry.active = true
+	if not redraw and entry.untimed then
+		return
+	end
+	entry.untimed = true
+	entry.endTime = nil
+	entry.duration = nil
+	node:ClearTimerDuration()
+	node:SetMinMax(0, 1)
+	node:SetValue(1, false)
+	TRB.Data.lookupDirty = true
+end
+
 ---@type TRB.Classes.CustomBarProvider
 local auraProvider = {
 	label = L["CustomBarsAddGroupAuraId"],
@@ -1721,7 +1740,14 @@ local auraProvider = {
 	Render = function(entry, group, node, settings, now, redraw)
 		if entry.isTimer then
 			local isActive, expirationTime, duration = TRB.Functions.Aura:GetFollowedAura(entry.spellId)
-			RenderPlainTimer(entry, node, isActive, expirationTime, duration, now, redraw)
+			if isActive and (expirationTime or 0) == 0 then
+				RenderUntimedTimer(entry, node, redraw)
+				return false
+			end
+			-- A buff that lost its untimed fill is drawn afresh.
+			local wasUntimed = entry.untimed == true
+			entry.untimed = nil
+			RenderPlainTimer(entry, node, isActive, expirationTime, duration, now, redraw or wasUntimed)
 			return false
 		end
 		RenderCount(entry, group, settings, ReadAuraCount(entry), knownMax[entry.key] or entry.bar.maxCount or 1, redraw, true)

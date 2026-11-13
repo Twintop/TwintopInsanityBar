@@ -955,7 +955,7 @@ end
 local function UpdateAuraSpellIdPrompt(dialog)
 	local text = dialog:GetEditBox():GetText()
 	local spellId = ParseAuraSpellId(text)
-	local message = dialog.data ~= nil and dialog.data.promptText or L["AuraSpellIdPromptText"]
+	local message = dialog.data ~= nil and dialog.data.promptText or L["CustomBarsAuraIdPromptText"]
 	if spellId ~= nil then
 		message = message .. "\n\n" .. (TRB.Functions.OptionsUi.Primitives:FormatAuraSpellLabel(spellId) or "")
 	elseif text ~= nil and text:match("%S") then

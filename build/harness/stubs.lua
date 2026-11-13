@@ -78,9 +78,12 @@ function frameMethods:RegisterEvent(ev)
 	if unknownEvents[ev] then error("Attempt to register unknown event \"" .. tostring(ev) .. "\"", 2) end
 	self.__events[ev] = true
 end
-function frameMethods:RegisterUnitEvent(ev)
+function frameMethods:RegisterUnitEvent(ev, ...)
 	if unknownEvents[ev] then error("Attempt to register unknown event \"" .. tostring(ev) .. "\"", 2) end
 	self.__events[ev] = true
+	-- The units it listens for, which only fireEventWith filters by.
+	self.__units = self.__units or {}
+	self.__units[ev] = { ... }
 end
 function frameMethods:UnregisterEvent(ev) self.__events[ev] = nil end
 function frameMethods:UnregisterAllEvents() self.__events = {} end
@@ -1094,6 +1097,33 @@ function M.fireEvents(spec, addonName)
 		print(string.format("Fired %s -> %d handlers, %d timers, %d handler failures, %d timer failures", event, handled, ran, failures, timerFailures))
 	end
 	return failures, timerFailures
+end
+
+-- Fires one event with any arguments, such as a UNIT_AURA payload table, to the frames registered for it. A frame
+-- registered for the event by unit gets it only for one of its units.
+function M.fireEventWith(event, ...)
+	local args = { ... }
+	local failures, handled = 0, 0
+	for _, f in ipairs(frames) do
+		local fn = f.__scripts.OnEvent
+		local units = f.__units ~= nil and f.__units[event] or nil
+		local forUnit = units == nil or #units == 0
+		if not forUnit then
+			for _, unit in ipairs(units) do
+				forUnit = forUnit or unit == args[1]
+			end
+		end
+		if fn and f.__events[event] and forUnit then
+			handled = handled + 1
+			local ok, err = xpcall(function() fn(f, event, unpack(args)) end, function(e) return debug.traceback(tostring(e), 2) end)
+			if not ok then
+				failures = failures + 1
+				print("EVENT ERROR " .. event .. " (frame " .. tostring(f.__name) .. ")\n    " .. tostring(err):gsub("\n", "\n    "))
+			end
+		end
+	end
+	runTimers()
+	return failures, handled
 end
 
 function M.finish()

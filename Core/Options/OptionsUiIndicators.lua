@@ -1321,7 +1321,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 							PointAuraConditionAt(condition, spellId)
 							Aura:RefreshConditionSpells()
 							OnEdited()
-						end, L["CustomBarsAuraIdPromptText"])
+						end)
 					end,
 				}
 			else
@@ -1640,7 +1640,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			end
 			if TRB.Flavor.playerAuras then
 				rootDescription:CreateButton(L["CustomBarsAddGroupAuraId"], function()
-					Primitives:ShowAuraSpellIdPrompt(nil, AddAuraIndicator, L["CustomBarsAuraIdPromptText"])
+					Primitives:ShowAuraSpellIdPrompt(nil, AddAuraIndicator)
 				end)
 			end
 			if #thresholdSpells > 0 then
