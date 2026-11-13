@@ -1108,7 +1108,7 @@ function M.fireEventWith(event, ...)
 		local fn = f.__scripts.OnEvent
 		local units = f.__units ~= nil and f.__units[event] or nil
 		local forUnit = units == nil or #units == 0
-		if not forUnit then
+		if units ~= nil and not forUnit then
 			for _, unit in ipairs(units) do
 				forUnit = forUnit or unit == args[1]
 			end
