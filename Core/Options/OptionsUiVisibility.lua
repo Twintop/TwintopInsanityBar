@@ -693,7 +693,7 @@ function TRB.Functions.OptionsUi.Visibility:BuildBarTabVisibilityHeader(containe
 	---Switches to the Visibility tab that lists this bar and selects its row. SwitchTab builds a deferred
 	---tab first, so its table API exists by the time the row is selected.
 	local function OpenVisibilityTab()
-		-- Resolved from the scope, not from namePrefix: the shared groupings' sub-tabs use synthesized prefixes.
+		-- Resolved from the scope, not from namePrefix: the shared groupings' strips use synthesized prefixes.
 		local tabs = TRB.Functions.OptionsUi.Tabs
 		if barGroup == "spec" then
 			if classId == nil or specId == nil then

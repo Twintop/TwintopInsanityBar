@@ -2262,9 +2262,7 @@ function TRB.Options:ConstructOptionsPanel()
 	ConstructImportExportPanel()
 	ConstructProfileDefaultsPanel()
 
-	-- Register all class headers and spec nav entries (with nil panels).
-	-- The active class's ConstructOptionsPanel will update its specs with real panels via RegisterSpecPanel.
-	-- Non-active classes appear in the nav but have no panels until lazy loading is implemented.
+	-- Every class and spec is listed up front; a spec's panel and sections are built when it is first opened.
 	TRB.Options:RegisterAllClassSpecNavEntries()
 
 	TRB.Options.OptionsFrame:RefreshNav()

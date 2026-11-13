@@ -6,8 +6,8 @@ local oUi = TRB.Data.constants.optionsUi
 local L = TRB.Localization
 
 -- ============================================================================
--- Castbar options panel (single central tab, injected into every spec by BuildTabGroup,
--- plus the global core-scope version hosted on the top-level Castbar screen)
+-- Castbar options panel (one central tab, in every spec's Cast Bars section,
+-- plus the global core-scope version on Global Options' Cast Bars screen)
 -- ============================================================================
 
 ---Whether the given spec uses empowered abilities (drives the Empower Level Colors section). Only

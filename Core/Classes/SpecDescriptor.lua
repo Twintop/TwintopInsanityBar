@@ -38,7 +38,7 @@ TRB.Classes = TRB.Classes or {}
 ---@field frame string # Frame key the entry resolves to (e.g. "ComboPoint_3", "EnrageBar")
 
 ---@class TRB.Classes.SpecDescriptor.Totems
----@field placement "spec"|"otherBars" # Where the Totems bar's options live: a top-level tab of the spec's own, or an Other Bars tab
+---@field placement "spec"|"otherBars" # Where the Totems bar's options live: a tab in the spec's General section, or a Timer Bars tab
 ---@field builtIn boolean? # The bar comes with the spec: Always Show above the main bar from the start, with no enable prompt
 
 ---@class TRB.Classes.SpecDescriptor.Pet

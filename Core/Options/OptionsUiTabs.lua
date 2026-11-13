@@ -207,23 +207,16 @@ function TRB.Functions.OptionsUi.Tabs:ActivateBarTextVariablesPanel(scrollChild)
 	end
 end
 
----The scroll child of the Bar Text tab showing under a tab, looking through the nested strips of Cast Bars and the other groupings.
----@param host table # A panel or strip that ran BuildTabGroup
+---The scroll child of a strip's Bar Text tab while that tab is the one showing.
+---@param host table # A frame that ran BuildTabGroup
 ---@param tabId string? # Its active tab
 ---@return TRB.Classes.OptionsUi.ScrollChild|nil
 function TRB.Functions.OptionsUi.Tabs:GetShownBarTextScrollChild(host, tabId)
-	if host == nil or tabId == nil or host.tabsheets == nil or host.tabsheets[tabId] == nil then
+	if host == nil or tabId ~= TRB.Functions.OptionsUi.Tabs.TabKeys.BarText or host.tabsheets == nil or host.tabsheets[tabId] == nil then
 		return nil
 	end
 	local sheet = host.tabsheets[tabId]
-	if tabId == TRB.Functions.OptionsUi.Tabs.TabKeys.BarText then
-		return sheet.scrollFrame and sheet.scrollFrame.scrollChild
-	end
-	local inner = sheet.constructorFrame
-	if inner ~= nil and inner.tabsheets ~= nil then
-		return self:GetShownBarTextScrollChild(inner, inner.lastTabId)
-	end
-	return nil
+	return sheet.scrollFrame and sheet.scrollFrame.scrollChild
 end
 
 ---Switches the visible tab in a multi-tab options panel, updating visual states and toggling the bar text variables flyout.
@@ -331,7 +324,7 @@ end
 
 ---Switches to a specific tab by key for a panel identified by its tab-group name prefix.
 ---@param namePrefix string The tab-group name prefix (e.g., "Global", "Castbar", "Priest_shadow")
----@param tabKey string The tab key to switch to (e.g., "barText", "barDisplay")
+---@param tabKey string The tab key to switch to (e.g., "barText", "barVisibility")
 function TRB.Functions.OptionsUi.Tabs:SwitchToTabByNamePrefix(namePrefix, tabKey)
 	-- A tab on a sectioned panel exists only once its section is built, and shows only while that section does.
 	local route = sectionRoutes[namePrefix]
@@ -419,7 +412,6 @@ end
 
 ---Standard tab key constants used across all options panels.
 TRB.Functions.OptionsUi.Tabs.TabKeys = {
-	BarDisplay = "barDisplay",
 	Thresholds = "thresholds",
 	FontText = "fontText",
 	AudioTracking = "audioTracking",
@@ -834,7 +826,7 @@ end
 ---@param namePrefix string The naming prefix (e.g., "Priest_Shadow")
 ---@param tabDefinitions table[] Ordered list of tab definitions: { [1]=key:string, [2]=label:string, [3]=width:number, [4]=constructor:function(scrollChild) }. A named `visibilityKey` field marks a bar tab and gives it a pinned enable/disable header.
 ---@param yCoord number The starting y coordinate for the tabs row. Will be adjusted internally.
----@param specContext table? Explicit { classId, specId } scope; only needed when namePrefix is synthesized (e.g. the castbar sub-tab group)
+---@param specContext table? Explicit { classId, specId } scope; only needed when namePrefix is synthesized (e.g. a spec's Cast Bars strip)
 ---@return number yCoord The adjusted yCoord after tabs are placed (for further content below if needed)
 function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefinitions, yCoord, specContext)
 	local optionsUiFuncs = TRB.Functions.OptionsUi.Tabs
@@ -889,7 +881,8 @@ function TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, namePrefix, tabDefin
 		for _, def in ipairs(rowDefs) do
 			baseRowWidth = baseRowWidth + def[3]
 		end
-		local extraSpace = maxWidth - baseRowWidth - totalSpacing
+		-- A strip's only tab keeps its own width instead of spanning the panel.
+		local extraSpace = #tabDefinitions > 1 and (maxWidth - baseRowWidth - totalSpacing) or 0
 		local extraPerTab = math.floor(extraSpace / numTabs)
 		local remainder = extraSpace - (extraPerTab * numTabs)
 

@@ -3362,6 +3362,7 @@ L["PriestHolyAudioCueSourceLightweaverDescription"] = "Plays whenever your Light
 L["ResourceGcd"] = "Global Cooldown"
 L["ResourceFatigue"] = "Fatigue"
 L["ResourceBreath"] = "Breath"
+-- REMOVED: L["ResourceDeathTimer"] - the Death mirror timer bar was retired
 L["ResourceFeignDeath"] = "Feign Death"
 
 -- Other Bars: panel sections and options
@@ -3372,8 +3373,6 @@ L["GcdBarGrowInstead"] = "Grow instead of drain"
 L["GcdBarGrowInsteadTooltip"] = "Fills the bar up from empty as the global cooldown elapses, instead of draining a full bar down as it runs out."
 L["MirrorTimerDisableBlizzard"] = "Hide Blizzard's bar"
 L["MirrorTimerDisableBlizzardTooltip"] = "Hides the default Blizzard timer for this one while it is being shown here. Blizzard groups these under 'Duration Bars' in Edit Mode and offers no per-timer toggle, so only the timer this tab replaces is hidden -- the others are left alone."
-
--- Other Bars: global settings
 
 -- Other Bars: copy menu section labels
 L["CopyMenuSection_gcdDimensions"] = "Global Cooldown Bar - Dimensions"

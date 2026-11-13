@@ -3174,7 +3174,7 @@ function TRB.Classes.BarTypeRegistry:SpecHasTotems(classId, specId)
 	return self:GetTotemSpecInfo(classId, specId) ~= nil
 end
 
----Where a spec's Totems bar options live: "spec" for a top-level tab, "otherBars" for an Other Bars tab. Nil for a
+---Where a spec's Totems bar options live: "spec" for a tab in General, "otherBars" for a Timer Bars tab. Nil for a
 ---spec without totems.
 ---@param classId integer?
 ---@param specId integer?
@@ -3200,7 +3200,7 @@ function TRB.Classes.BarTypeRegistry:HasGlobalTotems()
 	return not TRB.Flavor.specOwnedTotems
 end
 
----Whether a spec's Totems visibility can follow Global Options. Only a spec where the bar has its own tab: under Other
+---Whether a spec's Totems visibility can follow Global Options. Only a spec where the bar's tab is in General: under Timer
 ---Bars the spec owns its visibility outright, while its other Totems sections can still follow Global Options.
 ---@param classId integer?
 ---@param specId integer?

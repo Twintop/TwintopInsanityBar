@@ -535,7 +535,7 @@ local function ConstructSpecPanel(cache)
 	tabDefinitions[#tabDefinitions + 1] = { "resetDefaults", L["TabResetDefaults"], oUi.tabWidth.medium, resetDefaultsPanel }
 
 	interfaceSettingsFrame.controls[compositeKey] = controls
-	-- BuildTabGroup recognizes a spec panel by its classToken_specName prefix; that earns it the Cast Bars and Other Bars tabs and spec-scoped tab headers.
+	-- BuildTabGroup recognizes a spec panel by its classToken_specName prefix; that earns it its nav sections and spec-scoped tab headers.
 	local tabClassName, tabSpecName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(panel, tabClassName .. "_" .. tabSpecName, tabDefinitions, yCoord)
 end
