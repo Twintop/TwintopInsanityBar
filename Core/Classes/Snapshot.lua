@@ -532,7 +532,17 @@ function TRB.Classes.SnapshotBuff:SyncCustomFromPlayerAura(auraIds)
 			if issecrettable(aura) or issecretvalue(aura.applications) or issecretvalue(aura.expirationTime) or issecretvalue(aura.duration) then
 				return false
 			end
-			self:InitializeCustom(aura.duration, aura.expirationTime - aura.duration, true, math.max(aura.applications, 1))
+			-- A charge buff may carry its count as charges; with neither, the tracked count stands in.
+			local stacks = aura.applications
+			if stacks == 0 then
+				local charges = aura.charges
+				if charges ~= nil and not issecretvalue(charges) and charges > 0 then
+					stacks = charges
+				else
+					stacks = self.isActive and self.applications or 1
+				end
+			end
+			self:InitializeCustom(aura.duration, aura.expirationTime - aura.duration, true, stacks)
 			return true
 		end
 	end
