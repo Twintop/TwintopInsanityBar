@@ -21,6 +21,39 @@ local function GetArcaneBlast()
 	return snapshotData.snapshots[spells.arcaneBlast.id], spells
 end
 
+-- A loading screen's sync waits for CheckCharacter when the spell set isn't loaded yet, as on login and reload.
+local syncPending = true
+
+---Corrects the counted stacks and time from the Arcane Blast aura, which reads only out of combat.
+---@return boolean # whether the spell set was loaded to sync against
+local function SyncArcaneBlastFromAura()
+	local arcaneBlast, spells = GetArcaneBlast()
+	if arcaneBlast == nil or spells == nil then
+		return false
+	end
+	if arcaneBlast.buff:SyncCustomFromPlayerAura({ spells.arcaneBlast.attributes.auraId }) then
+		TRB.Functions.BarText:MarkLookupDirty()
+	end
+	return true
+end
+
+local syncFrame = CreateFrame("Frame")
+syncFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+syncFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+syncFrame:SetScript("OnEvent", function(_, event)
+	if event == "PLAYER_ENTERING_WORLD" then
+		syncPending = not SyncArcaneBlastFromAura()
+	else
+		SyncArcaneBlastFromAura()
+	end
+end)
+
+function runtime.CheckClassCharacter()
+	if syncPending then
+		syncPending = not SyncArcaneBlastFromAura()
+	end
+end
+
 ---A cast of any rank adds a stack, up to the maximum.
 ---@param spellId integer?
 function runtime.OnSpellCastSucceeded(spellId)
