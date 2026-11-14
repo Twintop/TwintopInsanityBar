@@ -28,6 +28,9 @@ local talents = nil
 -- Max applied to each form bar's node, so SetMinMax only runs when it changes.
 local formBarAppliedMax = {}
 
+-- The Eclipse bar's talent gate the current layout was built with; nil until the bar is first built.
+local eclipseGateHidden = nil
+
 Global_TwintopResourceBar = {}
 
 -- The two form resource bars and the keys their values, indicators, thresholds, and text colors use. Energy's
@@ -77,7 +80,67 @@ local function FillSpecializationCache()
 	for _, spell in ipairs({ spells.primalBite, spells.bash, spells.challengingRoar, spells.feralCharge, spells.cower }) do
 		snapshots[spell.id] = TRB.Classes.Snapshot:New(spell)
 	end
+	snapshots[spells.eclipse.id] = TRB.Classes.Snapshot:New(spells.eclipse)
 	cache.barTextVariables = { icons = {}, values = {} }
+end
+
+---The Eclipse snapshot's buff and the active spell set, or nil before the spec cache loads.
+---@return TRB.Classes.SnapshotBuff?, TRB.Classes.Forever.Druid.GeneralSpells?
+local function GetEclipse()
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Forever.Druid.GeneralSpells?]]
+	local snapshotData = TRB.Data.snapshotData
+	if spells == nil or spells.eclipse == nil or snapshotData == nil then
+		return nil, nil
+	end
+	local snapshot = snapshotData.snapshots[spells.eclipse.id]
+	return snapshot and snapshot.buff, spells
+end
+
+-- A loading screen's sync waits for CheckCharacter when the spell set isn't loaded yet, as on login and reload.
+local eclipseSyncPending = true
+
+---Corrects the counted charges and time from the Eclipse aura, which reads only out of combat.
+---@return boolean # whether the spell set was loaded to sync against
+local function SyncEclipseFromAura()
+	local eclipse, spells = GetEclipse()
+	if eclipse == nil or spells == nil or eclipseGateHidden == nil then
+		return false
+	end
+	if eclipseGateHidden == false and eclipse:SyncCustomFromPlayerAura({ spells.eclipse.attributes.auraId }) then
+		TRB.Functions.BarText:MarkLookupDirty()
+	end
+	return true
+end
+
+local eclipseSyncFrame = CreateFrame("Frame")
+eclipseSyncFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+eclipseSyncFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+eclipseSyncFrame:SetScript("OnEvent", function(_, event)
+	if event == "PLAYER_ENTERING_WORLD" then
+		eclipseSyncPending = not SyncEclipseFromAura()
+	else
+		SyncEclipseFromAura()
+	end
+end)
+
+---Lays the bars out again when the Eclipse talent is taken or dropped, and drops charges the talent no longer backs.
+local function RefreshEclipseGate()
+	local hidden = Bar:IsBarTalentGatedHidden("eclipse")
+	if hidden == eclipseGateHidden then
+		return
+	end
+	eclipseGateHidden = hidden
+	local eclipse = GetEclipse()
+	if hidden and eclipse ~= nil and eclipse.isActive then
+		eclipse:Reset(nil, true)
+		TRB.Functions.BarText:MarkLookupDirty()
+	end
+	local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+	local sharedSettings = specCache[compositeKey].settings
+	if barGroups ~= nil and sharedSettings ~= nil then
+		Bar:ApplyBarGroupsLayout(sharedSettings, barGroups)
+	end
+	TRB.Functions.BarVisibility:MarkDirty()
 end
 
 local function Setup()
@@ -137,6 +200,16 @@ local function ConstructResourceBar(settings)
 		local maxNodes = TRB.Data.character.maxResource2 or 5
 		barGroups.secondary:RebuildNodes(maxNodes, settings)
 	end
+
+	if barGroups.eclipse then
+		for x = 1, barGroups.eclipse.maxNodes do
+			local node = barGroups.eclipse:GetNode(x)
+			if node then
+				node:SetMinMax(0, 1)
+			end
+		end
+	end
+	eclipseGateHidden = Bar:IsBarTalentGatedHidden("eclipse")
 
 	TRB.Functions.Class:CheckCharacter()
 	-- Make sure bar visibility and bar text are updated immediately.
@@ -270,6 +343,28 @@ local function RefreshLookupData()
 		end
 	end
 
+	if not activeVars or activeVars["$eclipseStacks"] or activeVars["$eclipseStacksMax"] or activeVars["$eclipseTime"] then
+		local eclipse, spells = GetEclipse()
+		if eclipse ~= nil and spells ~= nil then
+			-- Reset leaves both at 0 once the charges are gone.
+			local stacks = eclipse.applications
+			local remaining = eclipse.remaining
+			local maxStacks = spells.eclipse.maxStacks
+			lookupLogic["$eclipseStacks"] = stacks
+			lookupLogic["$eclipseStacksMax"] = maxStacks
+			lookupLogic["$eclipseTime"] = remaining
+			if lookupChanged(prevState, "$eclipseStacks", stacks) then
+				lookup["$eclipseStacks"] = tostring(stacks)
+			end
+			if lookupChanged(prevState, "$eclipseStacksMax", maxStacks) then
+				lookup["$eclipseStacksMax"] = tostring(maxStacks)
+			end
+			if lookupChanged(prevState, "$eclipseTime", remaining) then
+				lookup["$eclipseTime"] = TRB.Functions.BarText:TimerPrecision(remaining)
+			end
+		end
+	end
+
 	if not activeVars or activeVars["$inStealth"] then
 		lookupLogic["$inStealth"] = TRB.Data.character.isStealthed == true
 	end
@@ -280,10 +375,17 @@ end
 
 local function UpdateSnapshot()
 	Character:UpdateSnapshot()
+	local eclipse = GetEclipse()
+	if eclipse ~= nil and eclipse.isActive then
+		eclipse:GetRemainingTime(GetTime())
+		if not eclipse.isActive then
+			TRB.Functions.BarText:MarkLookupDirty()
+		end
+	end
 end
 
 -- Reused per-tick scratch tables so UpdateResourceBar allocates nothing.
-local scratch = { conditionMap = {}, barColors = {}, barColorMap = {}, formBarColors = { rage = {}, energy = {} }, comboPointColors = {}, claimed = { comboPointsBar = {} }, formConditionMap = {}, formBarGradients = { rage = {}, energy = {} } }
+local scratch = { conditionMap = {}, barColors = {}, barColorMap = {}, formBarColors = { rage = {}, energy = {} }, comboPointColors = {}, eclipseColors = {}, claimed = { comboPointsBar = {}, eclipseBar = {} }, formConditionMap = {}, formBarGradients = { rage = {}, energy = {} } }
 
 ---A form bar's own Overcap gradients per element while their condition holds, or nil. These gradients stay out
 ---of the shared resolver, which measures every gradient against the primary resource: Mana here.
@@ -361,8 +463,16 @@ local function UpdateResourceBar()
 		comboPointColors.border = specSettings.colors.comboPoints.border.color
 		comboPointColors.background = specSettings.colors.comboPoints.background.color
 		barColorMap.comboPointsBar = comboPointColors
+		local eclipseSettings = specSettings.colors.bars.eclipse
+		local eclipseColors = scratch.eclipseColors
+		wipe(eclipseColors)
+		eclipseColors.bar = eclipseSettings.nodeColors.charge1
+		eclipseColors.border = eclipseSettings.border.color
+		eclipseColors.background = eclipseSettings.background.color
+		barColorMap.eclipseBar = eclipseColors
 		local claimed = scratch.claimed
 		wipe(claimed.comboPointsBar)
+		wipe(claimed.eclipseBar)
 
 		Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, claimed)
 
@@ -451,6 +561,27 @@ local function UpdateResourceBar()
 			end
 		end
 
+		if barGroups.eclipse and eclipseGateHidden == false and not specSettings.displayBar.eclipse.neverShow then
+			refreshText = true
+			local eclipse = GetEclipse()
+			local stored = eclipse ~= nil and eclipse.isActive and eclipse.applications or 0
+			for x = 1, barGroups.eclipse.maxNodes do
+				local node = barGroups.eclipse:GetNode(x)
+				if node then
+					local fillColor = eclipseColors.bar
+					-- An indicator on the fill keeps its color over the per-charge colors.
+					if not claimed.eclipseBar.bar then
+						fillColor = eclipseSettings.nodeColors[nodeKeys.charge[(eclipseSettings.sameColor and stored >= x) and stored or x]]
+					end
+					Bar:SetBarNodeValue(specCacheSettings, nodeKeys.eclipse[x], node, stored >= x and 1 or 0, 1)
+					Bar:ApplyNodeIndicators(node, "eclipseBar")
+					Color:ApplyFillColor(node, fillColor)
+					node:SetBorderColor(eclipseColors.border)
+					node:SetBackgroundColorFromString(eclipseColors.background)
+				end
+			end
+		end
+
 		if not specSettings.displayBar.health.neverShow then
 			refreshText = true
 			Bar:UpdateHealthBar(barGroups, snapshotData, specCacheSettings)
@@ -461,6 +592,10 @@ local function UpdateResourceBar()
 	Threshold:UpdateSpellThresholdAudio(specCacheSettings, snapshotData)
 
 	TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "comboPoints", snapshotData.attributes.resource2)
+	if eclipseGateHidden == false then
+		local eclipse = GetEclipse()
+		TRB.Functions.AudioCues:UpdateCounter(specSettings, snapshotData, "eclipse", eclipse ~= nil and eclipse.isActive and eclipse.applications or 0)
+	end
 
 	TRB.Functions.BarText:UpdateResourceBarText(specCacheSettings, refreshText)
 end
@@ -521,6 +656,7 @@ local function SwitchSpec()
 		lookup["#bearForm"] = spells.bearForm.icon
 		lookup["#catForm"] = spells.catForm.icon
 		lookup["#claw"] = spells.claw.icon
+		lookup["#eclipse"] = spells.eclipse.icon
 		lookup["#ferociousBite"] = spells.ferociousBite.icon
 		lookup["#lacerate"] = spells.lacerate.icon
 		lookup["#maul"] = spells.maul.icon
@@ -591,6 +727,10 @@ function TRB.Functions.Class:CheckCharacter()
 			Bar:ApplyBarGroupsAppearance(sharedSettings, barGroups)
 		end
 	end
+	RefreshEclipseGate()
+	if eclipseSyncPending then
+		eclipseSyncPending = not SyncEclipseFromAura()
+	end
 end
 
 function TRB.Functions.Class:EventRegistration()
@@ -628,6 +768,7 @@ function TRB.Functions.Class:HideResourceBar(force)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.rage, displayBar and displayBar.rage, true, 1, nil)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.energy, displayBar and displayBar.energy, true, 1, nil)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.secondary, displayBar and displayBar.secondary, true, comboPointNodes, nil)
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.eclipse, displayBar and displayBar.eclipse, eclipseGateHidden == false, 4, nil)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.health, displayBar and displayBar.health, true, 1, nil)
 		if sharedSettings ~= nil then
 			local context = TRB.Functions.BarVisibility:GetGameStateContext(force)
@@ -650,7 +791,37 @@ function TRB.Functions.Class:RecreateThresholds(_, barGroups)
 	end
 end
 
----Mana casts snapshot their cost for the casting overlay and $casting; a finished cast refreshes its cooldown.
+---A finished Wrath of any rank stores Eclipse charges and restarts their timer; a finished Starfire spends one.
+---@param spellId integer?
+local function TrackEclipseCast(spellId)
+	if eclipseGateHidden ~= false or spellId == nil or issecretvalue(spellId) then
+		return
+	end
+	local eclipse, spells = GetEclipse()
+	local castSpells = TRB.Data.spellsData.spellsById[spellId]
+	if eclipse == nil or spells == nil or castSpells == nil then
+		return
+	end
+	local currentTime = GetTime()
+	if tContains(castSpells, spells.wrath) then
+		-- Charges that ran out since the last tick start over instead of growing.
+		eclipse:GetRemainingTime(currentTime)
+		local spell = spells.eclipse
+		local stored = eclipse.isActive and eclipse.applications or 0
+		eclipse:AddStackOrInitializeCustom(spell.duration, currentTime, true, math.min(spell.attributes.chargesPerWrath, spell.maxStacks - stored))
+		-- AddStack's own read returns the time cached for this timestamp, from before the restart.
+		eclipse:GetRemainingTime(currentTime, nil, true)
+		TRB.Functions.BarText:MarkLookupDirty()
+	elseif tContains(castSpells, spells.starfire) then
+		eclipse:GetRemainingTime(currentTime)
+		if eclipse.isActive then
+			eclipse:RemoveStack()
+			TRB.Functions.BarText:MarkLookupDirty()
+		end
+	end
+end
+
+---Mana casts snapshot their cost for the casting overlay and $casting; a finished cast counts toward Eclipse.
 ---@param event string
 ---@param spellId integer?
 function TRB.Functions.Class:SpellCast(event, spellId)
@@ -658,6 +829,8 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 	if event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_DELAYED" then
 		snapshotData.casting:SnapshotManaSpell()
 		snapshotData.casting.resourceFinal = snapshotData.casting.resourceRaw
+	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+		TrackEclipseCast(spellId)
 	end
 end
 
@@ -671,8 +844,12 @@ function TRB.Functions.Class:IsValidVariableForSpec(var)
 	local valid = TRB.Functions.BarText:IsValidVariableBase(var)
 	if valid then return valid end
 	if var == "$resourceMax" or var == "$manaMax" or var == "$rageMax" or var == "$energyMax"
-		or var == "$comboPoints" or var == "$comboPointsMax" or var == "$inStealth" then
+		or var == "$comboPoints" or var == "$comboPointsMax" or var == "$inStealth" or var == "$eclipseStacksMax" then
 		return true
+	end
+	if var == "$eclipseStacks" or var == "$eclipseTime" then
+		local eclipse = GetEclipse()
+		return eclipse ~= nil and eclipse.isActive
 	end
 	if var == "$casting" then
 		return castingFn() or false
@@ -702,13 +879,16 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 		end
 		return nil, true, false
 	end
-	local comboPointPrefix = "ComboPoint"
-	if string.sub(normalized, 1, string.len(comboPointPrefix)) == comboPointPrefix then
-		local index = tonumber(string.sub(normalized, string.len(comboPointPrefix) + 1))
-		if index and barGroups.secondary then
-			local node = barGroups.secondary:GetNode(index)
+	local prefix, nodeGroup = "ComboPoint", barGroups.secondary
+	if string.sub(normalized, 1, 7) == "Eclipse" then
+		prefix, nodeGroup = "Eclipse", barGroups.eclipse
+	end
+	if string.sub(normalized, 1, string.len(prefix)) == prefix then
+		local index = tonumber(string.sub(normalized, string.len(prefix) + 1))
+		if index and nodeGroup then
+			local node = nodeGroup:GetNode(index)
 			if node then
-				return node:GetFrame(), true, barGroups.secondary.isVisible and node.isVisible
+				return node:GetFrame(), true, nodeGroup.isVisible and node.isVisible
 			end
 		end
 	end
@@ -716,7 +896,8 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 end
 
 function TRB.Functions.Class:HasActiveTimers()
-	return false
+	local eclipse = GetEclipse()
+	return eclipse ~= nil and eclipse.isActive
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()

@@ -8,6 +8,19 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 1.60.1.20-release (2026-11-14)
+## Druid
+
+- [#999](#999) Add a new Eclipse bar, tracking your Eclipse charges, with the `$eclipseStacks`, `$eclipseStacksMax`, `$eclipseTime`, and `#eclipse` bar text variables. It shows once you take the Eclipse talent, outside Cat, Bear, and Travel forms.
+- [#999](#999) Each Wrath cast fills two of its four nodes and each Starfire cast empties one, and the charges end 15 seconds after the last Wrath.
+- [#999](#999) The Eclipse bar joins the bar text Relative to Frame and Color Indicator target lists, and adds an Eclipse Charges source for audio cues.
+
+## Mage
+
+- [#999](#999) The Arcane Blast bar now corrects its stacks and time from the game when you leave combat and after a loading screen.
+
+---
+
 # 1.60.1.19-release (2026-11-13)
 ## General
 ### Bar Visibility

@@ -3,7 +3,7 @@ local L = TRB.Localization
 local oUi = TRB.Data.constants.optionsUi
 
 -- Druid options (World of Warcraft: Forever): default settings, default bar text, and the options panel for the
--- Mana, Rage, Energy, and Combo Point bars.
+-- Mana, Rage, Energy, Combo Point, and Eclipse bars.
 
 TRB.Options = TRB.Options or {}
 TRB.Options.Druid = TRB.Options.Druid or {}
@@ -19,14 +19,15 @@ local formBars = {
 }
 local maxResources = TRB.Data.maxResource[className][specName]
 
----The registered form bar types, in options order.
+---The registered form bar types and the Eclipse bar type, in options order.
 ---@return TRB.Classes.BarTypeDefinition[]
-local function GetFormBarTypes()
+local function GetCustomBarTypes()
 	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 	local types = {}
 	for _, formBar in ipairs(formBars) do
 		types[#types + 1] = registry:Get(formBar.key)
 	end
+	types[#types + 1] = registry:Get("eclipse")
 	return types
 end
 
@@ -127,6 +128,7 @@ local function LoadDefaultSettings(includeBarText, classic)
 			rage = visibility(true, notBear),
 			energy = visibility(true, notCat),
 			secondary = visibility(false, notCat),
+			eclipse = visibility(false, { "isDruidTravelFormAny", "isDruidCatForm", "isDruidBearForm" }),
 			health = visibility(true),
 		},
 		bar = TRB.Functions.Settings:DefaultBarDimensions(classic),
@@ -134,6 +136,7 @@ local function LoadDefaultSettings(includeBarText, classic)
 		bars = {
 			rage = TRB.Functions.Settings:DefaultDruidFormBarDimensions(classic),
 			energy = TRB.Functions.Settings:DefaultDruidFormBarDimensions(classic),
+			eclipse = TRB.Functions.Settings:DefaultDruidEclipseBarDimensions(classic),
 		},
 		comboPoints = comboPoints,
 		colors = {
@@ -161,6 +164,7 @@ local function LoadDefaultSettings(includeBarText, classic)
 			bars = {
 				rage = TRB.Functions.Settings:DefaultDruidRageBarColors(),
 				energy = TRB.Functions.Settings:DefaultDruidEnergyBarColors(),
+				eclipse = TRB.Functions.Settings:DefaultDruidEclipseBarColors(),
 			},
 			comboPoints = {
 				border = { color = "FFFFD300" },
@@ -199,7 +203,7 @@ local function LoadDefaultSettings(includeBarText, classic)
 			barText = {},
 		},
 		audio = {},
-		textures = TRB.Functions.Settings:DefaultTextures(true, GetFormBarTypes()),
+		textures = TRB.Functions.Settings:DefaultTextures(true, GetCustomBarTypes()),
 	}
 
 	-- Each form bar's Overcap gradient steps at that bar's own threshold.
@@ -313,6 +317,14 @@ local comboPointsPanel = withSpec(function(parent, specSettings, controls)
 	TRB.Functions.OptionsUi.ColorPickers:GenerateEndCapOptions(parent, controls, yCoord, specSettings.colors.comboPoints, namePrefix .. "_ComboPoints", "endCapComboPoints", L["EndCap"], classId, specId)
 end)
 
+local eclipsePanel = withSpec(function(parent, specSettings, controls)
+	local barTypeDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("eclipse")
+	local yCoord = 5
+	yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, specSettings, classId, specId, yCoord, barTypeDef, L["ResourceMana"])
+	yCoord = yCoord - 90
+	TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, specSettings, classId, specId, yCoord, barTypeDef)
+end)
+
 local healthBarPanel = withSpec(function(parent, specSettings, controls)
 	local yCoord = 5
 	yCoord = TRB.Functions.OptionsUi.Layout:GenerateHealthBarDimensionsOptions(parent, controls, specSettings, classId, specId, yCoord, L["ResourceMana"])
@@ -340,11 +352,11 @@ local thresholdListPanel = withSpec(function(parent, specSettings, controls)
 end)
 
 local texturesPanel = withSpec(function(parent, specSettings, controls)
-	TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, specSettings, classId, specId, 5, true, L["ResourceComboPoints"], false, GetFormBarTypes())
+	TRB.Functions.OptionsUi.Textures:GenerateBarTexturesOptions(parent, controls, specSettings, classId, specId, 5, true, L["ResourceComboPoints"], false, GetCustomBarTypes())
 end)
 
 local visibilityPanel = withSpec(function(parent, specSettings, controls)
-	TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, specSettings, classId, specId, 5, L["ResourceMana"], "notFull", true, L["ResourceComboPoints"], true, nil, GetFormBarTypes())
+	TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent, controls, specSettings, classId, specId, 5, L["ResourceMana"], "notFull", true, L["ResourceComboPoints"], true, nil, GetCustomBarTypes())
 end)
 
 local fontTextPanel = withSpec(function(parent, specSettings, controls)
@@ -402,6 +414,7 @@ local indicatorColorsPanel = withSpec(function(parent, specSettings, controls)
 			{ key = "comboPointsBar", label = L["BarNameComboPoints"] },
 			{ key = "energyBar", label = L["BarNameEnergyBar"] },
 			{ key = "rageBar", label = L["BarNameRageBar"] },
+			{ key = "eclipseBar", label = L["BarNameEclipseBar"] },
 		},
 		ddNamePrefix = "TwintopResourceBar_" .. namePrefix,
 	})
@@ -520,6 +533,7 @@ local function ConstructSpecPanel(cache)
 		tabDefinitions[#tabDefinitions + 1] = { formBar.tabKey, formBar.label, oUi.tabWidth.small, BuildFormBarPanel(formBar), visibilityKey = formBar.key }
 	end
 	tabDefinitions[#tabDefinitions + 1] = { "comboPoints", L["TabComboPoints"], oUi.tabWidth.medium, comboPointsPanel, visibilityKey = "secondary" }
+	tabDefinitions[#tabDefinitions + 1] = { "eclipseBar", L["TabEclipse"], oUi.tabWidth.small, eclipsePanel, visibilityKey = "eclipse" }
 	tabDefinitions[#tabDefinitions + 1] = { "healthBar", L["TabHealth"], oUi.tabWidth.small, healthBarPanel, visibilityKey = "health" }
 	tabDefinitions[#tabDefinitions + 1] = { "indicatorColors", L["TabIndicatorColors"], oUi.tabWidth.large, indicatorColorsPanel }
 	tabDefinitions[#tabDefinitions + 1] = { "thresholdSettings", L["TabThresholdSettings"], oUi.tabWidth.large, thresholdSettingsPanel }
