@@ -542,7 +542,16 @@ function TRB.Classes.SnapshotBuff:SyncCustomFromPlayerAura(auraIds, endWhenMissi
 			if aura.duration <= 0 or aura.expirationTime <= GetTime() then
 				return "untimed"
 			end
-			local stacks = aura.applications > 0 and aura.applications or (self.isActive and self.applications or 1)
+			-- A charge buff may carry its count as charges; with neither, the tracked count stands in.
+			local stacks = aura.applications
+			if stacks == 0 then
+				local charges = aura.charges
+				if charges ~= nil and not issecretvalue(charges) and charges > 0 then
+					stacks = charges
+				else
+					stacks = self.isActive and self.applications or 1
+				end
+			end
 			self:InitializeCustom(aura.duration, aura.expirationTime - aura.duration, true, stacks)
 			return "copied"
 		end

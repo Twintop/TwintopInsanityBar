@@ -578,4 +578,7 @@ if locale == "enGB" then
 	L["CheckboxUseGlobalTooltip_FatigueDimensions"] = "When checked, this bar's position and size come from the global Timer Bars screen instead of this specialisation's own settings."
 	L["CheckboxUseGlobalTooltip_BreathDimensions"] = "When checked, this bar's position and size come from the global Timer Bars screen instead of this specialisation's own settings."
 	L["BarDisplayTextCustomizationHeaderOtherBars"] = "Timer Bar Display Text Customisation"
+	L["ForeverShamanElementalShieldColorsHeader"] = "Elemental Shield Colours"
+	L["ForeverShamanElementalShieldCheckboxUseHighestForAll"] = "Use highest shield orb colour for all?"
+	L["ForeverShamanElementalShieldCheckboxUseHighestForAllTooltip"] = "When checked, the highest shield orb's colour will be used for all shield orbs. E.g., if you have maximum %d shield orbs and currently have %d, the Penultimate colour will be used for all shield orbs instead of just the second to last."
 end
