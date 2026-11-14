@@ -5,6 +5,11 @@
 -- window whose text can be copied (Ctrl+A, Ctrl+C) and are also saved in TRBForeverProbeResults
 -- (WTF\...\SavedVariables\TRBForeverProbe.lua) for when the beta can write saved variables again.
 --
+-- The toggled logs answer one tracking question each (each also runs on the live client): /trbprobe hits compares a
+-- charge buff's count across a fight with the hits taken, /trbprobe swings tallies swings against the target's results,
+-- /trbprobe auras lists which stack auras the client keeps secret, /trbprobe crits pairs each cast with its result on the
+-- target, /trbprobe mana shows what a resource gain looks like, and /trbprobe casttime <spell id> lists every cast time and cost a spell reports.
+--
 -- Nothing here depends on the addon itself. Every probe is wrapped in pcall: an API that is missing or
 -- throws is itself a finding.
 
@@ -605,16 +610,471 @@ local function ToggleSwingLog()
 	end
 end
 
+-- Shared by the toggled logs below: the full log goes to the copy window, chat gets only the summaries.
+local function Chat(text)
+	print("|cFF00FF00TRB Probe|r " .. text)
+end
+
+local function CanReadAuras()
+	-- A client that restricts auras says when; one with no such check reads them anytime.
+	if C_Secrets ~= nil and C_Secrets.ShouldAurasBeSecret ~= nil then
+		return not C_Secrets.ShouldAurasBeSecret()
+	end
+	return true
+end
+
+---Sorted "key xN" pairs of a tally table.
+local function TallyText(tally)
+	local keys = {}
+	for k in pairs(tally) do keys[#keys + 1] = k end
+	table.sort(keys)
+	for i, k in ipairs(keys) do keys[i] = k .. " x" .. tally[k] end
+	return #keys > 0 and table.concat(keys, ", ") or "none"
+end
+
+local function SpellName(spellId)
+	local ok, info = pcall(C_Spell.GetSpellInfo, spellId)
+	return ok and info ~= nil and info.name or "?"
+end
+
+-- /trbprobe hits: per fight, each charge buff's count before and after against a tally of the hits taken.
+local chargeBuffs = {
+	{ name = "Lightning Shield", ids = { 324, 325, 905, 945, 8134, 10431, 10432 } },
+	{ name = "Water Shield", ids = { 408510 } },
+	{ name = "Shadowguard", ids = { 18137, 19308, 19309, 19310, 19311, 19312 } },
+	{ name = "Elune's Grace", ids = { 2651 } },
+	{ name = "Inner Fire", ids = { 588, 7128, 602, 1006, 10951, 10952 } },
+	{ name = "Shield Block", ids = { 2565 } },
+	{ name = "Holy Shield", ids = { 20925, 20927, 20928, 1239570 } },
+	{ name = "Redoubt", ids = { 20128 } },
+	{ name = "Sweeping Strikes", ids = { 12292 } },
+	{ name = "Reckless Swings", ids = { 1329555 } },
+	{ name = "Flurry", ids = { 16257, 12966 } },
+}
+local hitsFrame = CreateFrame("Frame")
+local hitsLog = nil
+local hitsState = nil
+
+---Each tracked buff the player has, as name -> charges; nil when auras can't be read right now.
+local function ReadChargeBuffs()
+	if not CanReadAuras() then
+		return nil
+	end
+	local found = {}
+	for _, buff in ipairs(chargeBuffs) do
+		for _, id in ipairs(buff.ids) do
+			local ok, aura = pcall(C_UnitAuras.GetPlayerAuraBySpellID, id)
+			if ok and aura ~= nil and not IsSecret(aura.applications) then
+				local charges = aura.charges
+				found[buff.name] = (aura.applications or 0) > 0 and aura.applications or ((charges ~= nil and not IsSecret(charges)) and charges or 0)
+				break
+			end
+		end
+	end
+	return found
+end
+
+local function ChargeText(found)
+	if found == nil then return "unreadable" end
+	local parts = {}
+	for _, buff in ipairs(chargeBuffs) do
+		if found[buff.name] ~= nil then parts[#parts + 1] = buff.name .. " " .. found[buff.name] end
+	end
+	return #parts > 0 and table.concat(parts, ", ") or "no charge buff"
+end
+
+local function EndHitsFight()
+	local state = hitsState
+	if state == nil or state.fightStart == nil then return end
+	local after = ReadChargeBuffs()
+	local parts = {}
+	for _, buff in ipairs(chargeBuffs) do
+		local before = state.before ~= nil and state.before[buff.name] or nil
+		local now = after ~= nil and after[buff.name] or nil
+		if before ~= nil or now ~= nil then
+			parts[#parts + 1] = string.format("%s %s -> %s%s", buff.name, tostring(before or 0), after == nil and "?" or tostring(now or 0),
+				(state.recasts[buff.name] or 0) > 0 and (" (recast x" .. state.recasts[buff.name] .. ")") or "")
+		end
+	end
+	local line = string.format("fight %.1fs: %s | taken: %s | wound times: %s | other casts: %s", GetTime() - state.fightStart,
+		#parts > 0 and table.concat(parts, "; ") or "no charge buff", TallyText(state.taken),
+		#state.woundTimes > 0 and table.concat(state.woundTimes, " ") or "none", TallyText(state.casts))
+	hitsLog[#hitsLog + 1] = line
+	Chat(line)
+	state.fightStart = nil
+	state.before = after
+end
+
+hitsFrame:SetScript("OnEvent", function(_, event, unit, a, b, _, d)
+	local state = hitsState
+	if state == nil then return end
+	if event == "PLAYER_REGEN_DISABLED" then
+		state.fightStart, state.taken, state.casts, state.recasts, state.woundTimes = GetTime(), {}, {}, {}, {}
+	elseif event == "PLAYER_REGEN_ENABLED" then
+		C_Timer.After(0.5, EndHitsFight)
+	elseif event == "UNIT_COMBAT" then
+		if state.fightStart == nil or IsSecret(a) or IsSecret(b) or IsSecret(d) then return end
+		local physical = d == 1
+		local key = a .. (b ~= "" and ("/" .. b) or "") .. (physical and "" or " magic")
+		state.taken[key] = (state.taken[key] or 0) + 1
+		local elapsed = string.format("+%.1f", GetTime() - state.fightStart)
+		if a == "WOUND" then state.woundTimes[#state.woundTimes + 1] = elapsed end
+		hitsLog[#hitsLog + 1] = string.format("  %s %s", elapsed, key)
+		-- Where the buff reads in combat, each hit shows the charges it left.
+		if CanReadAuras() then
+			C_Timer.After(0.1, function()
+				if hitsLog ~= nil and CanReadAuras() then hitsLog[#hitsLog + 1] = string.format("    after %s %s: %s", elapsed, key, ChargeText(ReadChargeBuffs())) end
+			end)
+		end
+	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+		local spellId = b
+		if IsSecret(spellId) or spellId == nil then return end
+		local tracked = nil
+		for _, buff in ipairs(chargeBuffs) do
+			if tContains(buff.ids, spellId) then tracked = buff.name end
+		end
+		if state.fightStart == nil then
+			-- A buff cast before the pull: read what it gave once the aura is up.
+			C_Timer.After(0.3, function()
+				if hitsState ~= nil and hitsState.fightStart == nil then
+					local found = ReadChargeBuffs()
+					if found ~= nil then hitsState.before = found end
+				end
+			end)
+		elseif tracked ~= nil then
+			state.recasts[tracked] = (state.recasts[tracked] or 0) + 1
+			hitsLog[#hitsLog + 1] = string.format("  +%.1f recast %s", GetTime() - state.fightStart, tracked)
+		else
+			local key = spellId .. " " .. SpellName(spellId)
+			state.casts[key] = (state.casts[key] or 0) + 1
+			hitsLog[#hitsLog + 1] = string.format("  +%.1f cast %s", GetTime() - state.fightStart, key)
+		end
+	end
+end)
+
+local function ToggleHitsLog()
+	if hitsLog == nil then
+		hitsLog = { "TRB Forever Probe hits log " .. date("%Y-%m-%d %H:%M:%S") }
+		hitsState = { before = ReadChargeBuffs(), taken = {}, casts = {}, recasts = {}, woundTimes = {} }
+		hitsFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+		hitsFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+		hitsFrame:RegisterUnitEvent("UNIT_COMBAT", "player")
+		hitsFrame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
+		hitsLog[#hitsLog + 1] = "start: " .. ChargeText(hitsState.before)
+		Chat("hits log ON (" .. ChargeText(hitsState.before) .. "). Buff up out of combat, pull one enemy, take only 1 to 3 hits, kill it, and wait for the fight line. Repeat a few times (with a shield equipped for blocks), then /trbprobe hits again.")
+	else
+		hitsFrame:UnregisterAllEvents()
+		local text = table.concat(hitsLog, "\n")
+		hitsLog, hitsState = nil, nil
+		Chat("hits log OFF: press Ctrl+A then Ctrl+C in the window, then paste the text back.")
+		ShowResults(text)
+	end
+end
+
+-- /trbprobe swings: whether PLAYER_SWING fires for misses, and whether the target's results show the player's crits.
+local swingsFrame = CreateFrame("Frame")
+local swingsLog = nil
+local swingsTally = nil
+
+swingsFrame:SetScript("OnEvent", function(_, event, a, b, c, _, e)
+	if swingsLog == nil or swingsTally == nil then return end
+	local key
+	if event == "PLAYER_SWING" then
+		key = "PLAYER_SWING type " .. Value(b)
+	elseif event == "UNIT_COMBAT" then
+		if IsSecret(b) or IsSecret(c) then return end
+		key = "target " .. b .. (c ~= "" and ("/" .. c) or "") .. ((IsSecret(e) or e == 1) and "" or " magic")
+	else
+		if IsSecret(c) or c == nil then return end
+		key = "cast " .. c .. " " .. SpellName(c)
+	end
+	swingsTally[key] = (swingsTally[key] or 0) + 1
+	swingsLog[#swingsLog + 1] = string.format("%.3f %s", GetTime(), key)
+end)
+
+local function ToggleSwingsLog()
+	if swingsLog == nil then
+		swingsLog = { "TRB Forever Probe swings log " .. date("%Y-%m-%d %H:%M:%S") }
+		swingsTally = {}
+		local ok = pcall(swingsFrame.RegisterEvent, swingsFrame, "PLAYER_SWING")
+		swingsFrame:RegisterUnitEvent("UNIT_COMBAT", "target")
+		swingsFrame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
+		swingsLog[#swingsLog + 1] = "PLAYER_SWING registered: " .. tostring(ok)
+		Chat("swings log ON" .. (ok and "" or " (this client has no PLAYER_SWING)") .. ". Solo, with no pet or damage over time effect on the target, auto attack one enemy for a minute or more, with some special attacks, then /trbprobe swings again.")
+	else
+		swingsFrame:UnregisterAllEvents()
+		local summary = "swings: " .. TallyText(swingsTally)
+		swingsLog[#swingsLog + 1] = summary
+		local text = table.concat(swingsLog, "\n")
+		swingsLog, swingsTally = nil, nil
+		Chat(summary)
+		ShowResults(text)
+	end
+end
+
+-- /trbprobe auras: which stack and charge auras the client would keep secret. A static query; no aura is read.
+local secretAuraCandidates = {
+	{ "Eclipse", 408255 }, { "Maelstrom Weapon", 408505 }, { "Lightning Shield", 324 }, { "Water Shield", 408510 }, { "Flurry (Shaman)", 16257 },
+	{ "Flurry (Warrior)", 12966 }, { "Heating Up", 400625 }, { "Fingers of Frost", 400669 }, { "Combustion", 28682 }, { "Arcane Blast", 400573 },
+	{ "Inner Fire", 588 }, { "Shadowguard", 18137 }, { "Elune's Grace", 2651 }, { "Holy Shield", 20925 }, { "Redoubt", 20128 },
+	{ "Reckoning", 1326084 }, { "Vengeance", 20050 }, { "Echo of Command", 1311703 }, { "Shield Block", 2565 }, { "Sweeping Strikes", 12292 },
+	{ "Reckless Swings", 1329555 }, { "Gore Drinker", 1323969 }, { "Sniper Shot", 1310687 }, { "Slice and Dice", 5171 },
+}
+
+local function RunSecretAuras()
+	local lines = { "TRB Forever Probe aura secrecy " .. date("%Y-%m-%d %H:%M:%S") .. " inCombat=" .. tostring(InCombatLockdown()) }
+	if C_Secrets == nil or C_Secrets.ShouldSpellAuraBeSecret == nil then
+		lines[#lines + 1] = "C_Secrets.ShouldSpellAuraBeSecret is MISSING on this client"
+		Chat("auras: this client has no C_Secrets.ShouldSpellAuraBeSecret.")
+	else
+		local ok, all = pcall(C_Secrets.ShouldAurasBeSecret)
+		lines[#lines + 1] = "ShouldAurasBeSecret() = " .. (ok and Value(all) or ("ERROR: " .. tostring(all)))
+		local open = {}
+		for _, candidate in ipairs(secretAuraCandidates) do
+			local called, secret = pcall(C_Secrets.ShouldSpellAuraBeSecret, candidate[2])
+			lines[#lines + 1] = string.format("  %s (%d) = %s", candidate[1], candidate[2], called and Value(secret) or ("ERROR: " .. tostring(secret)))
+			if called and secret == false then open[#open + 1] = candidate[1] end
+		end
+		Chat(string.format("auras (%s): %d of %d not secret%s. Run it once in combat and once out.", InCombatLockdown() and "in combat" or "out of combat",
+			#open, #secretAuraCandidates, #open > 0 and (": " .. table.concat(open, ", ")) or ""))
+	end
+	ShowResults(table.concat(lines, "\n"))
+end
+
+-- /trbprobe casttime <spell id>: every distinct cast time and cost the spell reports, in and out of combat.
+local castTimeFrame = CreateFrame("Frame")
+local castTimeLog = nil
+local castTimeState = nil
+
+local function SampleCastTime(reason)
+	local state = castTimeState
+	if state == nil then return end
+	local okInfo, info = pcall(C_Spell.GetSpellInfo, state.spellId)
+	local castTime = okInfo and info ~= nil and info.castTime or nil
+	local okCost, costs = pcall(C_Spell.GetSpellPowerCost, state.spellId)
+	local cost = okCost and type(costs) == "table" and costs[1] ~= nil and costs[1].cost or nil
+	local key = string.format("%s castTime=%s cost=%s", InCombatLockdown() and "combat" or "idle", Value(castTime), Value(cost))
+	if state.seen[key] == nil then
+		state.seen[key] = true
+		local line = string.format("%.1f new value: %s (after %s)", GetTime() - state.start, key, reason)
+		castTimeLog[#castTimeLog + 1] = line
+		Chat(line)
+	end
+end
+
+castTimeFrame:SetScript("OnEvent", function(_, event, _, _, spellId)
+	if event == "UNIT_SPELLCAST_SUCCEEDED" and not IsSecret(spellId) and spellId ~= nil then
+		local reason = "cast " .. spellId .. " " .. SpellName(spellId)
+		SampleCastTime(reason)
+		-- Again once the cast's own buff changes have landed.
+		C_Timer.After(0.3, function() SampleCastTime(reason .. " +0.3s") end)
+	else
+		SampleCastTime(event)
+	end
+end)
+
+local function ToggleCastTimeLog(spellId)
+	if castTimeLog ~= nil then
+		castTimeFrame:UnregisterAllEvents()
+		if castTimeState ~= nil and castTimeState.ticker ~= nil then castTimeState.ticker:Cancel() end
+		local text = table.concat(castTimeLog, "\n")
+		castTimeLog, castTimeState = nil, nil
+		Chat("casttime log OFF: press Ctrl+A then Ctrl+C in the window, then paste the text back.")
+		ShowResults(text)
+		return
+	end
+	local name = SpellName(spellId)
+	castTimeLog = { string.format("TRB Forever Probe cast time log %s spell %d %s", date("%Y-%m-%d %H:%M:%S"), spellId, name) }
+	castTimeState = { spellId = spellId, seen = {}, start = GetTime() }
+	castTimeFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+	castTimeFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+	castTimeFrame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
+	-- Procs from hits change the value between casts.
+	castTimeState.ticker = C_Timer.NewTicker(0.5, function() SampleCastTime("0.5s tick") end)
+	Chat(string.format("casttime log ON for %d %s. Fight until the buff that shortens it has built up and been spent a few times, then /trbprobe casttime again.", spellId, name))
+	SampleCastTime("start")
+end
+
+-- /trbprobe crits: whether each of the player's casts has its result on the target in the same frame, crits included.
+local critsFrame = CreateFrame("Frame")
+local critsLog = nil
+local critsCasts, critsResults = nil, nil
+
+critsFrame:SetScript("OnEvent", function(_, event, _, a, b, _, d)
+	if critsLog == nil or critsCasts == nil or critsResults == nil then return end
+	if event == "UNIT_COMBAT" then
+		if IsSecret(a) or IsSecret(b) or a == "HEAL" or a == "ENERGIZE" then return end
+		local key = a .. (b ~= "" and ("/" .. b) or "") .. ((IsSecret(d) or d == 1) and "" or " magic")
+		critsResults[#critsResults + 1] = { time = GetTime(), key = key, crit = b == "CRITICAL" }
+		critsLog[#critsLog + 1] = string.format("%.3f target %s", GetTime(), key)
+	else
+		if IsSecret(b) or b == nil then return end
+		critsCasts[#critsCasts + 1] = { time = GetTime(), name = b .. " " .. SpellName(b) }
+		critsLog[#critsLog + 1] = string.format("%.3f cast %s", GetTime(), b .. " " .. SpellName(b))
+	end
+end)
+
+local function ToggleCritsLog()
+	if critsLog == nil then
+		critsLog = { "TRB Forever Probe crits log " .. date("%Y-%m-%d %H:%M:%S") }
+		critsCasts, critsResults = {}, {}
+		critsFrame:RegisterUnitEvent("UNIT_COMBAT", "target")
+		critsFrame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
+		Chat("crits log ON. Solo, keep one enemy targeted and use each damaging ability at least ten times (instant attacks, cast spells, and ones with travel time), then /trbprobe crits again.")
+		return
+	end
+	critsFrame:UnregisterAllEvents()
+	local casts, results = critsCasts or {}, critsResults or {}
+	-- A cast's result is the one in its own frame, or failing that the next unclaimed one within 2 seconds.
+	local bySpell, order = {}, {}
+	for _, cast in ipairs(casts) do
+		local spell = bySpell[cast.name]
+		if spell == nil then
+			spell = { casts = 0, same = 0, sameCrits = 0, late = 0, lateCrits = 0, lateTotal = 0, none = 0 }
+			bySpell[cast.name] = spell
+			order[#order + 1] = cast.name
+		end
+		spell.casts = spell.casts + 1
+		local match, late = nil, nil
+		for _, result in ipairs(results) do
+			if not result.used then
+				if result.time == cast.time then
+					match = result
+					break
+				elseif late == nil and result.time > cast.time and result.time - cast.time <= 2 then
+					late = result
+				end
+			end
+		end
+		if match ~= nil then
+			match.used = true
+			spell.same = spell.same + 1
+			spell.sameCrits = spell.sameCrits + (match.crit and 1 or 0)
+		elseif late ~= nil then
+			late.used = true
+			spell.late = spell.late + 1
+			spell.lateCrits = spell.lateCrits + (late.crit and 1 or 0)
+			spell.lateTotal = spell.lateTotal + (late.time - cast.time)
+		else
+			spell.none = spell.none + 1
+		end
+	end
+	local unclaimed, unclaimedCrits = 0, 0
+	for _, result in ipairs(results) do
+		if not result.used then
+			unclaimed = unclaimed + 1
+			unclaimedCrits = unclaimedCrits + (result.crit and 1 or 0)
+		end
+	end
+	for _, name in ipairs(order) do
+		local spell = bySpell[name]
+		local line = string.format("%s: %d casts | same frame %d (%d crit) | later %d (%d crit, avg +%.2fs) | no result %d", name, spell.casts,
+			spell.same, spell.sameCrits, spell.late, spell.lateCrits, spell.late > 0 and spell.lateTotal / spell.late or 0, spell.none)
+		critsLog[#critsLog + 1] = line
+		Chat(line)
+	end
+	local rest = string.format("results matched to no cast (swings, ticks, other sources): %d (%d crit)", unclaimed, unclaimedCrits)
+	critsLog[#critsLog + 1] = rest
+	Chat(rest)
+	local text = table.concat(critsLog, "\n")
+	critsLog, critsCasts, critsResults = nil, nil, nil
+	ShowResults(text)
+end
+
+-- /trbprobe mana: what a resource gain looks like on the player's own UNIT_COMBAT and combat text.
+local manaFrame = CreateFrame("Frame")
+local manaLog = nil
+local manaTally = nil
+
+manaFrame:SetScript("OnEvent", function(_, event, a, b, c, d, e)
+	if manaLog == nil or manaTally == nil then return end
+	local key
+	if event == "UNIT_COMBAT" then
+		if IsSecret(b) then return end
+		if b ~= "ENERGIZE" and b ~= "HEAL" then
+			-- Counted only, to show whether there were hits a gain could have come from.
+			manaTally["other " .. b] = (manaTally["other " .. b] or 0) + 1
+			return
+		end
+		key = string.format("UNIT_COMBAT %s flag %s amount %s school %s", b, Value(c), Value(d), Value(e))
+	elseif event == "COMBAT_TEXT_UPDATE" then
+		if IsSecret(a) or a == nil or not a:find("ENERGIZE") then return end
+		local parts = { pcall(C_CombatText.GetCurrentEventInfo) }
+		for i = 2, #parts do parts[i] = Value(parts[i]) end
+		key = string.format("COMBAT_TEXT %s info %s", a, parts[1] and table.concat(parts, ", ", 2) or "ERROR")
+	else
+		if IsSecret(c) or c == nil then return end
+		manaLog[#manaLog + 1] = string.format("%.3f cast %s %s", GetTime(), c, SpellName(c))
+		return
+	end
+	manaTally[key] = (manaTally[key] or 0) + 1
+	manaLog[#manaLog + 1] = string.format("%.3f %s", GetTime(), key)
+end)
+
+local function ToggleManaLog()
+	if manaLog == nil then
+		manaLog = { "TRB Forever Probe mana log " .. date("%Y-%m-%d %H:%M:%S") }
+		manaTally = {}
+		manaFrame:RegisterUnitEvent("UNIT_COMBAT", "player")
+		manaFrame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
+		local ok = pcall(manaFrame.RegisterEvent, manaFrame, "COMBAT_TEXT_UPDATE")
+		local unit = "no C_CombatText"
+		if C_CombatText ~= nil and C_CombatText.GetActiveUnit ~= nil then
+			-- Combat text is silent until a unit is set, which only Blizzard's floating combat text does.
+			if C_CombatText.GetActiveUnit() == nil then
+				pcall(C_CombatText.SetActiveUnit, "player")
+			end
+			unit = Value(C_CombatText.GetActiveUnit())
+		end
+		manaLog[#manaLog + 1] = string.format("COMBAT_TEXT_UPDATE registered: %s, combat text unit: %s", tostring(ok), unit)
+		Chat("mana log ON. In combat, trigger a few mana or resource gains (a proc, a potion, a shield that restores mana when hit), and take a heal, then /trbprobe mana again.")
+	else
+		manaFrame:UnregisterAllEvents()
+		local summary = "gains seen: " .. TallyText(manaTally)
+		manaLog[#manaLog + 1] = summary
+		local text = table.concat(manaLog, "\n")
+		manaLog, manaTally = nil, nil
+		Chat(summary)
+		ShowResults(text)
+	end
+end
+
+local validOptions = "/trbprobe, /trbprobe swing, /trbprobe hits, /trbprobe swings, /trbprobe auras, /trbprobe crits, /trbprobe mana, /trbprobe casttime <spell id>"
+
 SLASH_TRBFOREVERPROBE1 = "/trbprobe"
 SlashCmdList["TRBFOREVERPROBE"] = function(msg)
-	local option = strtrim(msg or ""):lower()
+	local option, argument = strsplit(" ", strtrim(msg or ""):lower(), 2)
 	local fn
-	if option == "" then
+	if option == "help" then
+		print("|cFF00FF00TRB Forever Probe|r Valid: " .. validOptions)
+		return
+	elseif option == "" then
 		fn = Run
 	elseif option == "swing" then
 		fn = ToggleSwingLog
+	elseif option == "hits" then
+		fn = ToggleHitsLog
+	elseif option == "swings" then
+		fn = ToggleSwingsLog
+	elseif option == "auras" then
+		fn = RunSecretAuras
+	elseif option == "crits" then
+		fn = ToggleCritsLog
+	elseif option == "mana" then
+		fn = ToggleManaLog
+	elseif option == "casttime" then
+		local spellId = tonumber(argument)
+		if castTimeLog == nil and (spellId == nil or SpellName(spellId) == "?") then
+			print("|cFFFF0000TRB Forever Probe:|r casttime needs a spell ID this client knows, such as /trbprobe casttime 403. Run it again with no ID to stop.")
+			return
+		end
+		fn = function() ToggleCastTimeLog(spellId) end
 	else
-		print("|cFFFF0000TRB Forever Probe:|r unknown option '" .. option .. "'. Valid: /trbprobe, /trbprobe swing")
+		print("|cFFFF0000TRB Forever Probe:|r unknown option '" .. option .. "'. Valid: " .. validOptions)
+		return
+	end
+	if option ~= "casttime" and argument ~= nil then
+		print("|cFFFF0000TRB Forever Probe:|r '" .. option .. "' takes no argument. Valid: " .. validOptions)
 		return
 	end
 	local ok, err = pcall(fn)
@@ -626,5 +1086,5 @@ end
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_LOGIN")
 frame:SetScript("OnEvent", function()
-	print("|cFF00FF00TRB Forever Probe|r loaded. Type /trbprobe to record this client's facts.")
+	print("|cFF00FF00TRB Forever Probe|r loaded. Type /trbprobe to record this client's facts, or /trbprobe help for the tracking logs.")
 end)
