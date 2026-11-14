@@ -34,7 +34,10 @@ TRB.Classes.Forever.Druid = TRB.Classes.Forever.Druid or {}
 ---@field public prowl TRB.Classes.SpellBase
 ---@field public tranquility TRB.Classes.SpellBase
 ---@field public hurricane TRB.Classes.SpellBase
-TRB.Classes.Forever.Druid.GeneralSpells = setmetatable({}, { __index = TRB.Classes.SpecializationSpellsBase })
+---@field public wrath TRB.Classes.SpellBase
+---@field public starfire TRB.Classes.SpellBase
+---@field public eclipse TRB.Classes.SpellBase
+TRB.Classes.Forever.Druid.GeneralSpells =setmetatable({}, { __index = TRB.Classes.SpecializationSpellsBase })
 TRB.Classes.Forever.Druid.GeneralSpells.__index = TRB.Classes.Forever.Druid.GeneralSpells
 
 function TRB.Classes.Forever.Druid.GeneralSpells:New()
@@ -241,6 +244,26 @@ function TRB.Classes.Forever.Druid.GeneralSpells:New()
 		tickProfile = { mode = "fixedCount", baseDuration = 10, tickCount = 10, firstTickAtStart = false },
 	})
 
+	-- Eclipse: each Wrath stores charges and each Starfire spends one.
+	self.wrath = TRB.Classes.SpellBase:New({
+		id = 5176,
+		rankIds = { 5176, 5177, 5178, 5179, 5180, 6780, 8905, 9912 },
+		baseline = true,
+	})
+	self.starfire = TRB.Classes.SpellBase:New({
+		id = 2912,
+		rankIds = { 2912, 8949, 8950, 8951, 9875, 9876, 25298 },
+		baseline = true,
+	})
+	self.eclipse = TRB.Classes.SpellBase:New({
+		id = 408248,
+		isTalent = true,
+		duration = 15,
+		maxStacks = 4,
+		chargesPerWrath = 2,
+		auraId = 408255,
+	})
+
 	return self
 end
 
@@ -257,6 +280,7 @@ function TRB.Classes.Forever.Druid.GeneralSpells.FillBarTextVariables(specCacheE
 		{ variable = "#bearForm", icon = spells.bearForm.icon, description = spells.bearForm.name, printInSettings = true },
 		{ variable = "#catForm", icon = spells.catForm.icon, description = spells.catForm.name, printInSettings = true },
 		{ variable = "#claw", icon = spells.claw.icon, description = spells.claw.name, printInSettings = true },
+		{ variable = "#eclipse", icon = spells.eclipse.icon, description = spells.eclipse.name, printInSettings = true },
 		{ variable = "#ferociousBite", icon = spells.ferociousBite.icon, description = spells.ferociousBite.name, printInSettings = true },
 		{ variable = "#lacerate", icon = spells.lacerate.icon, description = spells.lacerate.name, printInSettings = true },
 		{ variable = "#maul", icon = spells.maul.icon, description = spells.maul.name, printInSettings = true },
@@ -283,6 +307,10 @@ function TRB.Classes.Forever.Druid.GeneralSpells.FillBarTextVariables(specCacheE
 		{ variable = "$energyMax", description = L["DruidFeralBarTextVariable_energyMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 		{ variable = "$comboPoints", description = L["DruidFeralBarTextVariable_comboPoints"], printInSettings = true, color = false, category = varCategory.RESOURCES },
 		{ variable = "$comboPointsMax", description = L["DruidFeralBarTextVariable_comboPointsMax"], printInSettings = true, color = false, category = varCategory.RESOURCES },
+
+		{ variable = "$eclipseStacks", description = L["ForeverDruidBarTextVariable_eclipseStacks"], printInSettings = true, color = false, logicType = "number", booleanCheck = true, category = varCategory.RESOURCES },
+		{ variable = "$eclipseStacksMax", description = L["ForeverDruidBarTextVariable_eclipseStacksMax"], printInSettings = true, color = false, logicType = "number", category = varCategory.RESOURCES },
+		{ variable = "$eclipseTime", description = L["ForeverDruidBarTextVariable_eclipseTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
 
 		{ variable = "$inStealth", description = L["BarTextVariableInStealth"], printInSettings = true, color = false },
 	})
@@ -316,6 +344,7 @@ function TRB.Classes.Forever.Druid.BarGroupsFactory:CreateForSpec(specId)
 	barGroups.rage = TRB.Classes.BarGroup:New(UIParent, "TwintopResourceBarFrame_Rage", 1, false)
 	barGroups.energy = TRB.Classes.BarGroup:New(UIParent, "TwintopResourceBarFrame_Energy", 1, false)
 	barGroups.secondary = TRB.Classes.BarGroup:New(UIParent, "TwintopResourceBarFrame_ComboPoint", 5, false)
+	barGroups.eclipse = TRB.Classes.BarGroup:New(UIParent, "TwintopResourceBarFrame_Eclipse", 4, false)
 	barGroups.health = TRB.Classes.BarGroup:New(UIParent, "TwintopResourceBarFrame_Health", 1, false)
 	return barGroups
 end
@@ -332,7 +361,8 @@ function TRB.Classes.Forever.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
 		rage = { maxNodes = 1, isPrimary = false, resourceType = "Rage" },
 		energy = { maxNodes = 1, isPrimary = false, resourceType = "Energy" },
 		secondary = { maxNodes = 5, isPrimary = false, resourceType = "ComboPoints" },
-		health = { maxNodes = 1, isPrimary = false, resourceType = "Health" },
+		eclipse = { maxNodes = 4, isPrimary = false, resourceType = "Eclipse" },
+		health ={ maxNodes = 1, isPrimary = false, resourceType = "Health" },
 	}
 end
 
@@ -358,7 +388,8 @@ do
 			},
 		},
 		secondary = { exportable = true },
-		customBars = { "rage", "energy" },
+		customBars = { "rage", "energy", "eclipse" },
+		talentGatedBars = { eclipse = "eclipse" },
 		-- The global panel has no notion of a form-following bar set, so visibility and combo point layout stay spec-owned.
 		useGlobalDefaults = { displayBar = false, comboPoints = false },
 		barTextAnchorFrames = {
@@ -368,10 +399,46 @@ do
 			},
 			energy = { { label = L["EnergyBar"], frame = "EnergyBar" } },
 			rage = { { label = L["RageBar"], frame = "RageBar" } },
+			eclipse = {
+				{ label = L["ForeverDruidEclipse1"], frame = "Eclipse_1" }, { label = L["ForeverDruidEclipse2"], frame = "Eclipse_2" }, { label = L["ForeverDruidEclipse3"], frame = "Eclipse_3" }, { label = L["ForeverDruidEclipse4"], frame = "Eclipse_4" },
+			},
 		},
 	})
 end
 
 TRB.Functions.AudioCues:Register("druid_general", {
-	counters = { TRB.Forever.Templates.Classes:ComboPointAudioCueSource() },
+	counters = {
+		TRB.Forever.Templates.Classes:ComboPointAudioCueSource(),
+		{
+			id = "eclipse",
+			label = L["ForeverDruidAudioCueSourceEclipse"],
+			description = L["ForeverDruidAudioCueSourceEclipseDescription"],
+			sliderLabel = L["ForeverDruidEclipseThresholdSliderTitle"],
+			defaultName = L["ForeverDruidAudioCueEclipseDefaultName"],
+			min = 0,
+			max = 4,
+			step = 1,
+			decimals = 0,
+			compare = "atLeast",
+			requiresCombat = true,
+			defaultCues = {
+				{
+					id = "eclipseThreshold1",
+					name = L["ForeverDruidAudioEclipseThreshold1"],
+					enabled = false,
+					sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName = L["LSMSoundBoxingArenaGong"],
+					thresholdValue = 2,
+				},
+				{
+					id = "eclipseThreshold2",
+					name = L["ForeverDruidAudioEclipseThreshold2"],
+					enabled = false,
+					sound = "Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+					soundName = L["LSMSoundBoxingArenaGong"],
+					thresholdValue = 4,
+				},
+			},
+		},
+	},
 })

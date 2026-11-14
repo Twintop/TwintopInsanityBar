@@ -20,6 +20,7 @@ local function FillSpells(spells)
 		duration = 18,
 		maxStacks = 4,
 		refreshOnStack = false,
+		auraId = 400573,
 	})
 	-- Ranks 1 and 2 fire three and four missiles; every later rank fires five.
 	local fiveMissiles = { mode = "fixedCount", baseDuration = 5, tickCount = 5, firstTickAtStart = false }

@@ -519,6 +519,26 @@ function TRB.Classes.SnapshotBuff:InitializeCustom(duration, startTime, hasStack
 	self:GetRemainingTime(nil, nil, true)
 end
 
+---Copies a manually tracked buff's stacks and time from the player's aura while auras can be read. A missing aura changes nothing.
+---@param auraIds integer[] # checked last to first, so the highest rank wins
+---@return boolean # whether an aura was copied
+function TRB.Classes.SnapshotBuff:SyncCustomFromPlayerAura(auraIds)
+	if InCombatLockdown() or (C_Secrets ~= nil and C_Secrets.ShouldAurasBeSecret ~= nil and C_Secrets.ShouldAurasBeSecret() == true) then
+		return false
+	end
+	for i = #auraIds, 1, -1 do
+		local aura = C_UnitAuras.GetPlayerAuraBySpellID(auraIds[i])
+		if aura ~= nil then
+			if issecrettable(aura) or issecretvalue(aura.applications) or issecretvalue(aura.expirationTime) or issecretvalue(aura.duration) then
+				return false
+			end
+			self:InitializeCustom(aura.duration, aura.expirationTime - aura.duration, true, math.max(aura.applications, 1))
+			return true
+		end
+	end
+	return false
+end
+
 ---Initializes the buff with custom endTime and duration values
 ---@param hasStacks boolean? # Should the buff be marked as having stacks
 function TRB.Classes.SnapshotBuff:InitializeCustomSimple(hasStacks)

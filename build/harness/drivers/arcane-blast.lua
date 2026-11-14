@@ -13,7 +13,7 @@ local ARCANE_BLAST = {
 local FROSTBOLT = 116
 
 -- The test clock, the addon's frames, the known spells, the Forever talent, and the options tab groups.
-local drv = { now = 1000, frames = {}, known = {}, talent = false, groups = {} }
+local drv = { now = 1000, frames = {}, known = {}, talent = false, groups = {}, auras = {}, inCombat = false }
 
 function hooks.afterInstall(ctx)
 	parity.Install(ctx, { spec = 1, holdDeferredSetup = true })
@@ -25,6 +25,10 @@ function hooks.afterInstall(ctx)
 		return frame
 	end
 	G.GetTime = function() return drv.now end
+	-- Player auras by spell ID, readable only out of combat.
+	G.C_UnitAuras.GetPlayerAuraBySpellID = function(spellId) return drv.auras[spellId] end
+	G.issecrettable = function() return false end
+	G.InCombatLockdown = function() return drv.inCombat end
 	G.C_SpellBook.IsSpellKnown = function(spellId) return drv.known[spellId] == true end
 end
 
@@ -376,6 +380,24 @@ function hooks.afterEvents(ctx)
 		Cast(data.top)
 	end
 	check("stacks stop at the cap", buff.applications == data.stacks and Draw() == data.stacks and counted == data.stacks)
+
+	if TRB.Flavor.id == "forever" then
+		-- The aura sync: leaving combat copies the real stacks and time; a missing aura changes nothing.
+		local aura = TRB.Data.spellsData.spells.arcaneBlast.attributes.auraId
+		drv.auras[aura] = { applications = 2, expirationTime = drv.now + 7, duration = data.duration }
+		drv.inCombat = true
+		stubs.fireEvents("PLAYER_REGEN_ENABLED", ctx.addonName)
+		check("in combat lockdown, the aura isn't read", buff.applications == data.stacks)
+		drv.inCombat = false
+		stubs.fireEvents("PLAYER_REGEN_ENABLED", ctx.addonName)
+		check("leaving combat copies the aura's stacks and time", buff.applications == 2 and buff.remaining == 7)
+		drv.auras[aura] = nil
+		stubs.fireEvents("PLAYER_REGEN_ENABLED", ctx.addonName)
+		check("with no aura, the counted stacks stand", buff.isActive and buff.applications == 2 and buff.remaining == 7)
+		for _ = 1, data.stacks do
+			Cast(data.top)
+		end
+	end
 
 	stubs.fireEvents("PLAYER_ENTERING_WORLD", ctx.addonName)
 	Drain()
