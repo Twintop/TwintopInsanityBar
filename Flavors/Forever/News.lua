@@ -8,7 +8,7 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
-# 1.60.1.20-release (2026-11-16)
+# 1.60.1.20-release (2026-11-17)
 ## General
 ### Custom Bars
 
