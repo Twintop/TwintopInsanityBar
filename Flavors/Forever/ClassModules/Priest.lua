@@ -127,8 +127,9 @@ local function QueueDiagnosticHit()
 end
 
 ---Copies Inner Fire's charges and time from its aura. Only an unrestricted read is trusted: in combat it is nil either way.
+---@param endWhenMissing boolean # whether no aura ends the tracking; a loading screen's read can miss an aura that is up
 ---@return string # what the sync found
-local function SyncInnerFireFromAura()
+local function SyncInnerFireFromAura(endWhenMissing)
 	local innerFire, spells = GetInnerFire()
 	if innerFire == nil or spells == nil then
 		return "not loaded"
@@ -151,20 +152,21 @@ local function SyncInnerFireFromAura()
 			return string.format("rank %d aura, %d charges, %ds left", rankIds[i], charges, math.floor(buff.remaining))
 		end
 	end
-	if buff.isActive then
+	if buff.isActive and endWhenMissing then
 		buff:Reset()
 		TRB.Functions.BarText:MarkLookupDirty()
 		return "no aura, tracking ended"
 	end
-	return "no aura"
+	return buff.isActive and "no aura, tracking kept" or "no aura"
 end
 
 ---Runs the aura sync, keeping its result for the diagnostic.
 ---@param trigger string
+---@param endWhenMissing boolean
 ---@return string
-local function SyncAndReport(trigger)
+local function SyncAndReport(trigger, endWhenMissing)
 	local before = DescribeTrackedCharges()
-	local result = SyncInnerFireFromAura()
+	local result = SyncInnerFireFromAura(endWhenMissing)
 	diagnostic.lastSync = trigger .. ": " .. result
 	if diagnostic.enabled then
 		print(string.format("|cFFFF8800TRB Inner Fire:|r sync on %s: %s | tracked %s -> %s", trigger, result, before, DescribeTrackedCharges()))
@@ -176,7 +178,7 @@ end
 local loadingScreenSyncPending = true
 
 local function TryLoadingScreenSync()
-	if SyncAndReport("loading screen") ~= "not loaded" then
+	if SyncAndReport("loading screen", false) ~= "not loaded" then
 		loadingScreenSyncPending = false
 	end
 end
@@ -217,7 +219,7 @@ eventFrame:SetScript("OnEvent", function(_, event)
 		loadingScreenSyncPending = true
 		TryLoadingScreenSync()
 	else
-		SyncAndReport("leaving combat")
+		SyncAndReport("leaving combat", true)
 	end
 end)
 

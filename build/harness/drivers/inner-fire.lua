@@ -394,6 +394,13 @@ function hooks.afterEvents(ctx)
 	buff:Reset()
 	try("CheckCharacter", function() Class:CheckCharacter() end)
 	check("once per loading screen", not buff.isActive)
+	Cast(INNER_FIRE_RANK_6)
+	local chargesBefore, upAura = buff.applications, drv.auras[INNER_FIRE_RANK_6]
+	drv.auras[INNER_FIRE_RANK_6] = nil
+	Fire("PLAYER_ENTERING_WORLD")
+	check("a loading screen whose read finds no aura keeps the tracking", buff.isActive and buff.applications == chargesBefore)
+	drv.auras[INNER_FIRE_RANK_6] = upAura
+	buff:Reset()
 
 	Cast(INNER_FIRE_RANK_6)
 	Hit()
