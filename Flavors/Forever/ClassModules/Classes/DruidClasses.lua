@@ -37,7 +37,7 @@ TRB.Classes.Forever.Druid = TRB.Classes.Forever.Druid or {}
 ---@field public wrath TRB.Classes.SpellBase
 ---@field public starfire TRB.Classes.SpellBase
 ---@field public eclipse TRB.Classes.SpellBase
-TRB.Classes.Forever.Druid.GeneralSpells =setmetatable({}, { __index = TRB.Classes.SpecializationSpellsBase })
+TRB.Classes.Forever.Druid.GeneralSpells = setmetatable({}, { __index = TRB.Classes.SpecializationSpellsBase })
 TRB.Classes.Forever.Druid.GeneralSpells.__index = TRB.Classes.Forever.Druid.GeneralSpells
 
 function TRB.Classes.Forever.Druid.GeneralSpells:New()
@@ -310,7 +310,7 @@ function TRB.Classes.Forever.Druid.GeneralSpells.FillBarTextVariables(specCacheE
 
 		{ variable = "$eclipseStacks", description = L["ForeverDruidBarTextVariable_eclipseStacks"], printInSettings = true, color = false, logicType = "number", booleanCheck = true, category = varCategory.RESOURCES },
 		{ variable = "$eclipseStacksMax", description = L["ForeverDruidBarTextVariable_eclipseStacksMax"], printInSettings = true, color = false, logicType = "number", category = varCategory.RESOURCES },
-		{ variable = "$eclipseTime", description = L["ForeverDruidBarTextVariable_eclipseTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true },
+		{ variable = "$eclipseTime", description = L["ForeverDruidBarTextVariable_eclipseTime"], printInSettings = true, color = false, logicType = "number", booleanCheck = true, category = varCategory.RESOURCES },
 
 		{ variable = "$inStealth", description = L["BarTextVariableInStealth"], printInSettings = true, color = false },
 	})
@@ -362,7 +362,7 @@ function TRB.Classes.Forever.Druid.BarGroupsFactory:GetSpecConfiguration(specId)
 		energy = { maxNodes = 1, isPrimary = false, resourceType = "Energy" },
 		secondary = { maxNodes = 5, isPrimary = false, resourceType = "ComboPoints" },
 		eclipse = { maxNodes = 4, isPrimary = false, resourceType = "Eclipse" },
-		health ={ maxNodes = 1, isPrimary = false, resourceType = "Health" },
+		health = { maxNodes = 1, isPrimary = false, resourceType = "Health" },
 	}
 end
 

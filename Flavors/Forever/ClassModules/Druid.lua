@@ -96,32 +96,25 @@ local function GetEclipse()
 	return snapshot and snapshot.buff, spells
 end
 
--- A loading screen's sync waits for CheckCharacter when the spell set isn't loaded yet, as on login and reload.
-local eclipseSyncPending = true
-
----Corrects the counted charges and time from the Eclipse aura, which reads only out of combat.
----@return boolean # whether the spell set was loaded to sync against
-local function SyncEclipseFromAura()
+---Corrects the counted charges and time from the Eclipse aura, which reads only out of combat; nil before the spell set loads.
+---@param endWhenMissing boolean
+---@return string?
+local function SyncEclipseFromAura(endWhenMissing)
 	local eclipse, spells = GetEclipse()
 	if eclipse == nil or spells == nil or eclipseGateHidden == nil then
-		return false
+		return nil
 	end
-	if eclipseGateHidden == false and eclipse:SyncCustomFromPlayerAura({ spells.eclipse.attributes.auraId }) then
+	if eclipseGateHidden then
+		return "gated"
+	end
+	local result = eclipse:SyncCustomFromPlayerAura({ spells.eclipse.attributes.auraId }, endWhenMissing)
+	if result == "copied" or result == "ended" then
 		TRB.Functions.BarText:MarkLookupDirty()
 	end
-	return true
+	return result
 end
 
-local eclipseSyncFrame = CreateFrame("Frame")
-eclipseSyncFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-eclipseSyncFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-eclipseSyncFrame:SetScript("OnEvent", function(_, event)
-	if event == "PLAYER_ENTERING_WORLD" then
-		eclipseSyncPending = not SyncEclipseFromAura()
-	else
-		SyncEclipseFromAura()
-	end
-end)
+local eclipseSync = TRB.Classes.AuraSync:New(SyncEclipseFromAura)
 
 ---Lays the bars out again when the Eclipse talent is taken or dropped, and drops charges the talent no longer backs.
 local function RefreshEclipseGate()
@@ -141,6 +134,10 @@ local function RefreshEclipseGate()
 		Bar:ApplyBarGroupsLayout(sharedSettings, barGroups)
 	end
 	TRB.Functions.BarVisibility:MarkDirty()
+	-- A login's sync ran while the bar was gated, so a talent the cache resolved late needs its own read.
+	if not hidden then
+		eclipseSync:SyncNow()
+	end
 end
 
 local function Setup()
@@ -201,14 +198,6 @@ local function ConstructResourceBar(settings)
 		barGroups.secondary:RebuildNodes(maxNodes, settings)
 	end
 
-	if barGroups.eclipse then
-		for x = 1, barGroups.eclipse.maxNodes do
-			local node = barGroups.eclipse:GetNode(x)
-			if node then
-				node:SetMinMax(0, 1)
-			end
-		end
-	end
 	eclipseGateHidden = Bar:IsBarTalentGatedHidden("eclipse")
 
 	TRB.Functions.Class:CheckCharacter()
@@ -728,9 +717,7 @@ function TRB.Functions.Class:CheckCharacter()
 		end
 	end
 	RefreshEclipseGate()
-	if eclipseSyncPending then
-		eclipseSyncPending = not SyncEclipseFromAura()
-	end
+	eclipseSync:OnCheckCharacter()
 end
 
 function TRB.Functions.Class:EventRegistration()
@@ -768,7 +755,8 @@ function TRB.Functions.Class:HideResourceBar(force)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.rage, displayBar and displayBar.rage, true, 1, nil)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.energy, displayBar and displayBar.energy, true, 1, nil)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.secondary, displayBar and displayBar.secondary, true, comboPointNodes, nil)
-		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.eclipse, displayBar and displayBar.eclipse, eclipseGateHidden == false, 4, nil)
+		local eclipseNodes = barGroups and barGroups.eclipse and barGroups.eclipse.maxNodes or nil
+		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.eclipse, displayBar and displayBar.eclipse, eclipseGateHidden == false, eclipseNodes, nil)
 		TRB.Functions.BarVisibility:AddEntry(entries, barGroups and barGroups.health, displayBar and displayBar.health, true, 1, nil)
 		if sharedSettings ~= nil then
 			local context = TRB.Functions.BarVisibility:GetGameStateContext(force)
@@ -798,8 +786,11 @@ local function TrackEclipseCast(spellId)
 		return
 	end
 	local eclipse, spells = GetEclipse()
+	if eclipse == nil or spells == nil then
+		return
+	end
 	local castSpells = TRB.Data.spellsData.spellsById[spellId]
-	if eclipse == nil or spells == nil or castSpells == nil then
+	if castSpells == nil then
 		return
 	end
 	local currentTime = GetTime()

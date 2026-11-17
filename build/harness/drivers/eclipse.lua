@@ -8,16 +8,23 @@ local hooks = {}
 local ECLIPSE = { talent = 408248, aura = 408255, wrath = 5176, wrathTop = 9912, starfire = 2912, starfireTop = 25298, stacks = 4, perWrath = 2, duration = 15 }
 local MOONFIRE = 8921
 
--- The test clock, whether the talent is taken, the player's auras, and combat lockdown.
-local drv = { now = 1000, talent = false, auras = {}, inCombat = false }
+-- The test clock, the addon's frames, whether the talent is taken, the player's auras, combat lockdown, and restricted auras.
+local drv = { now = 1000, frames = {}, talent = false, auras = {}, inCombat = false, aurasSecret = false }
 
 function hooks.afterInstall(ctx)
 	parity.Install(ctx, { spec = 1, holdDeferredSetup = true })
+	local innerCreate = desktop.CreateFrame
+	desktop.CreateFrame = function(...)
+		local frame = innerCreate(...)
+		drv.frames[#drv.frames + 1] = frame
+		return frame
+	end
 	desktop.GetTime = function() return drv.now end
 	-- Player auras by spell ID, readable only out of combat.
 	desktop.C_UnitAuras.GetPlayerAuraBySpellID = function(spellId) return drv.auras[spellId] end
 	desktop.issecrettable = function() return false end
 	desktop.InCombatLockdown = function() return drv.inCombat end
+	desktop.C_Secrets = { ShouldAurasBeSecret = function() return drv.aurasSecret end }
 end
 
 function hooks.afterLoad(ctx)
@@ -200,6 +207,31 @@ function hooks.afterEvents(ctx)
 	local function Cast(spellId)
 		try("SpellCast", function() Class:SpellCast("UNIT_SPELLCAST_SUCCEEDED", spellId, "Cast-0") end)
 	end
+	---Runs only the aura syncs' handlers (Snapshot.lua's frames) for an event, so no spec switch follows.
+	local function FireSync(event)
+		for _, frame in ipairs(drv.frames) do
+			local scripts = rawget(frame, "__scripts")
+			local events = rawget(frame, "__events")
+			local fn = scripts ~= nil and scripts.OnEvent or nil
+			if fn ~= nil and events ~= nil and events[event] and debug.getinfo(fn, "S").source:find("Snapshot%.lua$") then
+				try(event, function() fn(frame, event) end)
+			end
+		end
+	end
+	local function CheckCharacter(seconds)
+		drv.now = drv.now + (seconds or 0)
+		try("CheckCharacter", function() Class:CheckCharacter() end)
+	end
+	-- Each node's fill color the real update paints.
+	local fills = {}
+	local applyFill = TRB.Functions.Color.ApplyFillColor
+	TRB.Functions.Color.ApplyFillColor = function(self, node, colorEntry, ...)
+		fills[node] = colorEntry
+		return applyFill(self, node, colorEntry, ...)
+	end
+	local function Fill(i)
+		return fills[group:GetNode(i)]
+	end
 	local function Lookup()
 		TRB.Data.activeVariables = nil
 		try("RefreshLookupData", function() TRB.Functions.RefreshLookupData() end)
@@ -218,9 +250,16 @@ function hooks.afterEvents(ctx)
 	Retalent(false)
 	local baseline = layouts
 	check("a talent change that leaves Eclipse untaken keeps the bar hidden", Shown() == false)
+	drv.auras[ECLIPSE.aura] = { applications = 2, expirationTime = drv.now + 10, duration = ECLIPSE.duration }
+	stubs.fireEvents("PLAYER_REGEN_ENABLED", ctx.addonName)
+	check("while the bar is gated, leaving combat copies no aura", not buff.isActive)
 	Retalent(true)
+	buff = Buff() --[[@as table]]
 	check("taking the Eclipse talent lays the bars out once more and shows it", layouts == baseline + 1 and Shown() == true
 		and not Bar:IsBarTalentGatedHidden("eclipse") and container:GetHeight() > 1)
+	check("and reads the aura the gated syncs skipped", buff.isActive and buff.applications == 2 and buff.remaining == 10)
+	drv.auras = {}
+	buff:Reset()
 	Retalent(true)
 	check("an unchanged talent lays out nothing more", layouts == baseline)
 	buff = Buff() --[[@as table]]
@@ -242,6 +281,22 @@ function hooks.afterEvents(ctx)
 	Cast(ECLIPSE.wrathTop)
 	check("any rank of Wrath adds two more and restarts the timer", buff.applications == 3 and buff.remaining == ECLIPSE.duration)
 	check("three charges fill three nodes and feed the audio counter", Draw() == 3 and counted == 3)
+	local eclipseColors = TRB.Data.settings.druid.general.colors.bars.eclipse
+	local nodeColors = eclipseColors.nodeColors
+	check("each node takes its own charge's color", Fill(1) == nodeColors.charge1 and Fill(3) == nodeColors.charge3 and Fill(4) == nodeColors.charge4)
+	eclipseColors.sameColor = true
+	Draw()
+	check("with the highest color for all, every filled node takes the third charge's", Fill(1) == nodeColors.charge3 and Fill(3) == nodeColors.charge3
+		and Fill(4) == nodeColors.charge4)
+	eclipseColors.sameColor = false
+	local stealthIndicator = TRB.Data.settings.druid.general.colors.shared.indicatorColors.borderStealth
+	local stealthTargets = stealthIndicator.targets
+	stealthIndicator.targets = { eclipseBar = { bar = true, border = false, background = false } }
+	TRB.Data.character.isStealthed = true
+	Draw()
+	check("a Color Indicator on the Eclipse bar's fill outranks the charge colors", Fill(1) == stealthIndicator and Fill(4) == stealthIndicator)
+	TRB.Data.character.isStealthed = false
+	stealthIndicator.targets = stealthTargets
 	local lookup, lookupLogic = Lookup()
 	check("the bar text shows 3 of 4 charges", lookup["$eclipseStacks"] == "3" and lookup["$eclipseStacksMax"] == "4"
 		and lookupLogic["$eclipseStacks"] == 3 and lookupLogic["$eclipseStacksMax"] == 4 and lookupLogic["$eclipseTime"] == buff.remaining)
@@ -260,18 +315,26 @@ function hooks.afterEvents(ctx)
 	try("GetBarTextFrame", function() comboFrame = Class:GetBarTextFrame("ComboPoint_2") end)
 	check("and combo point anchors still resolve", comboFrame ~= nil and comboFrame == barGroups.secondary:GetNode(2):GetFrame())
 
-	-- The aura sync: leaving combat and a loading screen copy the real charges and time; a missing aura changes nothing.
+	-- The aura sync. Leaving combat copies the real charges and time, and a missing aura ends them.
 	drv.auras[ECLIPSE.aura] = { applications = 2, expirationTime = drv.now + 9, duration = ECLIPSE.duration }
 	drv.inCombat = true
 	stubs.fireEvents("PLAYER_REGEN_ENABLED", ctx.addonName)
 	check("in combat lockdown, the aura isn't read", buff.applications == ECLIPSE.stacks)
 	drv.inCombat = false
+	drv.aurasSecret = true
+	stubs.fireEvents("PLAYER_REGEN_ENABLED", ctx.addonName)
+	check("nor while auras are restricted", buff.applications == ECLIPSE.stacks)
+	drv.aurasSecret = false
 	stubs.fireEvents("PLAYER_REGEN_ENABLED", ctx.addonName)
 	check("leaving combat copies the aura's charges and time", buff.applications == 2 and buff.remaining == 9)
+	drv.auras[ECLIPSE.aura] = { applications = 1, expirationTime = 0, duration = 0 }
+	stubs.fireEvents("PLAYER_REGEN_ENABLED", ctx.addonName)
+	check("an aura with no timing keeps the charges", buff.isActive and buff.applications == 2 and buff.remaining == 9)
 	drv.auras[ECLIPSE.aura] = nil
 	stubs.fireEvents("PLAYER_REGEN_ENABLED", ctx.addonName)
-	check("with no aura, the counted charges stand", buff.isActive and buff.applications == 2 and buff.remaining == 9)
+	check("with no aura, leaving combat ends the charges", not buff.isActive and not Class:HasActiveTimers())
 
+	-- A loading screen copies the aura; a read that misses keeps the count and retries once in a later frame, where a second miss ends it.
 	drv.auras[ECLIPSE.aura] = { applications = 3, expirationTime = drv.now + 12, duration = ECLIPSE.duration }
 	stubs.fireEvents("PLAYER_ENTERING_WORLD", ctx.addonName)
 	Drain()
@@ -282,7 +345,38 @@ function hooks.afterEvents(ctx)
 	stubs.fireEvents("PLAYER_ENTERING_WORLD", ctx.addonName)
 	Drain()
 	buff = Buff() --[[@as table]]
-	check("and one with no aura keeps the charges", buff.isActive and buff.applications == 3)
+	check("one whose read finds no aura keeps the charges, even through its spec switch", buff.isActive and buff.applications == 3)
+	drv.auras[ECLIPSE.aura] = { applications = 4, expirationTime = drv.now + 11, duration = ECLIPSE.duration }
+	CheckCharacter(0.15)
+	check("the next CheckCharacter, a frame later, copies the aura", buff.applications == 4 and buff.remaining == drv.auras[ECLIPSE.aura].expirationTime - drv.now)
+	drv.auras[ECLIPSE.aura].applications = 1
+	CheckCharacter(0.15)
+	check("and the retry runs once", buff.applications == 4)
+	drv.auras[ECLIPSE.aura] = nil
+	stubs.fireEvents("PLAYER_ENTERING_WORLD", ctx.addonName)
+	Drain()
+	CheckCharacter(0.15)
+	buff = Buff() --[[@as table]]
+	check("a retry that misses too ends the charges", not buff.isActive)
+	Cast(ECLIPSE.wrath)
+	stubs.fireEvents("PLAYER_ENTERING_WORLD", ctx.addonName)
+	Drain()
+	drv.auras[ECLIPSE.aura] = { applications = 1, expirationTime = drv.now + 20, duration = ECLIPSE.duration }
+	CheckCharacter(6)
+	check("a CheckCharacter long after the loading screen doesn't retry", buff.isActive and buff.applications == ECLIPSE.perWrath)
+	drv.auras = {}
+	-- A login: the loading screen's sync waits until the spell set loads.
+	buff:Reset()
+	drv.auras[ECLIPSE.aura] = { applications = 3, expirationTime = drv.now + 8, duration = ECLIPSE.duration }
+	local spellsData = TRB.Data.spellsData
+	TRB.Data.spellsData = nil
+	FireSync("PLAYER_ENTERING_WORLD")
+	TRB.Data.spellsData = spellsData
+	check("before the spell set loads, nothing syncs", not buff.isActive)
+	CheckCharacter()
+	check("and the next CheckCharacter copies the aura, as on login and reload", buff.isActive and buff.applications == 3
+		and buff.remaining == drv.auras[ECLIPSE.aura].expirationTime - drv.now)
+	drv.auras = {}
 
 	for _ = 1, ECLIPSE.stacks do
 		Cast(ECLIPSE.starfire)
@@ -313,6 +407,7 @@ function hooks.afterEvents(ctx)
 	Bar.ApplyBarGroupsLayout = applyLayout
 	Bar.SetBarNodeValue = setValue
 	TRB.Functions.AudioCues.UpdateCounter = updateCounter
+	TRB.Functions.Color.ApplyFillColor = applyFill
 	return errors
 end
 

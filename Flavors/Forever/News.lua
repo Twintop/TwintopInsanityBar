@@ -17,7 +17,7 @@ TRB.Flavor.newsContent = [====[
 
 ## Mage
 
-- [#999](#999) The Arcane Blast bar now corrects its stacks and time from the game when you leave combat and after a loading screen.
+- [#999](#999) The Arcane Blast bar now keeps its stacks and time through a reload or a loading screen, and clears stacks that ended once you leave combat.
 
 ## Priest
 

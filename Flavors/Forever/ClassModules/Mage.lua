@@ -21,37 +21,25 @@ local function GetArcaneBlast()
 	return snapshotData.snapshots[spells.arcaneBlast.id], spells
 end
 
--- A loading screen's sync waits for CheckCharacter when the spell set isn't loaded yet, as on login and reload.
-local syncPending = true
-
----Corrects the counted stacks and time from the Arcane Blast aura, which reads only out of combat.
----@return boolean # whether the spell set was loaded to sync against
-local function SyncArcaneBlastFromAura()
+---Corrects the counted stacks and time from the Arcane Blast aura, which reads only out of combat; nil before the spell set loads.
+---@param endWhenMissing boolean
+---@return string?
+local function SyncArcaneBlastFromAura(endWhenMissing)
 	local arcaneBlast, spells = GetArcaneBlast()
 	if arcaneBlast == nil or spells == nil then
-		return false
+		return nil
 	end
-	if arcaneBlast.buff:SyncCustomFromPlayerAura({ spells.arcaneBlast.attributes.auraId }) then
+	local result = arcaneBlast.buff:SyncCustomFromPlayerAura({ spells.arcaneBlast.attributes.auraId }, endWhenMissing)
+	if result == "copied" or result == "ended" then
 		TRB.Functions.BarText:MarkLookupDirty()
 	end
-	return true
+	return result
 end
 
-local syncFrame = CreateFrame("Frame")
-syncFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-syncFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-syncFrame:SetScript("OnEvent", function(_, event)
-	if event == "PLAYER_ENTERING_WORLD" then
-		syncPending = not SyncArcaneBlastFromAura()
-	else
-		SyncArcaneBlastFromAura()
-	end
-end)
+local arcaneBlastSync = TRB.Classes.AuraSync:New(SyncArcaneBlastFromAura)
 
 function runtime.CheckClassCharacter()
-	if syncPending then
-		syncPending = not SyncArcaneBlastFromAura()
-	end
+	arcaneBlastSync:OnCheckCharacter()
 end
 
 ---A cast of any rank adds a stack, up to the maximum.

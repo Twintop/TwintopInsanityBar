@@ -10,7 +10,7 @@
 -- /trbprobe auras lists which stack auras the client keeps secret, /trbprobe crits pairs each cast with its result on the
 -- target, /trbprobe mana shows what a resource gain looks like, and /trbprobe casttime <spell id> lists every cast time and cost a spell reports.
 --
--- Nothing here depends on the addon itself. Every probe is wrapped in pcall: an API that is missing or
+-- Nothing here depends on the addon itself. Every probe in the /trbprobe report is wrapped in pcall: an API that is missing or
 -- throws is itself a finding.
 
 local addonName = ...
@@ -1044,6 +1044,10 @@ local validOptions = "/trbprobe, /trbprobe swing, /trbprobe hits, /trbprobe swin
 SLASH_TRBFOREVERPROBE1 = "/trbprobe"
 SlashCmdList["TRBFOREVERPROBE"] = function(msg)
 	local option, argument = strsplit(" ", strtrim(msg or ""):lower(), 2)
+	if option ~= "casttime" and argument ~= nil then
+		print("|cFFFF0000TRB Forever Probe:|r '" .. option .. "' takes no argument. Valid: " .. validOptions)
+		return
+	end
 	local fn
 	if option == "help" then
 		print("|cFF00FF00TRB Forever Probe|r Valid: " .. validOptions)
@@ -1064,6 +1068,10 @@ SlashCmdList["TRBFOREVERPROBE"] = function(msg)
 		fn = ToggleManaLog
 	elseif option == "casttime" then
 		local spellId = tonumber(argument)
+		if castTimeLog ~= nil and argument ~= nil then
+			print("|cFFFF0000TRB Forever Probe:|r a casttime log is running; type /trbprobe casttime with no ID to stop it first.")
+			return
+		end
 		if castTimeLog == nil and (spellId == nil or SpellName(spellId) == "?") then
 			print("|cFFFF0000TRB Forever Probe:|r casttime needs a spell ID this client knows, such as /trbprobe casttime 403. Run it again with no ID to stop.")
 			return
@@ -1071,10 +1079,6 @@ SlashCmdList["TRBFOREVERPROBE"] = function(msg)
 		fn = function() ToggleCastTimeLog(spellId) end
 	else
 		print("|cFFFF0000TRB Forever Probe:|r unknown option '" .. option .. "'. Valid: " .. validOptions)
-		return
-	end
-	if option ~= "casttime" and argument ~= nil then
-		print("|cFFFF0000TRB Forever Probe:|r '" .. option .. "' takes no argument. Valid: " .. validOptions)
 		return
 	end
 	local ok, err = pcall(fn)

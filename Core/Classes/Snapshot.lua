@@ -519,24 +519,111 @@ function TRB.Classes.SnapshotBuff:InitializeCustom(duration, startTime, hasStack
 	self:GetRemainingTime(nil, nil, true)
 end
 
----Copies a manually tracked buff's stacks and time from the player's aura while auras can be read. A missing aura changes nothing.
+---Copies a manually tracked buff's stacks and time from the player's aura while auras can be read; an aura with no stack
+---count keeps the tracked count. With endWhenMissing, a read that finds none of the auras ends the tracking.
 ---@param auraIds integer[] # checked last to first, so the highest rank wins
----@return boolean # whether an aura was copied
-function TRB.Classes.SnapshotBuff:SyncCustomFromPlayerAura(auraIds)
+---@param endWhenMissing boolean?
+---@return string # "copied", "ended", "missing", "restricted" (unreadable now), "untimed" (an aura with no timing), or "unsupported"
+function TRB.Classes.SnapshotBuff:SyncCustomFromPlayerAura(auraIds, endWhenMissing)
+	-- Independent stacks, proc charges, and a pause keep state an aura's count and time can't restore.
+	if self.useIndependentStacks or self.useProcCharges or self.isPaused then
+		return "unsupported"
+	end
 	if InCombatLockdown() or (C_Secrets ~= nil and C_Secrets.ShouldAurasBeSecret ~= nil and C_Secrets.ShouldAurasBeSecret() == true) then
-		return false
+		return "restricted"
 	end
 	for i = #auraIds, 1, -1 do
 		local aura = C_UnitAuras.GetPlayerAuraBySpellID(auraIds[i])
 		if aura ~= nil then
 			if issecrettable(aura) or issecretvalue(aura.applications) or issecretvalue(aura.expirationTime) or issecretvalue(aura.duration) then
-				return false
+				return "restricted"
 			end
-			self:InitializeCustom(aura.duration, aura.expirationTime - aura.duration, true, math.max(aura.applications, 1))
-			return true
+			-- Copying no timing would end the tracking at once.
+			if aura.duration <= 0 or aura.expirationTime <= GetTime() then
+				return "untimed"
+			end
+			local stacks = aura.applications > 0 and aura.applications or (self.isActive and self.applications or 1)
+			self:InitializeCustom(aura.duration, aura.expirationTime - aura.duration, true, stacks)
+			return "copied"
 		end
 	end
-	return false
+	if endWhenMissing and self.isActive then
+		self:Reset(nil, true)
+		return "ended"
+	end
+	return "missing"
+end
+
+---The out-of-combat aura sync of one manually tracked buff. Leaving combat trusts a missing aura. A loading screen's read
+---can miss an aura that is up, so a miss keeps the count and retries once in a later frame, where a second miss ends it.
+---@class TRB.Classes.AuraSync
+---@field public sync fun(endWhenMissing: boolean): string?
+---@field public pending boolean # whether a loading screen's sync has yet to finish
+---@field public missTime number? # when this loading screen's first read missed
+TRB.Classes.AuraSync = {}
+TRB.Classes.AuraSync.__index = TRB.Classes.AuraSync
+-- A retry later than this after the miss would judge a different moment's aura.
+TRB.Classes.AuraSync.retryWindow = 5
+
+-- The results a loading screen retries; any other ends its sync.
+local auraSyncMisses = { missing = true, restricted = true, untimed = true }
+
+---Creates the sync and listens for loading screens and leaving combat.
+---@param sync fun(endWhenMissing: boolean): string? # runs SyncCustomFromPlayerAura and returns its result, or nil while the spell set isn't loaded
+---@return TRB.Classes.AuraSync
+function TRB.Classes.AuraSync:New(sync)
+	local instance = setmetatable({}, TRB.Classes.AuraSync) --[[@as TRB.Classes.AuraSync]]
+	instance.sync = sync
+	instance.pending = true
+	instance.missTime = nil
+	local frame = CreateFrame("Frame")
+	frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+	frame:RegisterEvent("PLAYER_REGEN_ENABLED")
+	frame:SetScript("OnEvent", function(_, event)
+		if event == "PLAYER_ENTERING_WORLD" then
+			instance.pending = true
+			instance.missTime = nil
+			instance:TryLoadingScreen()
+		else
+			instance.sync(true)
+		end
+	end)
+	return instance
+end
+
+---Runs a pending loading screen sync. Call it from CheckCharacter, which runs once the spell set loads and after a zone's spec switch.
+function TRB.Classes.AuraSync:OnCheckCharacter()
+	if self.pending then
+		self:TryLoadingScreen()
+	end
+end
+
+---Reads once now, keeping the count on a miss.
+function TRB.Classes.AuraSync:SyncNow()
+	self.sync(false)
+end
+
+function TRB.Classes.AuraSync:TryLoadingScreen()
+	local currentTime = GetTime()
+	local retry = self.missTime ~= nil
+	if retry then
+		if currentTime <= self.missTime then
+			return
+		end
+		if currentTime - self.missTime > self.retryWindow then
+			self.pending = false
+			return
+		end
+	end
+	local result = self.sync(retry)
+	if result == nil then
+		return
+	end
+	if retry or not auraSyncMisses[result] then
+		self.pending = false
+	else
+		self.missTime = currentTime
+	end
 end
 
 ---Initializes the buff with custom endTime and duration values

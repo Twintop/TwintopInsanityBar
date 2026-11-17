@@ -382,7 +382,7 @@ function hooks.afterEvents(ctx)
 	check("stacks stop at the cap", buff.applications == data.stacks and Draw() == data.stacks and counted == data.stacks)
 
 	if TRB.Flavor.id == "forever" then
-		-- The aura sync: leaving combat copies the real stacks and time; a missing aura changes nothing.
+		-- The aura sync: leaving combat copies the real stacks and time, and a missing aura ends them.
 		local aura = TRB.Data.spellsData.spells.arcaneBlast.attributes.auraId
 		drv.auras[aura] = { applications = 2, expirationTime = drv.now + 7, duration = data.duration }
 		drv.inCombat = true
@@ -393,7 +393,24 @@ function hooks.afterEvents(ctx)
 		check("leaving combat copies the aura's stacks and time", buff.applications == 2 and buff.remaining == 7)
 		drv.auras[aura] = nil
 		stubs.fireEvents("PLAYER_REGEN_ENABLED", ctx.addonName)
-		check("with no aura, the counted stacks stand", buff.isActive and buff.applications == 2 and buff.remaining == 7)
+		check("with no aura, leaving combat ends the stacks", not buff.isActive)
+		-- A login: the loading screen's sync waits until the spell set loads.
+		drv.auras[aura] = { applications = 3, expirationTime = drv.now + 9, duration = data.duration }
+		local spellsData = TRB.Data.spellsData
+		TRB.Data.spellsData = nil
+		for _, frame in ipairs(drv.frames) do
+			local scripts = rawget(frame, "__scripts")
+			local events = rawget(frame, "__events")
+			local fn = scripts ~= nil and scripts.OnEvent or nil
+			if fn ~= nil and events ~= nil and events.PLAYER_ENTERING_WORLD and debug.getinfo(fn, "S").source:find("Snapshot%.lua$") then
+				try("PLAYER_ENTERING_WORLD", function() fn(frame, "PLAYER_ENTERING_WORLD") end)
+			end
+		end
+		TRB.Data.spellsData = spellsData
+		check("before the spell set loads, a loading screen syncs nothing", not buff.isActive)
+		try("CheckCharacter", function() Class:CheckCharacter() end)
+		check("and the next CheckCharacter copies the aura, as on login and reload", buff.isActive and buff.applications == 3 and buff.remaining == 9)
+		drv.auras = {}
 		for _ = 1, data.stacks do
 			Cast(data.top)
 		end
