@@ -8,6 +8,28 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.5.14-release (2026-11-17)
+## General
+### Custom Bars
+
+- [#1003](#1003) Fix a custom bar's cooldown and recharge times ignoring the Timer Precision threshold in combat.
+
+### Totems
+
+- [#1003](#1003) Fix the time of a totem placed in combat ignoring the Timer Precision threshold.
+
+## Mage
+### Fire
+
+- [#1003](#1003) Fix Fire Blast's recharge time ignoring the Timer Precision threshold in combat.
+
+## Monk
+### Brewmaster
+
+- [#1003](#1003) Fix brew cooldown times ignoring the Timer Precision threshold in combat.
+
+---
+
 # 12.1.5.13-release (2026-11-13)
 ## General
 ### Color Indicators

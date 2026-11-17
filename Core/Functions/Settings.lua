@@ -164,7 +164,8 @@ function TRB.Functions.Settings:LoadDefaultSettings(classic)
 			timers = {
 				precisionLow = 1,
 				precisionHigh = 0,
-				precisionThreshold = 5
+				precisionThreshold = 5,
+				showMinutes = false
 			},
 			-- User-defined Border Glow appearances, keyed by guid. Color Indicators on any spec point at
 			-- these by id, so they live in core rather than per spec.

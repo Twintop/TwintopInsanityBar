@@ -2977,7 +2977,7 @@ function TRB.Functions.BarText:RefreshPetLookupData(settings)
 end
 
 ---Refreshes the totem variables from the slots. Names, times, and icons may be secret, so they reach only `lookup`,
----through nil tests and string.format; an empty slot renders empty.
+---through nil tests and engine formatting; an empty slot renders empty.
 function TRB.Functions.BarText:RefreshTotemLookupData()
 	if not IsRefresherInUse("totems") then
 		return
@@ -3021,7 +3021,7 @@ function TRB.Functions.BarText:RefreshTotemLookupData()
 			end
 		end
 		if duration ~= nil then
-			local timeText = self:TimerPrecision(duration:GetRemainingDuration())
+			local timeText = self:DurationTimerPrecision(duration)
 			for _, var in ipairs(vars.times) do
 				lookup[var] = timeText
 			end
@@ -4214,6 +4214,32 @@ function TRB.Functions.BarText:UnknownValue(zeroText)
 	return ""
 end
 
+-- m:ss formats by decimal places, the seconds zero-padded to two digits.
+local minutesFormatCache = {}
+
+---@param precision integer # Decimal places on the seconds
+---@return string
+local function GetMinutesFormat(precision)
+	local fmt = minutesFormatCache[precision]
+	if fmt == nil then
+		fmt = "%.0f:%0" .. (precision > 0 and precision + 3 or 2) .. "." .. precision .. "f"
+		minutesFormatCache[precision] = fmt
+	end
+	return fmt
+end
+
+---Formats seconds as m:ss, truncated to the decimal places like a clock. Splitting whole steps never carries 60 seconds.
+---@param value number
+---@param precision integer
+---@return string
+local function FormatMinutes(value, precision)
+	local scale = 10 ^ precision
+	local steps = math.floor(value * scale + 0.000001)
+	local stepsPerMinute = 60 * scale
+	local minutes = math.floor(steps / stepsPerMinute)
+	return string.format(GetMinutesFormat(precision), minutes, (steps - minutes * stepsPerMinute) / scale)
+end
+
 ---Returns a string formatted time value based on settings for precision
 ---@param value number # Timer value to format
 ---@param positiveOnly boolean? # Should the timer only ever show a positive number?
@@ -4235,11 +4261,64 @@ function TRB.Functions.BarText:TimerPrecision(value, positiveOnly)
 		value = 0
 	end
 
-	if value >= TRB.Data.settings.core.timers.precisionThreshold then
-		return string.format(GetPrecisionFormat(TRB.Data.settings.core.timers.precisionHigh), value)
-	else
-		return string.format(GetPrecisionFormat(TRB.Data.settings.core.timers.precisionLow), value)
+	local timers = TRB.Data.settings.core.timers
+	local precision = value >= timers.precisionThreshold and timers.precisionHigh or timers.precisionLow
+	if timers.showMinutes and value >= 60 then
+		return FormatMinutes(value, precision)
 	end
+	return string.format(GetPrecisionFormat(precision), value)
+end
+
+-- The Timer Precision settings as an engine formatter, and the settings it holds, so it is rebuilt only when they change.
+local timerFormatter = nil
+local timerFormatterLow, timerFormatterHigh, timerFormatterThreshold, timerFormatterMinutes = nil, nil, nil, nil
+
+---Builds the formatter's breakpoints: a precision change at the threshold, and m:ss from a minute when shown.
+---@param low integer
+---@param high integer
+---@param threshold number
+---@param showMinutes boolean
+---@return table[]
+local function BuildTimerBreakpoints(low, high, threshold, showMinutes)
+	local starts = { 0, threshold }
+	if showMinutes then
+		table.insert(starts, 60)
+	end
+	table.sort(starts)
+	local breakpoints = {}
+	local last = nil
+	for _, start in ipairs(starts) do
+		if start ~= last then
+			last = start
+			local precision = start >= threshold and high or low
+			if showMinutes and start >= 60 then
+				-- Rounded down per component, like FormatMinutes, so the seconds never read 60.
+				table.insert(breakpoints, { threshold = start, format = GetMinutesFormat(precision), components = {
+					{ div = 60, step = 1, rounding = Enum.NumericRuleFormatRounding.Down },
+					{ mod = 60, step = 10 ^ -precision, rounding = Enum.NumericRuleFormatRounding.Down },
+				} })
+			else
+				table.insert(breakpoints, { threshold = start, format = GetPrecisionFormat(precision) })
+			end
+		end
+	end
+	return breakpoints
+end
+
+---Returns a duration object's remaining time formatted like TimerPrecision. The engine formats it, so a secret
+---duration still gets the threshold's precision and m:ss instead of always the low precision in seconds.
+---@param durationObject any # A LuaDurationObject
+---@return string
+function TRB.Functions.BarText:DurationTimerPrecision(durationObject)
+	local timers = TRB.Data.settings.core.timers
+	local low, high, threshold, showMinutes = timers.precisionLow, timers.precisionHigh, timers.precisionThreshold, timers.showMinutes == true
+	if timerFormatter == nil or low ~= timerFormatterLow or high ~= timerFormatterHigh or threshold ~= timerFormatterThreshold
+		or showMinutes ~= timerFormatterMinutes then
+		timerFormatterLow, timerFormatterHigh, timerFormatterThreshold, timerFormatterMinutes = low, high, threshold, showMinutes
+		timerFormatter = timerFormatter or C_StringUtil.CreateNumericRuleFormatter()
+		timerFormatter:SetBreakpoints(BuildTimerBreakpoints(low, high, threshold, showMinutes))
+	end
+	return durationObject:FormatRemainingDuration(timerFormatter)
 end
 
 -- TimerPrecision(0) by precision, so idle timers skip string.format; a precision edit just picks another entry.

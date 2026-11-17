@@ -24,6 +24,7 @@ function hooks.afterInstall(ctx)
 			slot = slot,
 			EvaluateRemainingDuration = function() return { GetRGBA = function() return 1, 0, 0, 1 end } end,
 			GetRemainingDuration = function() return totem.duration - 0.5 end,
+			FormatRemainingDuration = function(_, formatter) return formatter:FormatNumber(totem.duration - 0.5) end,
 		}
 	end
 	-- Brewmaster's and Evoker's ticks read these before they reach the Totems bar.
@@ -395,6 +396,18 @@ function hooks.afterEvents(ctx)
 		and (lookup["$totem" .. firstSlot .. "Time"] or "") ~= "" and (lookup["#totem" .. firstSlot] or ""):find("|T", 1, true) ~= nil)
 	check("an empty slot's variables are blank", lookup["$totem" .. emptySlot .. "Name"] == "" and lookup["$totem" .. emptySlot .. "Time"] == "")
 	check("the listed name and the slot alias agree", lookup[listedName] == lookup["$totem" .. firstSlot .. "Name"])
+	local timers = TRB.Data.settings.core.timers
+	local timeVar = "$totem" .. firstSlot .. "Time"
+	local remaining = occupied[firstSlot].duration - 0.5
+	local plainTime = BarText:TimerPrecision(remaining)
+	check("a slot's time is formatted like any other timer", lookup[timeVar] == plainTime)
+	-- Lua can't compare a secret time to the threshold; the slot's time must still take the precision above it.
+	local plainSecretCheck = desktop.issecretvalue
+	desktop.issecretvalue = function(value) return type(value) == "number" end
+	BarText:RefreshTotemLookupData()
+	desktop.issecretvalue = plainSecretCheck
+	check("a secret slot time keeps the precision above the threshold", timers.precisionHigh ~= timers.precisionLow
+		and remaining >= timers.precisionThreshold and lookup[timeVar] == plainTime)
 	if elements then
 		check("Forever and Classic list the element names", listedName == "$earthTotemName")
 	else

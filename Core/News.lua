@@ -4,6 +4,14 @@ local _, TRB = ...
 -- first. Titles name the Live, Forever, Classic, and TBC releases; the tab keeps only the running flavor's.
 TRB.Details.coreNewsContent = [====[
 
+# Live 12.1.5.14-release / Forever 1.60.1.20-release / Classic 1.15.9.5-release / TBC 2.5.6.3-release (2026-11-17)
+## Bar Text
+
+- [#1004](#1004) Add a Show times of a minute or more as m:ss option to Timer Precision in Global Options, off by default.
+- [#1004](#1004) Timer Precision's decimal places now go up to 3, including on the seconds of m:ss times.
+
+---
+
 # Live 12.1.5.13-release / Forever 1.60.1.19-release / Classic 1.15.9.4-release / TBC 2.5.6.2-release (2026-11-13)
 ## General
 
