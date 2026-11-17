@@ -480,6 +480,7 @@ function M.install(opts)
 		Damageclass = { Physical = 0, Holy = 1, Fire = 2, Nature = 3, Frost = 4, Shadow = 5, Arcane = 6,
 			MaskNone = 0, MaskPhysical = 1, MaskHoly = 2, MaskFire = 4, MaskNature = 8, MaskFrost = 16, MaskShadow = 32, MaskArcane = 64 },
 		PlayerSwingType = { MainHand = 0, OffHand = 1, Ranged = 2 },
+		NumericRuleFormatRounding = { Nearest = 0, Up = 1, Down = 2 },
 		EditModeLayoutType = { Preset = 0, Account = 1, Character = 2 },
 		EditModeSettingDisplayType = { Dropdown = 0, Slider = 1, Checkbox = 2 },
 		CooldownViewerCategory = { Essential = 0, Utility = 1, TrackedBuff = 2, TrackedBar = 3 },
@@ -926,7 +927,22 @@ function M.install(opts)
 	G.CurveConstants.ScaleTo100:SetType(G.Enum.LuaCurveType.Linear)
 	G.CurveConstants.ScaleTo100:AddPoint(0, 0)
 	G.CurveConstants.ScaleTo100:AddPoint(1, 100)
-	-- The engine's rule formatter: the highest breakpoint at or below the value formats it. Only threshold and format.
+	-- The engine's rule formatter, as its API docs describe it: the highest breakpoint at or below the value formats it,
+	-- after its step; each component divides, then takes the remainder, then steps.
+	local function RoundToStep(value, step, rounding)
+		if step == nil then
+			return value
+		end
+		local units = value / step
+		if rounding == 1 then
+			units = math.ceil(units)
+		elseif rounding == 2 then
+			units = math.floor(units)
+		else
+			units = math.floor(units + 0.5)
+		end
+		return units * step
+	end
 	local ruleFormatterMethods = {}
 	ruleFormatterMethods.__index = ruleFormatterMethods
 	function ruleFormatterMethods:SetBreakpoints(breakpoints) self.__breakpoints = breakpoints end
@@ -937,7 +953,25 @@ function M.install(opts)
 				chosen = breakpoint
 			end
 		end
-		return chosen ~= nil and string.format(chosen.format, value) or ""
+		if chosen == nil then
+			return ""
+		end
+		value = RoundToStep(value, chosen.step, chosen.rounding)
+		if chosen.components == nil then
+			return string.format(chosen.format, value)
+		end
+		local parts = {}
+		for i, component in ipairs(chosen.components) do
+			local part = value
+			if component.div ~= nil then
+				part = part / component.div
+			end
+			if component.mod ~= nil then
+				part = math.fmod(part, component.mod)
+			end
+			parts[i] = RoundToStep(part, component.step, component.rounding)
+		end
+		return string.format(chosen.format, unpack(parts))
 	end
 	G.C_StringUtil = ns({
 		CreateNumericRuleFormatter = function() return setmetatable({ __breakpoints = {} }, ruleFormatterMethods) end,

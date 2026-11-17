@@ -320,7 +320,7 @@ local function ConstructMiscellaneousPanel(parent)
 
 	yCoord = yCoord - 50
 	title = L["TimerBelowPrecision"]
-	controls.timersLowPrecision = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, 2, TRB.Data.settings.core.timers.precisionLow, 1, 0,
+	controls.timersLowPrecision = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, 3, TRB.Data.settings.core.timers.precisionLow, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord, yCoord)
 	controls.timersLowPrecision:SetScript("OnValueChanged", function(self, value)
 		local min, max = self:GetMinMaxValues()
@@ -337,7 +337,7 @@ local function ConstructMiscellaneousPanel(parent)
 	end)
 	
 	title = L["TimerAbovePrecision"]
-	controls.timersHighPrecision = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, 2, TRB.Data.settings.core.timers.precisionHigh, 1, 0,
+	controls.timersHighPrecision = TRB.Functions.OptionsUi.Primitives:BuildSlider(parent, title, 0, 3, TRB.Data.settings.core.timers.precisionHigh, 1, 0,
 									oUi.sliderWidth, oUi.sliderHeight, oUi.xCoord2, yCoord)
 	controls.timersHighPrecision:SetScript("OnValueChanged", function(self, value)
 		local min, max = self:GetMinMaxValues()
@@ -371,6 +371,15 @@ local function ConstructMiscellaneousPanel(parent)
 		TRB.Data.settings.core.timers.precisionThreshold = value
 		TRB.Functions.BarText:InvalidateLookupMemoization()
 	end)
+
+	controls.checkBoxes.timersShowMinutes = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, "TwintopResourceBar_CB_Timers_Show_Minutes",
+		L["TimerShowMinutes"], L["TimerShowMinutesTooltip"], yCoord,
+		function() return TRB.Data.settings.core.timers.showMinutes end,
+		function(checked)
+			TRB.Data.settings.core.timers.showMinutes = checked
+			TRB.Functions.BarText:InvalidateLookupMemoization()
+		end)
+	controls.checkBoxes.timersShowMinutes:SetPoint("TOPLEFT", oUi.xCoord2, yCoord + 10)
 
 
 
