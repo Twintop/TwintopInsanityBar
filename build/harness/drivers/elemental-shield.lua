@@ -1,16 +1,17 @@
--- Checks the Forever Shaman's Elemental Shield bar (gate, casts, orb spends and their lockout, Water Shield's mana gains,
+-- Checks the Forever Shaman's Elemental Shield bar (gate, casts, orb spends and their lockout, Water Shield's talent,
 -- the aura sync, nodes, bar text, and audio counter).
 local desktop = _G --[[@as table<string, any>]]
 local debug = desktop.debug
 local parity = desktop.require("drivers.parity")
 
 local hooks = {}
--- Lightning Shield's rank 1 and top rank, Water Shield, the orb cap, the duration, and the spend lockout.
-local SHIELD = { first = 324, top = 10432, water = 408510, orbs = 3, duration = 600, lockout = 3.5 }
+-- Lightning Shield's rank 1 and top rank, Water Shield, the orb cap, the duration, and the gaps after a spend that, in game,
+-- spent nothing (3.3s) and spent an orb (3.4s).
+local SHIELD = { first = 324, top = 10432, water = 408510, orbs = 3, duration = 600, locked = 3.3, spent = 3.4 }
 local OTHER_SPELL = 403
 
--- The test clock, the addon's frames, the known spells, the Water Shield talent, the player's auras, combat lockdown, and the combat text unit.
-local drv = { now = 1000, frames = {}, known = {}, talent = false, auras = {}, inCombat = false, combatTextUnit = nil }
+-- The test clock, the addon's frames, the known spells, the Water Shield talent, the player's auras, and combat lockdown.
+local drv = { now = 1000, frames = {}, known = {}, talent = false, auras = {}, inCombat = false }
 
 function hooks.afterInstall(ctx)
 	parity.Install(ctx, { spec = 1, holdDeferredSetup = true })
@@ -33,10 +34,6 @@ function hooks.afterInstall(ctx)
 	G.C_UnitAuras.GetPlayerAuraBySpellID = function(spellId) return drv.auras[spellId] end
 	G.issecrettable = function() return false end
 	G.InCombatLockdown = function() return drv.inCombat end
-	G.C_CombatText = {
-		GetActiveUnit = function() return drv.combatTextUnit end,
-		SetActiveUnit = function(unit) drv.combatTextUnit = unit end,
-	}
 end
 
 function hooks.afterLoad(ctx)
@@ -220,8 +217,12 @@ function hooks.afterEvents(ctx)
 	local function Hit(action, flagText, schoolMask)
 		Fire("Shaman%.lua$", "UNIT_COMBAT", "player", action or "WOUND", flagText or "", "secret", schoolMask or 1)
 	end
-	local function ManaGain(combatTextType)
-		return Fire("Shaman%.lua$", "COMBAT_TEXT_UPDATE", combatTextType or "ENERGIZE")
+	---Whether the shield counts as a running timer for bar text that uses the given variables; nil is every variable.
+	local function TimersActive(activeVariables)
+		TRB.Data.activeVariables = activeVariables
+		local active = Class:HasActiveTimers()
+		TRB.Data.activeVariables = nil
+		return active
 	end
 	local function Wait(seconds)
 		drv.now = drv.now + seconds
@@ -239,7 +240,7 @@ function hooks.afterEvents(ctx)
 	check("learning it shows the bar", not Bar:IsBarTalentGatedHidden("secondary") and Shown() == true)
 	buff = Buff() --[[@as table]]
 
-	check("before a cast nothing is tracked", not buff.isActive and not Class:HasActiveTimers()
+	check("before a cast nothing is tracked", not buff.isActive and not TimersActive()
 		and not Class:IsValidVariableForSpec("$shieldOrbs") and not Class:IsValidVariableForSpec("$shieldTime")
 		and Class:IsValidVariableForSpec("$shieldOrbsMax") and Draw() == 0 and counted == 0)
 	Cast(OTHER_SPELL)
@@ -247,18 +248,20 @@ function hooks.afterEvents(ctx)
 	check("another spell or a hit with no shield changes nothing", not buff.isActive)
 	Cast(SHIELD.first)
 	check("Lightning Shield starts at three orbs for ten minutes", buff.isActive and buff.applications == SHIELD.orbs and buff.remaining == SHIELD.duration
-		and Class:HasActiveTimers() and Class:IsValidVariableForSpec("$shieldOrbs"))
+		and TimersActive() and Class:IsValidVariableForSpec("$shieldOrbs"))
+	check("but runs no bar text timer when no text shows $shieldTime", not TimersActive({ ["$shieldOrbs"] = true })
+		and TimersActive({ ["$shieldTime"] = true }))
 	Wait(10)
 	Hit()
 	check("a hit that lands spends an orb", buff.applications == 2 and Draw() == 2 and counted == 2)
 	local lookup, lookupLogic = Lookup()
 	check("the bar text shows 2 of 3 orbs", lookup["$shieldOrbs"] == "2" and lookup["$shieldOrbsMax"] == "3" and lookupLogic["$shieldOrbs"] == 2
 		and lookupLogic["$shieldTime"] == buff.remaining)
-	Wait(SHIELD.lockout - 0.1)
+	Wait(SHIELD.locked)
 	Hit()
 	Hit("BLOCK", "BLOCK")
-	check("hits inside the lockout spend nothing", buff.applications == 2)
-	Wait(0.1)
+	check("hits 3.3 seconds after a spend spend nothing", buff.applications == 2)
+	Wait(SHIELD.spent - SHIELD.locked)
 	Hit("MISS")
 	Hit("DODGE")
 	Hit("WOUND", "ABSORB")
@@ -268,8 +271,8 @@ function hooks.afterEvents(ctx)
 	Hit("secret")
 	check("a miss, a dodge, a hit that dealt nothing, a heal, and a secret hit spend nothing", buff.applications == 2)
 	Hit("WOUND", "", 8)
-	check("a spell hit spends an orb once the lockout ends", buff.applications == 1)
-	Wait(SHIELD.lockout)
+	check("a spell hit 3.4 seconds after a spend spends an orb", buff.applications == 1)
+	Wait(SHIELD.spent)
 	Cast(SHIELD.top)
 	check("any rank's recast refills the orbs", buff.applications == SHIELD.orbs and buff.remaining == SHIELD.duration)
 	Hit("BLOCK", "BLOCK")
@@ -277,59 +280,79 @@ function hooks.afterEvents(ctx)
 	Cast(SHIELD.first)
 	Hit()
 	check("the lockout carries across a recast", buff.applications == SHIELD.orbs)
-	Wait(SHIELD.lockout)
+	Wait(SHIELD.spent)
 	Hit("WOUND", "BLOCK_REDUCED")
 	check("a partly blocked hit spends an orb", buff.applications == 2)
-	Wait(SHIELD.lockout)
+	Wait(SHIELD.spent)
 	Hit("WOUND", "CRITICAL")
-	Wait(SHIELD.lockout)
+	Wait(SHIELD.spent)
 	Hit()
-	check("the last orb ends the tracking", not buff.isActive and not Class:HasActiveTimers() and Draw() == 0)
+	check("the last orb ends the tracking", not buff.isActive and not TimersActive() and Draw() == 0)
 
-	-- Water Shield: mana gains spend orbs too, only with its talent.
-	check("without the Water Shield talent, mana gains aren't followed", ManaGain() == 0 and drv.combatTextUnit == nil)
+	-- Water Shield: hits spend its orbs, and unlearning its talent takes them away.
 	Retalent(true)
 	buff = Buff() --[[@as table]]
-	check("with it, combat text is pointed at the player", drv.combatTextUnit == "player")
-	Wait(SHIELD.lockout)
+	Wait(SHIELD.spent)
 	Cast(SHIELD.first)
-	check("a mana gain under Lightning Shield spends nothing", ManaGain() == 1 and buff.applications == SHIELD.orbs)
 	Cast(SHIELD.water)
-	check("Water Shield replaces it at three orbs", buff.isActive and buff.applications == SHIELD.orbs and buff.remaining == SHIELD.duration)
-	ManaGain("PERIODIC_ENERGIZE")
-	ManaGain("secret")
-	check("a periodic or secret mana gain spends nothing", buff.applications == SHIELD.orbs)
-	ManaGain()
-	check("a mana gain under Water Shield spends an orb", buff.applications == 2)
+	check("Water Shield replaces Lightning Shield at three orbs", buff.isActive and buff.applications == SHIELD.orbs and buff.remaining == SHIELD.duration)
 	Hit()
-	ManaGain()
-	check("and shares the lockout with hits", buff.applications == 2)
-	Wait(SHIELD.lockout)
-	Hit()
-	check("a hit spends Water Shield's orbs too", buff.applications == 1)
+	check("a hit spends Water Shield's orbs too", buff.applications == 2)
 	Retalent(false)
 	buff = Buff() --[[@as table]]
-	check("dropping the talent stops following mana gains", ManaGain() == 0)
+	check("unlearning Water Shield ends its orbs", not buff.isActive)
+	Cast(SHIELD.first)
+	Retalent(false)
+	buff = Buff() --[[@as table]]
+	check("but leaves Lightning Shield's", buff.isActive and buff.applications == SHIELD.orbs)
 
-	-- The aura sync: leaving combat and a loading screen copy the real orbs and time; a missing aura changes nothing.
-	Wait(SHIELD.lockout)
-	drv.auras[SHIELD.top] = { applications = 3, expirationTime = drv.now + 200, duration = SHIELD.duration }
+	-- The aura sync: leaving combat copies the orbs and time of whichever shield is up, and a missing aura ends them.
+	drv.auras[SHIELD.top] = { applications = 1, expirationTime = drv.now + 200, duration = SHIELD.duration }
 	drv.inCombat = true
 	stubs.fireEvents("PLAYER_REGEN_ENABLED", ctx.addonName)
-	check("in combat lockdown, the aura isn't read", buff.applications == 1)
+	check("in combat lockdown, the aura isn't read", buff.applications == SHIELD.orbs)
 	drv.inCombat = false
 	stubs.fireEvents("PLAYER_REGEN_ENABLED", ctx.addonName)
-	check("leaving combat copies Lightning Shield's orbs and time", buff.applications == 3 and buff.remaining == 200)
+	check("leaving combat copies Lightning Shield's orbs and time", buff.applications == 1 and buff.remaining == 200)
 	drv.auras[SHIELD.top] = nil
 	stubs.fireEvents("PLAYER_REGEN_ENABLED", ctx.addonName)
-	check("with no aura, the counted orbs stand", buff.isActive and buff.applications == 3)
+	check("with no shield's aura up, leaving combat ends the orbs", not buff.isActive)
+	Retalent(true)
+	buff = Buff() --[[@as table]]
 	drv.auras[SHIELD.water] = { applications = 0, charges = 2, expirationTime = drv.now + 100, duration = SHIELD.duration }
 	stubs.fireEvents("PLAYER_ENTERING_WORLD", ctx.addonName)
 	Drain()
 	buff = Buff() --[[@as table]]
 	check("a loading screen copies Water Shield's orbs from its charges, and keeps the bar", buff.isActive and buff.applications == 2 and buff.remaining == 100
 		and Shown() == true and Draw() == 2)
-	drv.auras[SHIELD.water] = nil
+	Retalent(false)
+	buff = Buff() --[[@as table]]
+	check("and tracks it as Water Shield, which the missing talent ends", not buff.isActive)
+	drv.auras = {}
+	-- A loading screen whose read misses keeps the orbs, and a later frame's CheckCharacter reads again.
+	Cast(SHIELD.first)
+	stubs.fireEvents("PLAYER_ENTERING_WORLD", ctx.addonName)
+	Drain()
+	buff = Buff() --[[@as table]]
+	check("a loading screen whose read finds no shield keeps the orbs", buff.isActive and buff.applications == SHIELD.orbs)
+	drv.auras[SHIELD.top] = { applications = 2, expirationTime = drv.now + 300, duration = SHIELD.duration }
+	Wait(0.15)
+	try("CheckCharacter", function() Class:CheckCharacter() end)
+	check("and the next CheckCharacter, a frame later, copies the aura", buff.applications == 2)
+	-- A login: the sync waits until the spell set loads.
+	buff:Reset()
+	drv.auras[SHIELD.top] = { applications = 1, expirationTime = drv.now + 250, duration = SHIELD.duration }
+	local spellsData = TRB.Data.spellsData
+	TRB.Data.spellsData = nil
+	Fire("Snapshot%.lua$", "PLAYER_ENTERING_WORLD")
+	TRB.Data.spellsData = spellsData
+	check("before the spell set loads, a loading screen syncs nothing", not buff.isActive)
+	try("CheckCharacter", function() Class:CheckCharacter() end)
+	check("and the next CheckCharacter copies the aura, as on login and reload", buff.isActive and buff.applications == 1)
+	drv.auras = {}
+
+	-- A shield with 100 seconds left, for the expiry below.
+	buff:InitializeCustom(SHIELD.duration, drv.now - SHIELD.duration + 100, true, SHIELD.orbs)
 
 	Wait(100)
 	check("the shield ends when its time runs out", Draw() == 0 and not buff.isActive and not Class:IsValidVariableForSpec("$shieldTime"))

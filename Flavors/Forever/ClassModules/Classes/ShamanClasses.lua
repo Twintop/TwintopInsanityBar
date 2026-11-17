@@ -11,7 +11,7 @@ local L = TRB.Localization
 ---Adds the Shaman's elemental shields to a new spell set.
 ---@param spells TRB.Classes.Forever.Shaman.GeneralSpells
 local function FillSpells(spells)
-	-- Its snapshot tracks whichever shield is up; a hit taken spends an orb at most once per spendLockout seconds.
+	-- Its snapshot tracks whichever shield is up; the data's lockout is 3.5s, but in game a hit 3.4s after a spend took an orb.
 	spells.lightningShield = TRB.Classes.SpellBase:New({
 		id = 324,
 		rankIds = { 324, 325, 905, 945, 8134, 10431, 10432 },
@@ -19,13 +19,16 @@ local function FillSpells(spells)
 		isBuff = true,
 		duration = 600,
 		maxStacks = 3,
-		spendLockout = 3.5,
+		spendLockout = 3.35,
 	})
-	-- Also spends an orb when one of the Shaman's own spells crits, seen as the mana it restores.
+	-- Its orbs spent by the Shaman's own spell crits can't be seen; the out-of-combat sync corrects them.
 	spells.waterShield = TRB.Classes.SpellBase:New({
 		id = 408510,
 		isTalent = true,
 		isBuff = true,
+		duration = 600,
+		maxStacks = 3,
+		spendLockout = 3.35,
 	})
 end
 

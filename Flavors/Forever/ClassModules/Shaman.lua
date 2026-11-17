@@ -11,8 +11,8 @@ local lookupChanged = TRB.Functions.BarText.LookupChanged
 -- The WOUND flags of a hit that dealt nothing; a partly blocked or absorbed hit lands as a WOUND without them.
 local unlandedWoundFlags = { ABSORB = true, BLOCK = true, RESIST = true }
 
--- Whether the tracked shield is Water Shield, and when an orb was last spent; the lockout outlives a recast.
-local waterShieldUp = false
+-- The spell field of the shield the snapshot tracks, and when an orb was last spent; the lockout outlives a recast.
+local trackedShieldKey = "lightningShield"
 local lastSpendTime = 0
 
 ---The active spell set's shield snapshot's buff and the spell set, or nil before the spec cache loads.
@@ -34,7 +34,7 @@ local function SpendOrb()
 		return
 	end
 	local currentTime = GetTime()
-	if currentTime - lastSpendTime < spells.lightningShield.attributes.spendLockout then
+	if currentTime - lastSpendTime < spells[trackedShieldKey].attributes.spendLockout then
 		return
 	end
 	lastSpendTime = currentTime
@@ -61,66 +61,42 @@ hitFrame:SetScript("OnEvent", function(_, _, _, action, flagText)
 	end
 end)
 
--- Water Shield restores mana with each orb, so a mana gain while it is up is an orb spent, by a hit or by a crit.
-local manaGainFrame = CreateFrame("Frame")
-manaGainFrame:SetScript("OnEvent", function(_, _, combatTextType)
-	if waterShieldUp and not issecretvalue(combatTextType) and combatTextType == "ENERGIZE" then
-		SpendOrb()
-	end
-end)
-
----Follows mana gains only with the Water Shield talent; combat text is silent until a unit is set, which only Blizzard's floating combat text does.
----@param talented boolean
-local function WatchManaGains(talented)
-	if not talented then
-		manaGainFrame:UnregisterEvent("COMBAT_TEXT_UPDATE")
-		return
-	end
-	manaGainFrame:RegisterEvent("COMBAT_TEXT_UPDATE")
-	if C_CombatText.GetActiveUnit() == nil then
-		-- Unverified for addons; a failure must not break the class module.
-		pcall(C_CombatText.SetActiveUnit, "player")
-	end
-end
-
--- A loading screen's sync waits for CheckCharacter when the spell set isn't loaded yet, as on login and reload.
-local syncPending = true
-
----Corrects the counted orbs and time from whichever shield's aura is up, which reads only out of combat.
----@return boolean # whether the spell set was loaded to sync against
-local function SyncShieldFromAura()
+---Corrects the counted orbs and time from whichever shield's aura is up, which reads only out of combat; nil before the spell set loads.
+---@param endWhenMissing boolean
+---@return string?
+local function SyncShieldFromAura(endWhenMissing)
 	local shield, spells = GetShield()
 	if shield == nil or spells == nil then
-		return false
+		return nil
 	end
-	if shield:SyncCustomFromPlayerAura(spells.lightningShield.rankIds) == "copied" then
-		waterShieldUp = false
-		TRB.Functions.BarText:MarkLookupDirty()
-	elseif shield:SyncCustomFromPlayerAura({ spells.waterShield.id }) == "copied" then
-		waterShieldUp = true
+	local result = shield:SyncCustomFromPlayerAura(spells.lightningShield.rankIds, false)
+	if result == "copied" then
+		trackedShieldKey = "lightningShield"
+	elseif result == "missing" then
+		result = shield:SyncCustomFromPlayerAura({ spells.waterShield.id }, endWhenMissing)
+		if result == "copied" then
+			trackedShieldKey = "waterShield"
+		end
+	end
+	if result == "copied" or result == "ended" then
 		TRB.Functions.BarText:MarkLookupDirty()
 	end
-	return true
+	return result
 end
 
-local syncFrame = CreateFrame("Frame")
-syncFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-syncFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-syncFrame:SetScript("OnEvent", function(_, event)
-	if event == "PLAYER_ENTERING_WORLD" then
-		syncPending = not SyncShieldFromAura()
-	else
-		SyncShieldFromAura()
-	end
-end)
+local shieldSync = TRB.Classes.AuraSync:New(SyncShieldFromAura)
 
 ---@param spells TRB.Classes.SpecializationSpellsBase
 function runtime.CheckClassCharacter(spells)
+	local shield = GetShield()
 	local waterShield = (spells --[[@as TRB.Classes.Forever.Shaman.GeneralSpells]]).waterShield
-	WatchManaGains(runtime.talents ~= nil and runtime.talents:IsTalentActive(waterShield))
-	if syncPending then
-		syncPending = not SyncShieldFromAura()
+	-- Unlearning Water Shield takes its buff with it.
+	if shield ~= nil and shield.isActive and trackedShieldKey == "waterShield" and runtime.talents ~= nil
+		and not runtime.talents:IsTalentActive(waterShield) then
+		shield:Reset(nil, true)
+		TRB.Functions.BarText:MarkLookupDirty()
 	end
+	shieldSync:OnCheckCharacter()
 end
 
 ---A cast of either shield, any rank, replaces the tracked shield at full orbs.
@@ -134,12 +110,17 @@ function runtime.OnSpellCastSucceeded(spellId)
 	if castSpells == nil then
 		return
 	end
-	local isWaterShield = tContains(castSpells, spells.waterShield)
-	if not isWaterShield and not tContains(castSpells, spells.lightningShield) then
+	local key = nil
+	if tContains(castSpells, spells.waterShield) then
+		key = "waterShield"
+	elseif tContains(castSpells, spells.lightningShield) then
+		key = "lightningShield"
+	else
 		return
 	end
-	waterShieldUp = isWaterShield
-	shield:InitializeCustom(spells.lightningShield.duration, GetTime(), true, spells.lightningShield.maxStacks)
+	trackedShieldKey = key
+	local spell = spells[key]
+	shield:InitializeCustom(spell.duration, GetTime(), true, spell.maxStacks)
 	TRB.Functions.BarText:MarkLookupDirty()
 end
 
@@ -196,6 +177,11 @@ end
 
 ---@return boolean
 function runtime.HasClassTimers()
+	-- A 10 minute shield would keep the bar text on its timer path even when no text shows its time.
+	local activeVars = TRB.Data.activeVariables
+	if activeVars ~= nil and not activeVars["$shieldTime"] then
+		return false
+	end
 	local shield = GetShield()
 	return shield ~= nil and shield.isActive
 end

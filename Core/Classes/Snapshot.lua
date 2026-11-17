@@ -520,7 +520,7 @@ function TRB.Classes.SnapshotBuff:InitializeCustom(duration, startTime, hasStack
 end
 
 ---Copies a manually tracked buff's stacks and time from the player's aura while auras can be read; an aura with no stack
----count keeps the tracked count. With endWhenMissing, a read that finds none of the auras ends the tracking.
+---count gives its charges, or keeps the tracked count. With endWhenMissing, a read that finds none of the auras ends the tracking.
 ---@param auraIds integer[] # checked last to first, so the highest rank wins
 ---@param endWhenMissing boolean?
 ---@return string # "copied", "ended", "missing", "restricted" (unreadable now), "untimed" (an aura with no timing), or "unsupported"
