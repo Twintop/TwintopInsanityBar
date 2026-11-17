@@ -11,7 +11,7 @@ TRB.Details.coreNewsContent = [====[
 
 ## Bar Text
 
-- [#1004](#1004) Add a Show times of a minute or more as m:ss option to Timer Precision in Global Options, off by default.
+- [#1004](#1004) Add a 'Show times of a minute or more as m:ss' option to Timer Precision in Global Options, off by default.
 - [#1004](#1004) Timer Precision's decimal places now go up to 3, including on the seconds of m:ss times.
 
 ---
