@@ -8,6 +8,13 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 1.60.1.20-release (2026-11-16)
+## Priest
+
+- [#1001](#1001) Fix Inner Fire's charges and time no longer being tracked after a loading screen, such as using a Hearthstone.
+
+---
+
 # 1.60.1.19-release (2026-11-13)
 ## General
 ### Bar Visibility

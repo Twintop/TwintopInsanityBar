@@ -394,6 +394,46 @@ function hooks.afterEvents(ctx)
 	buff:Reset()
 	try("CheckCharacter", function() Class:CheckCharacter() end)
 	check("once per loading screen", not buff.isActive)
+	-- A read right after a zone can miss an aura that is up: it keeps the count and a later frame retries once; a second miss ends it.
+	Cast(INNER_FIRE_RANK_6)
+	drv.auras = {}
+	Fire("PLAYER_ENTERING_WORLD")
+	check("a loading screen whose read finds no aura keeps the tracking", buff.isActive and buff.applications == 20)
+	drv.auras[INNER_FIRE_RANK_6] = { applications = 15, expirationTime = drv.now + 400, duration = 600 }
+	try("CheckCharacter", function() Class:CheckCharacter() end)
+	check("a CheckCharacter in the same frame doesn't read again", buff.applications == 20)
+	drv.now = drv.now + 0.15
+	try("CheckCharacter", function() Class:CheckCharacter() end)
+	check("one a frame later copies the aura", buff.applications == 15 and buff.remaining == drv.auras[INNER_FIRE_RANK_6].expirationTime - drv.now)
+	drv.auras[INNER_FIRE_RANK_6].applications = 3
+	drv.now = drv.now + 0.15
+	try("CheckCharacter", function() Class:CheckCharacter() end)
+	check("and the retry runs once", buff.applications == 15)
+	drv.auras = {}
+	Fire("PLAYER_ENTERING_WORLD")
+	drv.now = drv.now + 0.15
+	try("CheckCharacter", function() Class:CheckCharacter() end)
+	check("a retry that misses too ends the tracking", not buff.isActive)
+	drv.auras[INNER_FIRE_RANK_6] = { applications = 3, expirationTime = drv.now + 400, duration = 600 }
+	drv.now = drv.now + 0.15
+	try("CheckCharacter", function() Class:CheckCharacter() end)
+	check("and ends the retries", not buff.isActive)
+	Cast(INNER_FIRE_RANK_6)
+	drv.auras[INNER_FIRE_RANK_6] = { applications = 3, expirationTime = 0, duration = 0 }
+	Fire("PLAYER_ENTERING_WORLD")
+	Fire("PLAYER_REGEN_ENABLED")
+	check("an aura with no timing keeps the tracking", buff.isActive and buff.applications == 20)
+	drv.auras = { [INNER_FIRE_RANK_6] = { applications = 12, expirationTime = drv.now + 300, duration = 600 } }
+	drv.now = drv.now + 0.15
+	try("CheckCharacter", function() Class:CheckCharacter() end)
+	check("and its retry copies a later read", buff.applications == 12)
+	Cast(INNER_FIRE_RANK_6)
+	drv.auras = {}
+	Fire("PLAYER_ENTERING_WORLD")
+	drv.now = drv.now + 6
+	try("CheckCharacter", function() Class:CheckCharacter() end)
+	check("a CheckCharacter long after the loading screen doesn't retry", buff.isActive and buff.applications == 20)
+	buff:Reset()
 
 	Cast(INNER_FIRE_RANK_6)
 	Hit()
@@ -495,6 +535,35 @@ function hooks.afterEvents(ctx)
 		Drain()
 	end)
 	check("a secret payload prints as secret", AnyLine(lines, "text none | unit secret secret secret school secret"))
+	-- A real zone: the loading screen's own read misses the aura, and the CheckCharacter after its spec switch reads it.
+	local zoneTime, getAura, timerAfter = drv.now, desktop.C_UnitAuras.GetPlayerAuraBySpellID, desktop.C_Timer.After
+	desktop.C_UnitAuras.GetPlayerAuraBySpellID = function(spellId)
+		if drv.now <= zoneTime then
+			return nil
+		end
+		return getAura(spellId)
+	end
+	-- Each timer runs a frame or more later, as in game.
+	desktop.C_Timer.After = function(delay, fn)
+		return timerAfter(delay, function()
+			drv.now = drv.now + math.max(delay or 0, 0.01)
+			fn()
+		end)
+	end
+	drv.auras = { [INNER_FIRE_RANK_6] = { applications = 16, expirationTime = zoneTime + 300, duration = 600 } }
+	lines = Capture(function()
+		stubs.fireEvents("PLAYER_ENTERING_WORLD", ctx.addonName)
+		Drain()
+	end)
+	desktop.C_UnitAuras.GetPlayerAuraBySpellID, desktop.C_Timer.After = getAura, timerAfter
+	for _, line in ipairs(lines) do
+		if line:find("^EVENT ERROR") then
+			print(line)
+		end
+	end
+	check("a zone whose first read misses the aura keeps the tracking", AnyLine(lines, "sync on loading screen: no aura, tracking kept | tracked 18/20 %-> 18/20"))
+	check("and the retry after its spec switch copies it", AnyLine(lines, "sync on loading screen retry: rank 10952 aura, 16 charges") and buff.applications == 16)
+	buff:InitializeCustom(600, drv.now - 200, true, 18)
 	drv.auras = { [INNER_FIRE_RANK_6] = { applications = 15, expirationTime = drv.now + 400, duration = 600 } }
 	lines = Capture(function() Fire("PLAYER_REGEN_ENABLED") end)
 	check("a sync prints what it found", AnyLine(lines, "sync on leaving combat: rank 10952 aura, 15 charges, 400s left | tracked 18/20 %-> 15/20"))
