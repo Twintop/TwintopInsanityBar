@@ -129,13 +129,14 @@ end
 ---Copies Inner Fire's charges and time from its aura. Only an unrestricted read is trusted: in combat it is nil either way.
 ---@param endWhenMissing boolean # whether no aura ends the tracking; a loading screen's read can miss an aura that is up
 ---@return string # what the sync found
+---@return boolean # whether it copied an aura
 local function SyncInnerFireFromAura(endWhenMissing)
 	local innerFire, spells = GetInnerFire()
 	if innerFire == nil or spells == nil then
-		return "not loaded"
+		return "not loaded", false
 	end
 	if InCombatLockdown() or (C_Secrets ~= nil and C_Secrets.ShouldAurasBeSecret ~= nil and C_Secrets.ShouldAurasBeSecret() == true) then
-		return "auras restricted"
+		return "auras restricted", false
 	end
 	local buff = innerFire.buff
 	local rankIds = spells.innerFire.rankIds or { spells.innerFire.id }
@@ -143,43 +144,59 @@ local function SyncInnerFireFromAura(endWhenMissing)
 		local aura = C_UnitAuras.GetPlayerAuraBySpellID(rankIds[i])
 		if aura ~= nil then
 			if issecrettable(aura) or issecretvalue(aura.applications) or issecretvalue(aura.expirationTime) or issecretvalue(aura.duration) then
-				return "aura secret"
+				return "aura secret", false
+			end
+			-- Copying an aura with no timing would end the tracking at once.
+			if aura.duration <= 0 or aura.expirationTime <= GetTime() then
+				return "aura without timing", false
 			end
 			-- A count of 0 would leave an active buff with no charges, so the tracked count stands in.
 			local charges = aura.applications > 0 and aura.applications or (buff.isActive and buff.applications or TRB.Data.character.maxInnerFireStacks)
 			buff:InitializeCustom(aura.duration, aura.expirationTime - aura.duration, true, charges)
 			TRB.Functions.BarText:MarkLookupDirty()
-			return string.format("rank %d aura, %d charges, %ds left", rankIds[i], charges, math.floor(buff.remaining))
+			return string.format("rank %d aura, %d charges, %ds left", rankIds[i], charges, math.floor(buff.remaining)), true
 		end
 	end
 	if buff.isActive and endWhenMissing then
 		buff:Reset()
 		TRB.Functions.BarText:MarkLookupDirty()
-		return "no aura, tracking ended"
+		return "no aura, tracking ended", false
 	end
-	return buff.isActive and "no aura, tracking kept" or "no aura"
+	return buff.isActive and "no aura, tracking kept" or "no aura", false
 end
 
 ---Runs the aura sync, keeping its result for the diagnostic.
 ---@param trigger string
 ---@param endWhenMissing boolean
----@return string
+---@return string, boolean
 local function SyncAndReport(trigger, endWhenMissing)
 	local before = DescribeTrackedCharges()
-	local result = SyncInnerFireFromAura(endWhenMissing)
+	local result, copied = SyncInnerFireFromAura(endWhenMissing)
 	diagnostic.lastSync = trigger .. ": " .. result
 	if diagnostic.enabled then
 		print(string.format("|cFFFF8800TRB Inner Fire:|r sync on %s: %s | tracked %s -> %s", trigger, result, before, DescribeTrackedCharges()))
 	end
-	return result
+	return result, copied
 end
 
--- A loading screen's sync waits for CheckCharacter when the spell set isn't loaded yet, as on login and reload.
+-- A loading screen's sync waits for CheckCharacter while the spell set isn't loaded; a miss retries once in a later frame.
 local loadingScreenSyncPending = true
+-- When this loading screen's first read missed; nil until one has.
+local loadingScreenMissTime = nil
 
 local function TryLoadingScreenSync()
-	if SyncAndReport("loading screen", false) ~= "not loaded" then
+	local currentTime = GetTime()
+	if loadingScreenMissTime ~= nil and currentTime <= loadingScreenMissTime then
+		return
+	end
+	local result, copied = SyncAndReport(loadingScreenMissTime == nil and "loading screen" or "loading screen retry", false)
+	if result == "not loaded" then
+		return
+	end
+	if copied or loadingScreenMissTime ~= nil then
 		loadingScreenSyncPending = false
+	else
+		loadingScreenMissTime = currentTime
 	end
 end
 
@@ -217,6 +234,7 @@ eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 eventFrame:SetScript("OnEvent", function(_, event)
 	if event == "PLAYER_ENTERING_WORLD" then
 		loadingScreenSyncPending = true
+		loadingScreenMissTime = nil
 		TryLoadingScreenSync()
 	else
 		SyncAndReport("leaving combat", true)
