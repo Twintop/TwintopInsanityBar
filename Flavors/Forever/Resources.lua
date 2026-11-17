@@ -12,6 +12,8 @@ TRB.Flavor.resourceTypes = {
 	-- Secondary resources
 	ComboPoints = { name = L["ResourceComboPoints"], containerLabel = L["ComboPointsContainer"] },
 	ArcaneBlast = { name = L["ResourceMageArcaneBlast"], containerLabel = L["ArcaneBlastContainer"] },
+	Eclipse = { name = L["ResourceDruidEclipse"], containerLabel = L["EclipseContainer"] },
+	ElementalShield = { name = L["ResourceShamanElementalShield"], containerLabel = L["ElementalShieldContainer"] },
 }
 
 -- Global Bar Text anchors beyond the bars every spec has, keyed by the bar group they sort with.

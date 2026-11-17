@@ -119,6 +119,7 @@ saved-variables replay and golden-snapshot options used to verify refactors.
 | Same, stamping a version | `.\build\stage.ps1 -Flavor mainline -Version 12.1.0.11 -ReleaseType beta01` |
 | Link / unlink a client | `.\build\dev-link.ps1 -Flavor <f> -AddOnsPath <path> [-Remove]` |
 | Record Forever, Classic, or TBC client facts | junction or copy `build\forever-probe\TRBForeverProbe` into the client's AddOns folder, `/trbprobe` in game, Ctrl+A and Ctrl+C in the window that opens |
+| Answer a tracking question in game, on any client | the same probe addon: `/trbprobe hits` (charge buffs against hits taken), `/trbprobe swings` (swings against the target's results), `/trbprobe auras` (which stack auras are secret), `/trbprobe crits` (each cast paired with its result on the target), `/trbprobe mana` (what a resource gain looks like), `/trbprobe casttime <spell id>` (every cast time and cost a spell reports) |
 
 ## 4. Releasing
 

@@ -9,9 +9,25 @@ TRB.Flavor.newsContent = [====[
 ---
 
 # 1.60.1.20-release (2026-11-16)
+## Druid
+
+- [#999](#999) Add a new Eclipse bar, tracking your Eclipse charges, with the `$eclipseStacks`, `$eclipseStacksMax`, `$eclipseTime`, and `#eclipse` bar text variables. It shows once you take the Eclipse talent, outside Cat, Bear, and Travel forms.
+- [#999](#999) Each Wrath cast fills two of its four nodes and each Starfire cast empties one, and the charges end 15 seconds after the last Wrath.
+- [#999](#999) The Eclipse bar joins the bar text Relative to Frame and Color Indicator target lists, and adds an Eclipse Charges source for audio cues.
+
+## Mage
+
+- [#999](#999) The Arcane Blast bar now keeps its stacks and time through a reload or a loading screen, and clears stacks that ended once you leave combat.
+
 ## Priest
 
 - [#1001](#1001) Fix Inner Fire's charges and time no longer being tracked after a loading screen, such as using a Hearthstone.
+
+## Shaman
+
+- [#1000](#1000) Add a new Elemental Shield bar, tracking the orbs left on Lightning Shield or Water Shield, with the `$shieldOrbs`, `$shieldOrbsMax`, `$shieldTime`, `#lightningShield`, and `#waterShield` bar text variables. It shows once you learn Lightning Shield, and the Totems bar now sits on top of it.
+- [#1000](#1000) Casting either shield fills its three nodes, and each hit that takes an orb empties one.
+- [#1000](#1000) The Elemental Shield bar joins the bar text Relative to Frame and Color Indicator target lists, and adds a Shield Orbs source for audio cues.
 
 ---
 

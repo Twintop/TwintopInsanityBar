@@ -172,8 +172,10 @@ function hooks.afterEvents(ctx)
 	check("only Forever and Classic Shaman's bar comes with the spec", builtIn == (TRB.Flavor.totemElements == true))
 	if builtIn then
 		local anchor = settings.bars.totems.anchor
-		check("a bar that comes with its spec is Always Show, above the main bar", settings.displayBar.totems.alwaysShow == true
-			and anchor.barKey == "primary" and anchor.anchorPoint == "TOP" and anchor.attachPoint == "BOTTOM")
+		-- The Forever Shaman's sits on its Elemental Shield bar, which sits on the main bar.
+		local onBarKey = TRB.Flavor.id == "forever" and "secondary" or "primary"
+		check("a bar that comes with its spec is Always Show, above the main bar or the bar its spec declares", settings.displayBar.totems.alwaysShow == true
+			and anchor.barKey == onBarKey and anchor.anchorPoint == "TOP" and anchor.attachPoint == "BOTTOM")
 		local primary = barGroups.primary
 		check("it lays out at the main bar's width", group ~= nil and primary ~= nil and (group.layoutWidth or 0) > 0
 			and math.abs(group.layoutWidth - (primary.layoutWidth or primary.containerFrame:GetWidth())) < 1)

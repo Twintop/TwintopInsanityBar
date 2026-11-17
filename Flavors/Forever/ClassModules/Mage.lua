@@ -21,6 +21,27 @@ local function GetArcaneBlast()
 	return snapshotData.snapshots[spells.arcaneBlast.id], spells
 end
 
+---Corrects the counted stacks and time from the Arcane Blast aura, which reads only out of combat; nil before the spell set loads.
+---@param endWhenMissing boolean
+---@return string?
+local function SyncArcaneBlastFromAura(endWhenMissing)
+	local arcaneBlast, spells = GetArcaneBlast()
+	if arcaneBlast == nil or spells == nil then
+		return nil
+	end
+	local result = arcaneBlast.buff:SyncCustomFromPlayerAura({ spells.arcaneBlast.attributes.auraId }, endWhenMissing)
+	if result == "copied" or result == "ended" then
+		TRB.Functions.BarText:MarkLookupDirty()
+	end
+	return result
+end
+
+local arcaneBlastSync = TRB.Classes.AuraSync:New(SyncArcaneBlastFromAura)
+
+function runtime.CheckClassCharacter()
+	arcaneBlastSync:OnCheckCharacter()
+end
+
 ---A cast of any rank adds a stack, up to the maximum.
 ---@param spellId integer?
 function runtime.OnSpellCastSucceeded(spellId)

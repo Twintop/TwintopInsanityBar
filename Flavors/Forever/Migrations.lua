@@ -30,4 +30,7 @@ function TRB.Flavor.PortForwardSettings(settings)
 
 	-- Threshold icons: the cooldown time option starts off where the cooldown swipe was off.
 	TRB.Functions.Settings:MigrateThresholdIconCooldownText(savedSettings)
+
+	-- Totems bar: a Shaman's, still at its old default spot on the Mana bar, moves onto the Elemental Shield bar.
+	TRB.Functions.Settings:MigrateTotemBarAnchors(savedSettings)
 end
