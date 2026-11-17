@@ -179,21 +179,30 @@ local function SyncAndReport(trigger, endWhenMissing)
 	return result, copied
 end
 
--- A loading screen's sync waits for CheckCharacter while the spell set isn't loaded; a miss retries once in a later frame.
+-- A loading screen's sync waits for CheckCharacter while the spell set isn't loaded; a miss retries once in a later frame, which a second miss ends.
 local loadingScreenSyncPending = true
 -- When this loading screen's first read missed; nil until one has.
 local loadingScreenMissTime = nil
+-- A retry later than this after the miss would judge a different moment's aura.
+local loadingScreenRetryWindow = 5
 
 local function TryLoadingScreenSync()
 	local currentTime = GetTime()
-	if loadingScreenMissTime ~= nil and currentTime <= loadingScreenMissTime then
-		return
+	if loadingScreenMissTime ~= nil then
+		if currentTime <= loadingScreenMissTime then
+			return
+		end
+		if currentTime - loadingScreenMissTime > loadingScreenRetryWindow then
+			loadingScreenSyncPending = false
+			return
+		end
 	end
-	local result, copied = SyncAndReport(loadingScreenMissTime == nil and "loading screen" or "loading screen retry", false)
+	local retry = loadingScreenMissTime ~= nil
+	local result, copied = SyncAndReport(retry and "loading screen retry" or "loading screen", retry)
 	if result == "not loaded" then
 		return
 	end
-	if copied or loadingScreenMissTime ~= nil then
+	if copied or retry then
 		loadingScreenSyncPending = false
 	else
 		loadingScreenMissTime = currentTime

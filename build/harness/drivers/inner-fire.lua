@@ -394,7 +394,7 @@ function hooks.afterEvents(ctx)
 	buff:Reset()
 	try("CheckCharacter", function() Class:CheckCharacter() end)
 	check("once per loading screen", not buff.isActive)
-	-- A read right after a zone can miss an aura that is up: the miss keeps the count, and a later frame's CheckCharacter retries once.
+	-- A read right after a zone can miss an aura that is up: it keeps the count and a later frame retries once; a second miss ends it.
 	Cast(INNER_FIRE_RANK_6)
 	drv.auras = {}
 	Fire("PLAYER_ENTERING_WORLD")
@@ -413,16 +413,26 @@ function hooks.afterEvents(ctx)
 	Fire("PLAYER_ENTERING_WORLD")
 	drv.now = drv.now + 0.15
 	try("CheckCharacter", function() Class:CheckCharacter() end)
-	check("a retry that misses too keeps the tracking", buff.isActive and buff.applications == 15)
+	check("a retry that misses too ends the tracking", not buff.isActive)
 	drv.auras[INNER_FIRE_RANK_6] = { applications = 3, expirationTime = drv.now + 400, duration = 600 }
 	drv.now = drv.now + 0.15
 	try("CheckCharacter", function() Class:CheckCharacter() end)
-	check("and ends the retries", buff.applications == 15)
+	check("and ends the retries", not buff.isActive)
+	Cast(INNER_FIRE_RANK_6)
 	drv.auras[INNER_FIRE_RANK_6] = { applications = 3, expirationTime = 0, duration = 0 }
 	Fire("PLAYER_ENTERING_WORLD")
 	Fire("PLAYER_REGEN_ENABLED")
-	check("an aura with no timing keeps the tracking", buff.isActive and buff.applications == 15)
+	check("an aura with no timing keeps the tracking", buff.isActive and buff.applications == 20)
 	drv.auras = { [INNER_FIRE_RANK_6] = { applications = 12, expirationTime = drv.now + 300, duration = 600 } }
+	drv.now = drv.now + 0.15
+	try("CheckCharacter", function() Class:CheckCharacter() end)
+	check("and its retry copies a later read", buff.applications == 12)
+	Cast(INNER_FIRE_RANK_6)
+	drv.auras = {}
+	Fire("PLAYER_ENTERING_WORLD")
+	drv.now = drv.now + 6
+	try("CheckCharacter", function() Class:CheckCharacter() end)
+	check("a CheckCharacter long after the loading screen doesn't retry", buff.isActive and buff.applications == 20)
 	buff:Reset()
 
 	Cast(INNER_FIRE_RANK_6)
