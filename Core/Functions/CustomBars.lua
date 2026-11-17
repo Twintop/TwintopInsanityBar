@@ -1054,7 +1054,7 @@ local function LookupSnapshot(entry, now, snapshot)
 				if cooldown.useManualCharges then
 					timeText = TRB.Functions.BarText:TimerPrecision((cooldown.manualCooldownExpires or now) - now)
 				elseif cooldown.rechargeDurationObject ~= nil then
-					timeText = TRB.Functions.BarText:TimerPrecision(cooldown.rechargeDurationObject:GetRemainingDuration())
+					timeText = TRB.Functions.BarText:DurationTimerPrecision(cooldown.rechargeDurationObject)
 				end
 			end
 		elseif entry.active and entry.pausedRemaining ~= nil then
@@ -1070,7 +1070,7 @@ local function LookupSnapshot(entry, now, snapshot)
 				durationObject = snapshot.cooldown.rechargeDurationObject
 			end
 			if durationObject ~= nil then
-				timeText = TRB.Functions.BarText:TimerPrecision(durationObject:GetRemainingDuration())
+				timeText = TRB.Functions.BarText:DurationTimerPrecision(durationObject)
 			end
 		end
 	end

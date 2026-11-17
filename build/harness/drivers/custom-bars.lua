@@ -451,8 +451,14 @@ function hooks.afterEvents(ctx)
 	}
 	local cooldownReading = nil
 	local chargeReading = { currentCharges = 1, maxCharges = 2, isActive = false }
-	local cooldownObject = { GetRemainingDuration = function() return 9 end }
-	local rechargeObject = { GetRemainingDuration = function() return 5 end }
+	local cooldownObject = {
+		GetRemainingDuration = function() return 9 end,
+		FormatRemainingDuration = function(_, formatter) return formatter:FormatNumber(9) end,
+	}
+	local rechargeObject = {
+		GetRemainingDuration = function() return 5 end,
+		FormatRemainingDuration = function(_, formatter) return formatter:FormatNumber(5) end,
+	}
 	desktop.C_Spell.GetSpellChargeDuration = function(id)
 		if id == chargeSpell.id then
 			return rechargeObject
@@ -970,7 +976,10 @@ function hooks.afterEvents(ctx)
 		end)
 		rawset(desktop.C_Spell, "GetSpellCooldownDuration", function(id, ...)
 			if id == 990030 then
-				return { GetRemainingDuration = function() return 9 end }
+				return {
+					GetRemainingDuration = function() return 9 end,
+					FormatRemainingDuration = function(_, formatter) return formatter:FormatNumber(9) end,
+				}
 			end
 			return api.GetSpellCooldownDuration(id, ...)
 		end)

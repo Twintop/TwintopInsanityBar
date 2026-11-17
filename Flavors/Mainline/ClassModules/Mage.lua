@@ -773,9 +773,9 @@ local function RefreshLookupData_Fire()
 		if fireBlastCooldown ~= nil and isRecharging then
 			durationObject = fireBlastCooldown:GetDurationObject()
 		end
-		local _fbTime = 0
-		if isRecharging and durationObject ~= nil then
-			_fbTime = durationObject:GetRemainingDuration() or 0
+		local _fbTimeText = TRB.Functions.BarText:ZeroTimerText()
+		if durationObject ~= nil then
+			_fbTimeText = TRB.Functions.BarText:DurationTimerPrecision(durationObject)
 		end
 		lookupLogic["$fireBlastCharges"] = false
 		lookupLogic["$fbCharges"] = false
@@ -787,8 +787,8 @@ local function RefreshLookupData_Fire()
 		lookup["$fbCharges"] = TRB.Functions.Number:RoundTo(_fbCharges, 0)
 		lookup["$fireBlastChargesMax"] = TRB.Functions.Number:RoundTo(_fbChargesMax, 0)
 		lookup["$fbChargesMax"] = TRB.Functions.Number:RoundTo(_fbChargesMax, 0)
-		lookup["$fireBlastTime"] = TRB.Functions.BarText:TimerPrecision(_fbTime)
-		lookup["$fbTime"] = TRB.Functions.BarText:TimerPrecision(_fbTime)
+		lookup["$fireBlastTime"] = _fbTimeText
+		lookup["$fbTime"] = _fbTimeText
 	end
 
 	-- Block C: Combustion ($combustionTime)

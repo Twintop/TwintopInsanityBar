@@ -666,7 +666,7 @@ local function RefreshLookupData_Brewmaster()
 	for _, brew in pairs(brewNodes) do
 		if not activeVars or activeVars[brew.timeVariable] or (brew.chargesVariable ~= nil and activeVars[brew.chargesVariable]) then
 			local _charges = 0
-			local _time = 0
+			local _timeText = TRB.Functions.BarText:ZeroTimerText()
 			local recharging = false
 			if brew.maxCharges > 0 then
 				local cooldown = snapshots[spells[brew.spellKey].id].cooldown
@@ -674,13 +674,13 @@ local function RefreshLookupData_Brewmaster()
 				recharging = _charges < brew.maxCharges
 				local durationObject = recharging and GetBrewDurationObject(brew, cooldown) or nil
 				if durationObject ~= nil then
-					_time = durationObject:GetRemainingDuration() or 0
+					_timeText = TRB.Functions.BarText:DurationTimerPrecision(durationObject)
 				end
 			end
 
 			-- The time is secret in combat, so conditions only see whether it is counting.
 			lookupLogic[brew.timeVariable] = recharging and 1 or 0
-			lookup[brew.timeVariable] = recharging and TRB.Functions.BarText:TimerPrecision(_time) or TRB.Functions.BarText:ZeroTimerText()
+			lookup[brew.timeVariable] = _timeText
 			if brew.chargesVariable ~= nil then
 				lookupLogic[brew.chargesVariable] = _charges
 				lookup[brew.chargesVariable] = _charges

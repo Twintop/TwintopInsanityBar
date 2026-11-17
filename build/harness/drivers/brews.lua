@@ -178,7 +178,10 @@ function hooks.afterEvents(ctx)
 		return { currentCharges = SECRET, maxCharges = maxCharges, cooldownStartTime = SECRET, cooldownDuration = SECRET, chargeModRate = 1, isActive = recharging }
 	end
 	local function Duration(remaining)
-		return { GetRemainingDuration = function() return remaining end }
+		return {
+			GetRemainingDuration = function() return remaining end,
+			FormatRemainingDuration = function(_, formatter) return formatter:FormatNumber(remaining) end,
+		}
 	end
 	local function Cast(spellId)
 		drv.now = drv.now + 1

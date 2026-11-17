@@ -38,6 +38,7 @@ local EXTRA_TEXTS = {
 local function NewDuration(startTime, endTime)
 	local methods = {
 		GetRemainingDuration = function() return math.max(0, endTime - world.now) end,
+		FormatRemainingDuration = function(_, formatter) return formatter:FormatNumber(math.max(0, endTime - world.now)) end,
 		GetTotalDuration = function() return endTime - startTime end,
 		GetElapsedDuration = function() return math.min(endTime - startTime, world.now - startTime) end,
 		GetStartTime = function() return startTime end,

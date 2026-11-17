@@ -2977,7 +2977,7 @@ function TRB.Functions.BarText:RefreshPetLookupData(settings)
 end
 
 ---Refreshes the totem variables from the slots. Names, times, and icons may be secret, so they reach only `lookup`,
----through nil tests and string.format; an empty slot renders empty.
+---through nil tests and engine formatting; an empty slot renders empty.
 function TRB.Functions.BarText:RefreshTotemLookupData()
 	if not IsRefresherInUse("totems") then
 		return
@@ -3021,7 +3021,7 @@ function TRB.Functions.BarText:RefreshTotemLookupData()
 			end
 		end
 		if duration ~= nil then
-			local timeText = self:TimerPrecision(duration:GetRemainingDuration())
+			local timeText = self:DurationTimerPrecision(duration)
 			for _, var in ipairs(vars.times) do
 				lookup[var] = timeText
 			end
@@ -4240,6 +4240,28 @@ function TRB.Functions.BarText:TimerPrecision(value, positiveOnly)
 	else
 		return string.format(GetPrecisionFormat(TRB.Data.settings.core.timers.precisionLow), value)
 	end
+end
+
+-- The Timer Precision settings as an engine formatter, and the settings it holds, so it is rebuilt only when they change.
+local timerFormatter = nil
+local timerFormatterLow, timerFormatterHigh, timerFormatterThreshold = nil, nil, nil
+
+---Returns a duration object's remaining time formatted like TimerPrecision. The engine formats it, so a secret
+---duration still gets the threshold's precision instead of always the low one.
+---@param durationObject any # A LuaDurationObject
+---@return string
+function TRB.Functions.BarText:DurationTimerPrecision(durationObject)
+	local timers = TRB.Data.settings.core.timers
+	local low, high, threshold = timers.precisionLow, timers.precisionHigh, timers.precisionThreshold
+	if timerFormatter == nil or low ~= timerFormatterLow or high ~= timerFormatterHigh or threshold ~= timerFormatterThreshold then
+		timerFormatterLow, timerFormatterHigh, timerFormatterThreshold = low, high, threshold
+		timerFormatter = timerFormatter or C_StringUtil.CreateNumericRuleFormatter()
+		timerFormatter:SetBreakpoints({
+			{ threshold = 0, format = GetPrecisionFormat(low) },
+			{ threshold = threshold, format = GetPrecisionFormat(high) },
+		})
+	end
+	return durationObject:FormatRemainingDuration(timerFormatter)
 end
 
 -- TimerPrecision(0) by precision, so idle timers skip string.format; a precision edit just picks another entry.

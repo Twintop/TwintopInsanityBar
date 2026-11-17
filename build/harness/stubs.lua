@@ -926,6 +926,22 @@ function M.install(opts)
 	G.CurveConstants.ScaleTo100:SetType(G.Enum.LuaCurveType.Linear)
 	G.CurveConstants.ScaleTo100:AddPoint(0, 0)
 	G.CurveConstants.ScaleTo100:AddPoint(1, 100)
+	-- The engine's rule formatter: the highest breakpoint at or below the value formats it. Only threshold and format.
+	local ruleFormatterMethods = {}
+	ruleFormatterMethods.__index = ruleFormatterMethods
+	function ruleFormatterMethods:SetBreakpoints(breakpoints) self.__breakpoints = breakpoints end
+	function ruleFormatterMethods:FormatNumber(value)
+		local chosen = nil
+		for _, breakpoint in ipairs(self.__breakpoints) do
+			if value >= breakpoint.threshold and (chosen == nil or breakpoint.threshold >= chosen.threshold) then
+				chosen = breakpoint
+			end
+		end
+		return chosen ~= nil and string.format(chosen.format, value) or ""
+	end
+	G.C_StringUtil = ns({
+		CreateNumericRuleFormatter = function() return setmetatable({ __breakpoints = {} }, ruleFormatterMethods) end,
+	})
 	G.C_EditMode = ns({ GetLayouts = function() return { layouts = {}, activeLayout = 1 } end, SaveLayouts = noop, GetAccountSettings = retEmpty, SetAccountSetting = noop, IsEditModeActive = retFalse, OnLayoutAdded = noop, OnLayoutDeleted = noop, ConvertLayoutInfoToString = function() return "" end, ConvertStringToLayoutInfo = retNil, OnEditModeExit = noop })
 	G.C_ChatInfo = ns({ SendAddonMessage = retTrue, RegisterAddonMessagePrefix = retTrue, IsAddonMessagePrefixRegistered = retFalse, GetChannelInfoFromIdentifier = retNil })
 	G.C_MountJournal = ns({ IsDragonridingUnlocked = retFalse, GetMountFromSpell = retNil, GetMountInfoByID = retNil, GetNumMounts = retZero, GetMountIDs = retEmpty })
