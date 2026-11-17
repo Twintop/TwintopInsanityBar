@@ -25,7 +25,7 @@ TRB.Flavor.newsContent = [====[
 
 ## Shaman
 
-- [#1000](#1000) Add a new Elemental Shield bar, tracking the orbs left on Lightning Shield or Water Shield, with the `$shieldOrbs`, `$shieldOrbsMax`, `$shieldTime`, `#lightningShield`, and `#waterShield` bar text variables. It shows once you learn Lightning Shield.
+- [#1000](#1000) Add a new Elemental Shield bar, tracking the orbs left on Lightning Shield or Water Shield, with the `$shieldOrbs`, `$shieldOrbsMax`, `$shieldTime`, `#lightningShield`, and `#waterShield` bar text variables. It shows once you learn Lightning Shield, and the Totems bar now sits on top of it.
 - [#1000](#1000) Casting either shield fills its three nodes, and each hit that takes an orb empties one.
 - [#1000](#1000) The Elemental Shield bar joins the bar text Relative to Frame and Color Indicator target lists, and adds a Shield Orbs source for audio cues.
 

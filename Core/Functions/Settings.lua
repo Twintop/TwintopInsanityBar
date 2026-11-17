@@ -1675,6 +1675,41 @@ function TRB.Functions.Settings:SeedTotemBarsText(settings)
 	migrations.totemSpecBarText = true
 end
 
+---Moves a built-in Totems bar still at the old default spot on the main bar onto the bar its spec now puts it on
+---(descriptor totems.anchorBarKey), once per spec; a bar the user placed anywhere else stays put.
+---@param settings table # A saved-variables shaped table
+function TRB.Functions.Settings:MigrateTotemBarAnchors(settings)
+	local oldAnchors = { self:DefaultCustomBarDimensions(false).anchor, self:DefaultCustomBarDimensions(true).anchor }
+	for _, classEntry in ipairs(TRB.Data.classRegistryOrder) do
+		local classSettings = settings[classEntry.className]
+		for _, specEntry in ipairs(classEntry.specs) do
+			local spec = type(classSettings) == "table" and classSettings[specEntry.specName] or nil
+			local totemInfo = TRB.Classes.BarTypeRegistry:GetTotemSpecInfo(specEntry.classId, specEntry.specId)
+			local displayText = type(spec) == "table" and spec.displayText or nil
+			if totemInfo ~= nil and totemInfo.builtIn and totemInfo.anchorBarKey ~= nil and type(displayText) == "table" then
+				displayText.migrations = displayText.migrations or {}
+				if not displayText.migrations.totemBarAnchor then
+					local bars = (spec --[[@as table]]).bars
+					for _, key in ipairs(TRB.Classes.BarTypeRegistry:GetTotemBarKeys(specEntry.classId, specEntry.specId)) do
+						local bar = type(bars) == "table" and bars[key] or nil
+						local anchor = type(bar) == "table" and bar.anchor or nil
+						if type(anchor) == "table" then
+							for _, old in ipairs(oldAnchors) do
+								if anchor.barKey == old.barKey and anchor.anchorPoint == old.anchorPoint and anchor.attachPoint == old.attachPoint
+									and anchor.xOffset == old.xOffset and anchor.yOffset == old.yOffset then
+									anchor.barKey = totemInfo.anchorBarKey
+									break
+								end
+							end
+						end
+					end
+					displayText.migrations.totemBarAnchor = true
+				end
+			end
+		end
+	end
+end
+
 ---Gets the default Target/Focus Cast Bar colors. `bar` is the standard-cast fill, `channel` recolors a
 ---channel, `empower` recolors an empowered cast (differentiated by event), `uninterruptible` /
 ---`uninterruptibleBorder` recolor the fill / border when a hostile cast can't be interrupted (via the
@@ -2492,6 +2527,13 @@ function TRB.Functions.Settings:InjectTotemBarsDefaults(specDefaults, classId, s
 	for _, key in ipairs(keys) do
 		if specDefaults.bars[key] == nil then
 			specDefaults.bars[key] = self:DefaultTotemBarSettings(classic, totemInfo ~= nil and totemInfo.builtIn)
+			if totemInfo ~= nil and totemInfo.builtIn and totemInfo.anchorBarKey ~= nil then
+				specDefaults.bars[key].anchor.barKey = totemInfo.anchorBarKey
+				-- A new spec starts where MigrateTotemBarAnchors would put it.
+				specDefaults.displayText = specDefaults.displayText or {}
+				specDefaults.displayText.migrations = specDefaults.displayText.migrations or {}
+				specDefaults.displayText.migrations.totemBarAnchor = true
+			end
 		end
 		if specDefaults.colors.bars[key] == nil then
 			specDefaults.colors.bars[key] = self:DefaultTotemBarColors()

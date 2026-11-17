@@ -351,6 +351,64 @@ function hooks.afterEvents(ctx)
 	check("and the next CheckCharacter copies the aura, as on login and reload", buff.isActive and buff.applications == 1)
 	drv.auras = {}
 
+	-- The Totems bar sits on the shield bar by default, instead of at the same spot above the Mana bar.
+	local shamanSettings = TRB.Data.settings.shaman.general
+	check("the Totems bar's default anchor is the shield bar", shamanSettings.bars.totems.anchor.barKey == "secondary"
+		and shamanSettings.comboPoints.anchor.barKey == "primary")
+	local totemsGroup = barGroups.totems
+	local anchoredTo = {}
+	for _, watched in ipairs({ group, totemsGroup }) do
+		local frame = watched ~= nil and watched.containerFrame or nil
+		if frame ~= nil then
+			local setPoint = frame.SetPoint
+			frame.SetPoint = function(self, point, relativeTo, ...)
+				anchoredTo[watched] = relativeTo
+				return setPoint(self, point, relativeTo, ...)
+			end
+		end
+	end
+	try("layout", function() Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, barGroups) end)
+	for _, watched in ipairs({ group, totemsGroup }) do
+		if watched ~= nil and watched.containerFrame ~= nil then
+			watched.containerFrame.SetPoint = nil
+		end
+	end
+	check("and a layout puts the Totems bar on the shield bar", totemsGroup ~= nil and anchoredTo[group] ~= nil and anchoredTo[totemsGroup] ~= nil
+		and anchoredTo[group] ~= anchoredTo[totemsGroup] and anchoredTo[totemsGroup] == group:GetAnchorFrame())
+
+	-- An existing save: a Totems bar at its old default spot moves once; one placed anywhere else stays.
+	local Settings = TRB.Functions.Settings
+	---A saved-variables shaped table holding one Shaman spec piece with this Totems anchor and migration flags.
+	local function SavedWith(anchor, migrations)
+		return { shaman = { general = { bars = { totems = { anchor = anchor } }, displayText = { barText = {}, migrations = migrations } } } }
+	end
+	local function TotemAnchor(saved)
+		return saved.shaman.general.bars.totems.anchor
+	end
+	local oldDefault = Settings:DefaultCustomBarDimensions(false).anchor
+	local saved = SavedWith(TRB.Functions.Table:DeepCopy(oldDefault), nil)
+	try("MigrateTotemBarAnchors", function() Settings:MigrateTotemBarAnchors(saved) end)
+	check("a Totems bar at the old default spot moves onto the shield bar, once", TotemAnchor(saved).barKey == "secondary"
+		and TotemAnchor(saved).yOffset == oldDefault.yOffset and saved.shaman.general.displayText.migrations.totemBarAnchor == true)
+	TotemAnchor(saved).barKey = "primary"
+	try("MigrateTotemBarAnchors", function() Settings:MigrateTotemBarAnchors(saved) end)
+	check("and one put back on the Mana bar afterward stays there", TotemAnchor(saved).barKey == "primary")
+	saved = SavedWith(TRB.Functions.Table:DeepCopy(Settings:DefaultCustomBarDimensions(true).anchor), nil)
+	try("MigrateTotemBarAnchors", function() Settings:MigrateTotemBarAnchors(saved) end)
+	check("the old Classic default spot moves too", TotemAnchor(saved).barKey == "secondary")
+	local moved = TRB.Functions.Table:DeepCopy(oldDefault)
+	moved.yOffset = 12
+	saved = SavedWith(moved, nil)
+	try("MigrateTotemBarAnchors", function() Settings:MigrateTotemBarAnchors(saved) end)
+	check("a Totems bar the user moved stays put", TotemAnchor(saved).barKey == "primary" and TotemAnchor(saved).yOffset == 12)
+	saved = SavedWith(TRB.Functions.Table:DeepCopy(oldDefault), { totemBarAnchor = true })
+	try("MigrateTotemBarAnchors", function() Settings:MigrateTotemBarAnchors(saved) end)
+	check("a spec that already ran the step, or started with it, is left alone", TotemAnchor(saved).barKey == "primary")
+	saved = { shaman = { general = { bars = { totems = { anchor = TRB.Functions.Table:DeepCopy(oldDefault) } } } } }
+	try("MigrateTotemBarAnchors", function() Settings:MigrateTotemBarAnchors(saved) end)
+	check("a spec piece with no bar text is left for the defaults", TotemAnchor(saved).barKey == "primary")
+	check("new settings start with the step done", shamanSettings.displayText.migrations ~= nil and shamanSettings.displayText.migrations.totemBarAnchor == true)
+
 	-- A shield with 100 seconds left, for the expiry below.
 	buff:InitializeCustom(SHIELD.duration, drv.now - SHIELD.duration + 100, true, SHIELD.orbs)
 

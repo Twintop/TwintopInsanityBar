@@ -107,4 +107,5 @@ TRB.Forever.Templates.Classes:DefineClass("shaman", {
 	},
 })
 
-TRB.Classes.SpecDescriptor:DeclareForClass("shaman", { totems = { placement = "spec", builtIn = true } })
+-- The Totems bar sits on the shield bar, which sits on the Mana bar.
+TRB.Classes.SpecDescriptor:DeclareForClass("shaman", { totems = { placement = "spec", builtIn = true, anchorBarKey = "secondary" } })
