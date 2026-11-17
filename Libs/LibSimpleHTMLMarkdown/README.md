@@ -372,6 +372,12 @@ MyFrame:SetText( MyMarkdown:ToHTML(text) );
 AddOns that do change the shared `config` keep their changes when a newer copy of the library
 loads.
 
+Besides the tags and colors, one setting changes how text is read: `hard_breaks`. Set it to `true`
+for text people type as they would in chat, such as notes: every line break in a paragraph is shown,
+and a blank line after a paragraph is an empty line, as in a GitHub comment. By default, as in
+Markdown, lines join into one paragraph unless one ends with two spaces or a backslash, and
+paragraphs are stacked without a gap.
+
 The library keeps its 20 most recent renders, by text and settings, so showing a document again
 doesn't render it again. Changing any setting, in any of these ways, renders it anew.
 

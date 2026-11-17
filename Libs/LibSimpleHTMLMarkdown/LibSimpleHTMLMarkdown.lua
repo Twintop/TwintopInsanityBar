@@ -3,7 +3,7 @@
 -- lua implementation of markdown originally from https://github.com/mpeterv/markdown
 
 local  MARKDOWN10 = "LibSimpleHTMLMarkdown-1.0"
-local  MARKDOWN10_MINOR = 4
+local  MARKDOWN10_MINOR = 5
 if not LibStub then error(MARKDOWN10 .. " requires LibStub.") end
 local  LibMarkdown = LibStub:NewLibrary(MARKDOWN10, MARKDOWN10_MINOR)
 if not LibMarkdown then return end
@@ -116,6 +116,11 @@ LibMarkdown.config = {
   [ 'code'            ] = '|cff66bbbb',
   ['/code'            ] = '|r',
   ['br'               ] = '<br />',
+  -- true: the text's own line breaks are kept, as in chat or a GitHub comment: every line break in
+  -- a paragraph is one, and a blank line after a paragraph is an empty line. false: as Markdown,
+  -- a line ending in two spaces or a backslash breaks, other lines join, and paragraphs are
+  -- stacked without a gap.
+  ['hard_breaks'      ] = false,
   -- A blockquote is one block, with a bar at the start of each of its lines (SimpleHTML can't put
   -- one on a line that wraps). Each quote inside a quote adds its own bar.
   [ 'blockquote'      ] = '<p>|cffc0c0c0',
@@ -715,6 +720,15 @@ end
 -- forward declarations
 -- local self.block_transform, self.span_transform, self.encode_code
 
+-- true if lines[k] is blank and there's more than blank lines after it
+local function blank_then_more(lines, k)
+   if not (lines[k] and lines[k].type == "blank") then return false end
+   for j = k + 1, #lines do
+      if lines[j].type ~= "blank" then return true end
+   end
+   return false
+end
+
 -- convert lines to html code
 function LibMarkdown.blocks_to_html(self, lines, no_paragraphs)
    local out = {}
@@ -740,7 +754,14 @@ function LibMarkdown.blocks_to_html(self, lines, no_paragraphs)
          if no_paragraphs then
             table.insert(out, self:span_transform(s))
          else
-            table.insert(out, self.config["p"] .. self:span_transform(s) .. self.config["/p"])
+            local html = self.config["p"] .. self:span_transform(s) .. self.config["/p"]
+            -- with hard_breaks, the blank line after a paragraph is shown. (Not in a list or a
+            -- quote, which keep their paragraphs apart themselves.)
+            if self.config.hard_breaks and (self.list_depth or 0) == 0 and (self.quote_depth or 0) == 0
+               and blank_then_more(lines, i + 1) then
+               html = html .. self.config.br
+            end
+            table.insert(out, html)
          end
       elseif line.type == "header" then
          local text = self:span_transform((LibMarkdown.heading_id(line.text)))
@@ -1961,8 +1982,10 @@ function LibMarkdown.entities(self, text)
 end
 
 -- handles line break markers in the text.
--- a line ending in two spaces, or in a backslash, breaks there
+-- a line ending in two spaces, or in a backslash, breaks there; with hard_breaks, every line does.
+-- (Those breaks keep no newline: SimpleHTML would show it as a space starting the next line.)
 function LibMarkdown.line_breaks(self, text)
+   if self.config.hard_breaks then return (text:gsub(" *\\?\n", "<br/>")) end
    return (text:gsub("  +\n", " <br/>\n"):gsub("\\\n", "<br/>\n"))
 end
 

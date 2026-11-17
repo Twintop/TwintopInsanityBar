@@ -5,6 +5,10 @@ local _, TRB = ...
 TRB.Details.coreNewsContent = [====[
 
 # Live 12.1.5.14-release / Forever 1.60.1.20-release / Classic 1.15.9.5-release / TBC 2.5.6.3-release (2026-11-17)
+## General
+
+- Update LibSimpleHTMLMarkdown to version 1.0.5.
+
 ## Bar Text
 
 - [#1004](#1004) Add a Show times of a minute or more as m:ss option to Timer Precision in Global Options, off by default.
