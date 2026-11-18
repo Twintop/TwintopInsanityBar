@@ -1005,4 +1005,4 @@ function TRB.Functions.OptionsUi.Tabs:EnsureTabConstructed(displayPanel, tabId)
 end
 
 
-TRB.Functions.OptionsUi.TabKeys = TRB.Functions.OptionsUi.Tabs.TabKeys
+TRB.Functions.OptionsUi.TabKeys = TRB.Functions.OptionsUi.Tabs.TabKeys
