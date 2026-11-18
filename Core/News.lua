@@ -5,6 +5,12 @@ local _, TRB = ...
 TRB.Details.coreNewsContent = [====[
 
 # Live 12.1.5.15-release / Forever 1.60.1.21-release / Classic 1.15.9.6-release / TBC 2.5.6.4-release (2026-11-18)
+## General
+
+- [#1013](#1013) Improve bar text update performance, primarily for bar text on bars that aren't showing.
+- [#1014](#1014) Improve bar text update performance, primarily for stats, cast bar text, and timer bar text.
+- [#1015](#1015) Improve bar text update performance, primarily for health and pet text.
+
 ## Custom Bars
 
 - [#1008](#1008) Fix a custom bar's Visibility row and Show dropdown leaving out its resource or health threshold.
