@@ -12,7 +12,7 @@ TRB.Flavor.newsContent = [====[
 ## General
 ### Custom Bars
 
-- Fix the bar text of a custom bar on a Cooldown Manager buff ignoring the 'Cooldown Manager value when unavailable' option.
+- Fix the bar text of a custom bar on a Cooldown Manager buff ignoring the Cooldown Manager value when unavailable option.
 
 ### Timer Bars
 
@@ -20,7 +20,7 @@ TRB.Flavor.newsContent = [====[
 
 ### Totems
 
-- Add a 'Use for every element' option to the Totems bar color, off by default, which fills every element's node with that color instead of its own.
+- Add a Use for every element option to the Totems bar color, off by default, which fills every element's node with that color instead of its own.
 
 ---
 
