@@ -1416,8 +1416,9 @@ end
 ---@param parent Frame
 ---@param namePrefix string # Unique global frame name prefix
 ---@param labels { gcdRadio: string, gcdSlider: string, timeRadio: string, timeSlider: string }
+---@param maximums { gcds: number?, seconds: number? }? # The sliders' tops; 10 GCDs and 30 seconds when omitted
 ---@return TRB.Classes.OptionsUi.RemainingWindowControls
-function TRB.Functions.OptionsUi.Primitives:BuildRemainingWindowControls(parent, namePrefix, labels)
+function TRB.Functions.OptionsUi.Primitives:BuildRemainingWindowControls(parent, namePrefix, labels, maximums)
 	local primitives = self
 	-- Rebound by Bind; a bind's own slider writes aren't edits.
 	local state = { window = nil, onChanged = nil, binding = false }
@@ -1473,9 +1474,9 @@ function TRB.Functions.OptionsUi.Primitives:BuildRemainingWindowControls(parent,
 	---@type TRB.Classes.OptionsUi.RemainingWindowControls
 	local windowControls = {
 		gcdRadio = radios.gcd,
-		gcdSlider = BuildWindowSlider(labels.gcdSlider, 10, "gcdsMax"),
+		gcdSlider = BuildWindowSlider(labels.gcdSlider, maximums and maximums.gcds or 10, "gcdsMax"),
 		timeRadio = radios.time,
-		timeSlider = BuildWindowSlider(labels.timeSlider, 30, "timeMax"),
+		timeSlider = BuildWindowSlider(labels.timeSlider, maximums and maximums.seconds or 30, "timeMax"),
 
 		Bind = function(self, window, onChanged)
 			state.window = window

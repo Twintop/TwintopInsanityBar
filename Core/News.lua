@@ -12,6 +12,7 @@ TRB.Details.coreNewsContent = [====[
 ## Totems
 
 - Fix the Totems bar ignoring its gradient colors.
+- The Totems bar's Ending color can now start up to 120 seconds or 40 GCDs before a totem ends.
 
 ---
 

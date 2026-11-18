@@ -458,6 +458,13 @@ function hooks.afterEvents(ctx)
 		and panelControls.colors.bars.totems.bar
 	TRB.Frames.interfaceSettingsFrameContainer = container
 	check("the Totems tab has a bar color row only without elements", panelBuilt and (barRow == nil) == (elements == true))
+	-- The Ending window reaches 120 seconds and 40 GCDs; other windows keep 30 and 10.
+	local endingWindow = panelControls and panelControls.totemsEndingWindow
+	local otherWindow = TRB.Functions.OptionsUi.Primitives:BuildRemainingWindowControls(desktop.CreateFrame("Frame"), "TotemsDriverWindow",
+		{ gcdRadio = "", gcdSlider = "", timeRadio = "", timeSlider = "" })
+	check("the Ending window goes up to 120 seconds and 40 GCDs, and other windows stay at 30 and 10", endingWindow ~= nil
+		and endingWindow.timeSlider.MaxLabel:GetText() == "120" and endingWindow.gcdSlider.MaxLabel:GetText() == "40"
+		and otherWindow.timeSlider.MaxLabel:GetText() == "30" and otherWindow.gcdSlider.MaxLabel:GetText() == "10")
 	if elements then
 		barColors.bar = nil
 	end
