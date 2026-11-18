@@ -11,6 +11,7 @@ TRB.Details.coreNewsContent = [====[
 - [#1014](#1014) Improve bar text update performance, primarily for stats, cast bar text, and timer bar text.
 - [#1015](#1015) Improve bar text update performance, primarily for health and pet text.
 - [#1019](#1019) Improve threshold line update performance, primarily for abilities with more than one line.
+- [#1020](#1020) Improve threshold line update performance, primarily for lines that are hidden or on cooldown.
 
 ## Custom Bars
 
