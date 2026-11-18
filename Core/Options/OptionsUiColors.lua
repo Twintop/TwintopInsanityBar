@@ -74,10 +74,8 @@ function TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, contro
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.casting.enabled = self:GetChecked()
 			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.castingOverlayFullHeight, spec.colors.bar.casting.enabled)
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end)
 	end
 
@@ -115,10 +113,8 @@ function TRB.Functions.OptionsUi.Colors:GenerateBaseColorsOptions(parent, contro
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.spending.enabled = self:GetChecked()
 			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.spendingOverlayFullHeight, spec.colors.bar.spending.enabled)
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end)
 	end
 
@@ -209,10 +205,8 @@ function TRB.Functions.OptionsUi.Colors:GenerateBarColorOptions(parent, controls
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.bar.casting.enabled = self:GetChecked()
 		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.castingOverlayFullHeight, spec.colors.bar.casting.enabled)
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Data.lookupDirty = true
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
+		TRB.Data.lookupDirty = true
+		TRB.Functions.Class:TriggerResourceBarUpdates()
 	end)
 
 	if includeSpendingOverlay then
@@ -246,10 +240,8 @@ function TRB.Functions.OptionsUi.Colors:GenerateBarColorOptions(parent, controls
 		f:SetScript("OnClick", function(self, ...)
 			spec.colors.bar.spending.enabled = self:GetChecked()
 			TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.spendingOverlayFullHeight, spec.colors.bar.spending.enabled)
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end)
 	end
 
@@ -427,10 +419,8 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 		spec.colors.healthBar.absorb.mode = newValue
 		controls.dropDown.absorbMode:SetDefaultText(AbsorbModeGetDisplayName(newValue))
 		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end
 
@@ -476,10 +466,8 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 		spec.colors.healthBar.absorb.enabled = self:GetChecked()
 		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.showAbsorbFullHeight, spec.colors.healthBar.absorb.enabled)
 		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end)
 
@@ -510,10 +498,8 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 		spec.colors.healthBar.incomingHeal.mode = newValue
 		controls.dropDown.incomingHealMode:SetDefaultText(IncomingHealModeGetDisplayName(newValue))
 		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end
 
@@ -558,10 +544,8 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 		spec.colors.healthBar.incomingHeal.enabled = self:GetChecked()
 		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.showIncomingHealFullHeight, spec.colors.healthBar.incomingHeal.enabled)
 		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end)
 
@@ -592,10 +576,8 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 		spec.colors.healthBar.healAbsorb.mode = newValue
 		controls.dropDown.healAbsorbMode:SetDefaultText(HealAbsorbModeGetDisplayName(newValue))
 		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end
 
@@ -640,10 +622,8 @@ function TRB.Functions.OptionsUi.Colors:GenerateHealthBarColorOptions(parent, co
 		spec.colors.healthBar.healAbsorb.enabled = self:GetChecked()
 		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.showHealAbsorbFullHeight, spec.colors.healthBar.healAbsorb.enabled)
 		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end)
 
@@ -773,10 +753,8 @@ function TRB.Functions.OptionsUi.Colors:GenerateMaxResourceOptions(parent, contr
 			if TRB.Frames.barGroups ~= nil and TRB.Data.character.compositeKey then
 				local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
 				TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
-				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-					TRB.Data.lookupDirty = true
-					TRB.Functions.Class:TriggerResourceBarUpdates()
-				end
+				TRB.Data.lookupDirty = true
+				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end
 	end)
@@ -842,7 +820,7 @@ function TRB.Functions.OptionsUi.Colors:RefreshCustomBarMaxValue(classId, specId
 		return
 	end
 
-	if TRB.Frames.barGroups ~= nil and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+	if TRB.Frames.barGroups ~= nil then
 		TRB.Data.lookupDirty = true
 		TRB.Functions.Class:TriggerResourceBarUpdates()
 	end

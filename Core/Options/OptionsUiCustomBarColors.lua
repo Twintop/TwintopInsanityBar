@@ -19,7 +19,7 @@ local gradientDirectionAbbrevLabels = {
 ---@param classId integer
 ---@param specId integer
 local function RepaintRangeBar(classId, specId)
-	if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+	if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
 		TRB.Data.lookupDirty = true
 		TRB.Functions.Class:TriggerResourceBarUpdates()
 	end
@@ -107,7 +107,7 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarPartialFillCol
 	checkBox:SetChecked(colorSettings.regenerating.enabled)
 	checkBox:SetScript("OnClick", function(self, ...)
 		colorSettings.regenerating.enabled = self:GetChecked()
-		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
 			TRB.Data.lookupDirty = true
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
@@ -181,10 +181,8 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateSecondaryCastingOverlay
 	checkBox:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.casting.enabled = self:GetChecked()
 		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.secondaryCastingOverlayFullHeight, spec.colors.comboPoints.casting.enabled)
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Data.lookupDirty = true
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
+		TRB.Data.lookupDirty = true
+		TRB.Functions.Class:TriggerResourceBarUpdates()
 	end)
 
 	return yCoord
@@ -247,10 +245,8 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateSecondarySpendingOverla
 	checkBox:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.spending.enabled = self:GetChecked()
 		TRB.Functions.OptionsUi.Primitives:ToggleCheckboxEnabled(controls.checkBoxes.secondarySpendingOverlayFullHeight, spec.colors.comboPoints.spending.enabled)
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Data.lookupDirty = true
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
+		TRB.Data.lookupDirty = true
+		TRB.Functions.Class:TriggerResourceBarUpdates()
 	end)
 
 	return yCoord
@@ -451,9 +447,7 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
 				TRB.Functions.BarVisibility:MarkDirty()
 				TRB.Functions.Bar:HideResourceBar()
-				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-					TRB.Functions.Class:TriggerResourceBarUpdates()
-				end
+				TRB.Functions.Class:TriggerResourceBarUpdates()
 				-- Re-parent bar text frames to reflect new node order
 				TRB.Functions.BarText:CreateBarTextFrames()
 				-- CreateBarTextFrames clears font strings as part of rebuilding/re-parenting.
@@ -614,10 +608,8 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 								self.Font:SetText(gradientDirectionAbbrevLabels[gradDir] or L["GradientDirectionDisabledAbbrev"])
 								TRB.Data.cache.colors.gradient = {}
 								TRB.Data.cache.colors.bar = {}
-								if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-									TRB.Data.lookupDirty = true
-									TRB.Functions.Class:TriggerResourceBarUpdates()
-								end
+								TRB.Data.lookupDirty = true
+								TRB.Functions.Class:TriggerResourceBarUpdates()
 							end
 						end)
 					else
@@ -686,10 +678,8 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 								self.Font:SetText(gradientDirectionAbbrevLabels[gradDir] or L["GradientDirectionDisabledAbbrev"])
 								TRB.Data.cache.colors.gradient = {}
 								TRB.Data.cache.colors.bar = {}
-								if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-									TRB.Data.lookupDirty = true
-									TRB.Functions.Class:TriggerResourceBarUpdates()
-								end
+								TRB.Data.lookupDirty = true
+								TRB.Functions.Class:TriggerResourceBarUpdates()
 							end
 						end)
 					else
@@ -855,10 +845,8 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarThresholdColor
 			changeCallback()
 		end
 		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(classId, specId) then
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end
 

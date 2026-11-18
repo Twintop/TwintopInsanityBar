@@ -288,9 +288,7 @@ local function ConstructMiscellaneousPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		TRB.Data.settings.core.numberAbbreviation = self:GetChecked()
 		TRB.Functions.Character:RecomputeFormattedValues()
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
+		TRB.Functions.Class:TriggerResourceBarUpdates()
 	end)
 
 	-- What a Cooldown Manager fed variable renders when the CDM holds no value for it: the ability was
@@ -308,9 +306,7 @@ local function ConstructMiscellaneousPanel(parent)
 				-- The lookup memoizes on the rendered string, so the new treatment only reaches the bar once
 				-- the cache is invalidated.
 				TRB.Data.lookupDirty = true
-				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-					TRB.Functions.Class:TriggerResourceBarUpdates()
-				end
+				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end, oUi.xCoord, yCoord)
 		yCoord = yCoord - 30
 	end

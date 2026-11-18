@@ -349,12 +349,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 				TRB.Functions.Bar:HideResourceBar()
 			end
 			TRB.Functions.Character:ResetCaches()
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				C_Timer.After(0, function()
-					TRB.Data.lookupDirty = true
-					TRB.Functions.Class:TriggerResourceBarUpdates()
-				end)
-			end
+			C_Timer.After(0, function()
+				TRB.Data.lookupDirty = true
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end)
 			TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox("bar")
 		end)
 		TRB.Functions.OptionsUi.GlobalCopy:BuildUseGlobalCopyButton(f, classId, specId, "bar")
@@ -386,12 +384,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 				TRB.Functions.Bar:HideResourceBar()
 			end
 			TRB.Functions.Character:ResetCaches()
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				C_Timer.After(0, function()
-					TRB.Data.lookupDirty = true
-					TRB.Functions.Class:TriggerResourceBarUpdates()
-				end)
-			end
+			C_Timer.After(0, function()
+				TRB.Data.lookupDirty = true
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end)
 		end
 	end)
 
@@ -419,12 +415,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 			end
 
 			TRB.Functions.Character:ResetCaches()
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				C_Timer.After(0, function()
-					TRB.Data.lookupDirty = true
-					TRB.Functions.Class:TriggerResourceBarUpdates()
-				end)
-			end
+			C_Timer.After(0, function()
+				TRB.Data.lookupDirty = true
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end)
 		end
 	end)
 
@@ -484,12 +478,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 			(classId == nil and specId == nil and TRB.Data.settings.core.global[TRB.Data.character.className][TRB.Data.character.specName].bar) then
 			AdjustBarBorder()
 			TRB.Functions.Character:ResetCaches()
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				C_Timer.After(0, function()
-					TRB.Data.lookupDirty = true
-					TRB.Functions.Class:TriggerResourceBarUpdates()
-				end)
-			end
+			C_Timer.After(0, function()
+				TRB.Data.lookupDirty = true
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end)
 		end
 
 		local minsliderWidth = math.max((spec.bar.border)*2+1, 120)
@@ -813,10 +805,8 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 
 			ApplyPrimaryAnchorLayout()
 			TRB.Functions.Character:ResetCaches()
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end)
 	end
 
@@ -897,12 +887,10 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 					TRB.Functions.Bar:HideResourceBar()
 				end
 				TRB.Functions.Character:ResetCaches()
-				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-					C_Timer.After(0, function()
-						TRB.Data.lookupDirty = true
-						TRB.Functions.Class:TriggerResourceBarUpdates()
-					end)
-				end
+				C_Timer.After(0, function()
+					TRB.Data.lookupDirty = true
+					TRB.Functions.Class:TriggerResourceBarUpdates()
+				end)
 			end,
 		})
 	end
@@ -1385,10 +1373,8 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 
 			ApplyAnchorLayout()
 			TRB.Functions.Character:ResetCaches()
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end)
 	end
 
@@ -1433,10 +1419,8 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 				ancGrowthDirectionDropdown:SetDefaultText(GetAncGrowthDirectionLabel(newValue))
 				ApplyAnchorLayout()
 				TRB.Functions.Character:ResetCaches()
-				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-					TRB.Data.lookupDirty = true
-					TRB.Functions.Class:TriggerResourceBarUpdates()
-				end
+				TRB.Data.lookupDirty = true
+				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end)
 		end
 

@@ -315,7 +315,7 @@ function TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(classId, specI
 			TRB.Functions.BarVisibility:MarkDirty()
 		end
 		TRB.Functions.Bar:HideResourceBar()
-		if includeAppearance and TRB.Frames.barGroups ~= nil and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+		if includeAppearance and TRB.Frames.barGroups ~= nil then
 			TRB.Data.lookupDirty = true
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end

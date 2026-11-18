@@ -117,10 +117,8 @@ local function RefreshBar(classId, specId)
 		local settings = TRB.Data.specCache[character.compositeKey].settings
 		TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
 		TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Data.lookupDirty = true
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
+		TRB.Data.lookupDirty = true
+		TRB.Functions.Class:TriggerResourceBarUpdates()
 	end
 end
 

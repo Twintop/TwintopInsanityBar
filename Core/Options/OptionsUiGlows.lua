@@ -61,9 +61,7 @@ StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteGlow"] = {
 ---node re-resolves per frame -- but a bar sitting idle needs the nudge to notice.
 local function RefreshRuntime()
 	TRB.Data.lookupDirty = true
-	if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-		TRB.Functions.Class:TriggerResourceBarUpdates()
-	end
+	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
 ---Puts a dragged slider value onto its field's step, then onto its precision so the multiply back out

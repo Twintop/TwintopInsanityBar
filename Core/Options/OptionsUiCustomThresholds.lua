@@ -123,9 +123,7 @@ local function RefreshSpecCache(className, specName)
 
 	if className == TRB.Data.character.className and specName == TRB.Data.character.specName then
 		TRB.Data.lookupDirty = true
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
+		TRB.Functions.Class:TriggerResourceBarUpdates()
 
 		-- TriggerResourceBarUpdates() is class-specific and does not always guarantee
 		-- custom threshold redraws, so force custom threshold refresh for immediate UI feedback.
@@ -477,7 +475,7 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 			local iconText = texture and ("|T" .. tostring(texture) .. ":16|t") or ""
 			local barTargetKey = customThreshold.barTarget or "primary"
 			local targetLabel = targetLabels[barTargetKey]
-			if targetLabel == nil and TRB.Functions.Bar and TRB.Functions.Bar.GetBarDisplayName then
+			if targetLabel == nil then
 				targetLabel = TRB.Functions.Bar:GetBarDisplayName(barTargetKey)
 			end
 			local enabledText = dictEntry and dictEntry.enabled and ("|cFF00FF00" .. L["BarTextVariablesStatusYes"] .. "|r") or ("|cFFFF0000" .. L["BarTextVariablesStatusNo"] .. "|r")

@@ -460,16 +460,12 @@ function TRB.Functions.OptionsUi.GlobalSettings:RefreshAfterBulkChange()
 		TRB.Functions.BarText:CreateBarTextFrames()
 		TRB.Functions.BarVisibility:MarkDirty()
 		TRB.Functions.Bar:HideResourceBar()
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
+		TRB.Functions.Class:TriggerResourceBarUpdates()
 	else
 		-- All classes use the BarGroups system; this path should not be reached.
 		-- ConstructBarGroups is called by each class module's ConstructResourceBar.
-		if TRB.Functions.Bar.ConstructBarGroups then
-			local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
-			TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
-		end
+		local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+		TRB.Functions.Bar:ConstructBarGroups(settings, TRB.Frames.barGroups)
 	end
 end
 
@@ -528,9 +524,7 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildBulkGlobalToggleCheckbox(pa
 	-- Add a "Copy..." button next to the bulk-toggle checkbox so users can
 	-- push Global -> a single spec or pull a single spec -> Global without
 	-- using the all-specs bulk apply.
-	if TRB.Functions.OptionsUi.GlobalCopy and TRB.Functions.OptionsUi.GlobalCopy.BuildGlobalBulkCopyButton then
-		TRB.Functions.OptionsUi.GlobalCopy:BuildGlobalBulkCopyButton(f, settingKey)
-	end
+	TRB.Functions.OptionsUi.GlobalCopy:BuildGlobalBulkCopyButton(f, settingKey)
 
 	return yCoord
 end
