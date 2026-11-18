@@ -218,7 +218,7 @@ local executeInRange = {}
 ---@return boolean
 local function IsExecuteInRange(line)
 	if not line.state.snapshotData.attributes.isChanneling then
-		executeInRange[line.spell.settingKey] = line.isUsable or line.spell:InsufficientPower()
+		executeInRange[line.spell.settingKey] = line:IsUsable() or line.spell:InsufficientPower()
 	end
 	return executeInRange[line.spell.settingKey] == true
 end
@@ -227,7 +227,7 @@ end
 ---@param line TRB.Classes.ThresholdLine
 local function ExecuteMinimum(line)
 	local inRange = IsExecuteInRange(line)
-	if line.isUsable then
+	if line:IsUsable() then
 		line:Over()
 	elseif inRange then
 		line:Under()
@@ -240,7 +240,7 @@ end
 ---@param line TRB.Classes.ThresholdLine
 local function ExecuteMaximum(line)
 	local inRange = IsExecuteInRange(line)
-	if line.isUsable then
+	if line:IsUsable() then
 		line:ApplyCostCurve(1, line.resourceAmount)
 	elseif inRange then
 		line:Under()
@@ -505,7 +505,7 @@ TRB.Classes.Mainline.Warrior.FurySpells.thresholdSnowflakes = {
 		executeMinimum = FuryExecute,
 		-- Improved Execute frees Execute's base cost but not the extra Rage it spends, so only this line stays, while Execute is usable.
 		executeMaximum = function(line)
-			if line.isUsable then
+			if line:IsUsable() then
 				line:ApplyCostCurve(1, line.resourceAmount)
 			elseif HasImprovedExecute(line) then
 				line:Hide()

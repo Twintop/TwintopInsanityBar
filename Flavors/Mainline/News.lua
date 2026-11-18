@@ -28,6 +28,10 @@ TRB.Flavor.newsContent = [====[
 
 - [#1008](#1008) Fix the Use Global checkbox tooltips in Totems Position and Size and Totems Colors showing a placeholder.
 
+## Rogue
+
+- [#1021](#1021) Fix finishing move threshold lines showing as unusable when you have Combo Points but not enough Energy.
+
 ---
 
 # 12.1.5.14-release (2026-11-17)

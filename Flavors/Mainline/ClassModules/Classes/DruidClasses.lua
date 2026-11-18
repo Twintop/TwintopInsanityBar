@@ -417,7 +417,7 @@ local function StarsurgeMulticast(line)
 		line:Hide()
 		return
 	end
-	if not line.isUsable then
+	if not line:IsUsable() then
 		line.frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 	end
 	local multiplier = line.spell.primaryResourceTypeMod
@@ -704,7 +704,7 @@ end
 
 ---@param line TRB.Classes.ThresholdLine
 local function FinisherMinimum(line)
-	if line.isUsable or (line.state --[[@as TRB.Classes.Mainline.Druid.ThresholdState]]).apexPredatorsCraving then
+	if line:IsUsable() or (line.state --[[@as TRB.Classes.Mainline.Druid.ThresholdState]]).apexPredatorsCraving then
 		line:Over()
 	else
 		line:Under()
@@ -714,7 +714,7 @@ end
 ---The maximum-cost line compares against secret Energy, so a curve colors it.
 ---@param line TRB.Classes.ThresholdLine
 local function MaximumCostCurve(line)
-	if line.isUsable then
+	if line:IsUsable() then
 		local multiplier = line.spell.primaryResourceTypeMod
 		line:ApplyCostCurve(multiplier, line.resourceAmount / multiplier)
 	else

@@ -103,7 +103,7 @@ end
 ---@field public dictEntry table?
 ---@field public snapshot TRB.Classes.Snapshot?
 ---@field public resourceAmount number
----@field public isUsable boolean
+---@field public usable boolean? # This pass's usability once a rule has asked; rules read it through IsUsable()
 ---@field public show boolean
 ---@field public color string? # nil when a color curve owns the line's color
 ---@field public frameLevel integer
@@ -120,6 +120,17 @@ end
 
 function TRB.Classes.ThresholdLine:Hide()
 	self.show = false
+end
+
+---Whether the spell is usable, read when a rule first asks so a line no rule asks about costs no API call.
+---@return boolean
+function TRB.Classes.ThresholdLine:IsUsable()
+	local usable = self.usable
+	if usable == nil then
+		usable = self.spell:IsUsable()
+		self.usable = usable
+	end
+	return usable
 end
 
 ---Colors the line with one of the spec's threshold colors at a frame level.
@@ -149,7 +160,7 @@ function TRB.Classes.ThresholdLine:Special(colorKey)
 end
 
 function TRB.Classes.ThresholdLine:ColorByUsable()
-	if self.isUsable then
+	if self:IsUsable() then
 		self:Over()
 	else
 		self:Under()
@@ -213,7 +224,7 @@ function TRB.Classes.ThresholdLine:ApplyCostCurve(multiplier, baseCost)
 	local thresholdCurve = Color:BuildThresholdCurve(multiplier, baseCost, underColor, overColor, curveMaxResource)
 	local iconCurve = Color:BuildIconVertexColorCurve(multiplier, baseCost, curveMaxResource)
 	local resourceType = self.bar.resourceType or TRB.Data.resource
-	if Threshold:ApplyThresholdCurveColor(self.spell, self.frame, thresholdCurve, resourceType, settings, iconCurve, self.frameLevel, self.pairOffset, self.isUsable, nil, self.cache) then
+	if Threshold:ApplyThresholdCurveColor(self.spell, self.frame, thresholdCurve, resourceType, settings, iconCurve, self.frameLevel, self.pairOffset, self:IsUsable(), nil, self.cache) then
 		self.color = nil
 	else
 		self.color = underColor

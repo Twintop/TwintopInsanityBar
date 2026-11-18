@@ -938,7 +938,7 @@ local function ShadowWordMadnessMulticast(line, maxResource)
 		line:Hide()
 		return
 	end
-	if not line.isUsable then
+	if not line:IsUsable() then
 		line.frameLevel = TRB.Data.constants.frameLevels.thresholdUnder
 	end
 	local multiplier = line.spell.primaryResourceTypeMod

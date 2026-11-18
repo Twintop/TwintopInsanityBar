@@ -494,6 +494,9 @@ end
 -- rather than on a timer. The floor is a backstop for a missed event, not the primary mechanism.
 local spellUsableGeneration = 0
 local spellUsableFloorTimespan = 1.0
+-- By ranked spell ID, so spells that share one (a second cast's line, Execute's cost range) share a read.
+---@type table<integer, { generation: integer, time: number, isUsable: boolean, insufficientPower: boolean }>
+local spellUsableReads = {}
 
 ---Marks every spell's cached usability stale. Called from the SPELL_UPDATE_USABLE handler.
 function TRB.Classes.SpellBase.InvalidateSpellUsable()
@@ -520,6 +523,13 @@ function TRB.Classes.SpellBase:InsufficientPower()
 	return self._insufficientPower
 end
 
+---Re-reads usability once its floor has passed, for a caller with no use for the answer this tick.
+function TRB.Classes.SpellBase:RefreshStaleUsable()
+	if (self._lastSpellUsableCheck or 0) + spellUsableFloorTimespan <= (tickTime or GetTime()) then
+		self:UpdateIsSpellUsable()
+	end
+end
+
 ---Updates IsSpellUsable cache.
 function TRB.Classes.SpellBase:UpdateIsSpellUsable()
 	local currentTime = tickTime or GetTime()
@@ -529,7 +539,18 @@ function TRB.Classes.SpellBase:UpdateIsSpellUsable()
 		return
 	end
 
-	local isUsable, insufficientPower = C_Spell.IsSpellUsable(self:GetRankedId())
+	local rankedId = self:GetRankedId()
+	local read = spellUsableReads[rankedId]
+	if read == nil then
+		read = { generation = -1, time = 0, isUsable = false, insufficientPower = false }
+		spellUsableReads[rankedId] = read
+	end
+	if read.generation ~= spellUsableGeneration or read.time + spellUsableFloorTimespan <= currentTime then
+		read.isUsable, read.insufficientPower = C_Spell.IsSpellUsable(rankedId)
+		read.generation = spellUsableGeneration
+		read.time = currentTime
+	end
+	local isUsable, insufficientPower = read.isUsable, read.insufficientPower
 	-- Not every usability change fires SPELL_UPDATE_USABLE (Execute and Overpower, on some clients), so a re-read that differs repaints bar text.
 	if not issecretvalue(isUsable) and not issecretvalue(insufficientPower)
 		and (isUsable ~= self._isUsable or insufficientPower ~= self._insufficientPower) then
@@ -538,7 +559,8 @@ function TRB.Classes.SpellBase:UpdateIsSpellUsable()
 	--We previously only cared about insufficient power, but since we are not doing a check based on just primary and secondary resources we might as well use the full usability.
 	self._isUsable = isUsable
 	self._insufficientPower = insufficientPower
-	self._lastSpellUsableCheck = currentTime
+	-- The read's time, not this call's, or a spell that joins a read late would hold it past the floor.
+	self._lastSpellUsableCheck = read.time
 	self._spellUsableGeneration = spellUsableGeneration
 end
 

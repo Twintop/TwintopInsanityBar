@@ -208,7 +208,7 @@ end
 local function UsableOrHidden(line)
 	if line.snapshot ~= nil and line.snapshot.cooldown:IsUnusable() then
 		line:Unusable()
-	elseif line.isUsable then
+	elseif line:IsUsable() then
 		line:Over()
 	else
 		line:Hide()
