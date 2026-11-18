@@ -947,11 +947,12 @@ function TRB.Functions.BarText:BuildActiveVariableSet(settings)
 	inCombatTimeWholeSeconds = wholeSeconds
 	displayListValid = false
 	refreshersStale = true
-	-- Stats are formatted only when shown, so a changed set reads them again.
+	-- Stats and health are formatted only when shown, so a changed set reads them again.
 	local snapshotData = TRB.Data.snapshotData
 	if snapshotData ~= nil then
 		snapshotData.attributes.primaryRefresh = true
 		snapshotData.attributes.secondaryRefresh = true
+		TRB.Functions.Character:UpdateHealthValues()
 	end
 	TRB.Functions.Skyriding:SetBarTextUse(offBar, skyridingAnchors)
 end
@@ -2937,6 +2938,7 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 		targetCastbarLookupWasActive = true
 		otherBarsLookupWasActive = true
 		petLookupWasActive = true
+		petWrittenVersion = nil
 		totemLookupWasActive = true
 		skyridingLookupWasActive = true
 	end
@@ -3005,14 +3007,24 @@ function TRB.Functions.BarText:RefreshPetLookupData(settings)
 	end
 
 	local precision = settings and settings.precision or nil
+	-- Abbreviating is the costly part, so a value no enabled entry shows stays empty.
+	local activeVars = TRB.Data.activeVariables
 	lookup["$petName"] = attributes.petName or ""
-	lookup["$petHealth"] = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.petHealth)
-	lookup["$petHealthMax"] = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.petHealthMax)
+	if activeVars == nil or activeVars["$petHealth"] then
+		lookup["$petHealth"] = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.petHealth)
+	end
+	if activeVars == nil or activeVars["$petHealthMax"] then
+		lookup["$petHealthMax"] = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.petHealthMax)
+	end
 	lookup["$petHealthPercent"] = string.format(GetPrecisionFormat((precision and precision.health) or 1), attributes.petHealthPercent)
 
 	if attributes.petPowerType ~= nil then
-		lookup["$petResource"] = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.petPower)
-		lookup["$petResourceMax"] = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.petPowerMax)
+		if activeVars == nil or activeVars["$petResource"] then
+			lookup["$petResource"] = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.petPower)
+		end
+		if activeVars == nil or activeVars["$petResourceMax"] then
+			lookup["$petResourceMax"] = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.petPowerMax)
+		end
 		lookup["$petResourcePercent"] = string.format(GetPrecisionFormat((precision and precision.mana) or 1), attributes.petPowerPercent)
 		lookup["$petResourceName"] = attributes.petPowerName or ""
 	end

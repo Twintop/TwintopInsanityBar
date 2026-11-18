@@ -270,6 +270,14 @@ local healthPieceByEvent = {
 	UNIT_HEAL_ABSORB_AMOUNT_CHANGED = "healAbsorb",
 }
 
+---Whether an enabled bar text entry shows a variable. True until the entries have been scanned.
+---@param variable string
+---@return boolean
+local function IsBarTextVariableShown(variable)
+	local activeVariables = TRB.Data.activeVariables
+	return activeVariables == nil or activeVariables[variable] == true
+end
+
 ---Reads the chosen health pieces into snapshotData.attributes and their display strings. With health, also
 ---re-evaluates the health color curve. Then marks threshold-curve visibility for the next tick.
 ---@param health boolean # health, healthMax, healthPercent, and healthColor
@@ -301,19 +309,40 @@ local function ReadHealthValues(health, absorb, incomingHeal, healAbsorb)
 
 	-- Pre-format health display strings once per read, consuming secret values once.
 	-- The render tick copies these normal strings into lookup[] without reformatting.
+	-- Abbreviating is most of a read's cost, so only a piece some enabled bar text shows gets it; a changed set reads again.
 	local formatted = snapshotData.formatted
 	if health then
-		formatted.health = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.health)
-		formatted.healthMax = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.healthMax)
+		if IsBarTextVariableShown("$health") then
+			formatted.health = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.health)
+		else
+			formatted.health = nil
+		end
+		if IsBarTextVariableShown("$healthMax") then
+			formatted.healthMax = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.healthMax)
+		else
+			formatted.healthMax = nil
+		end
 	end
 	if absorb then
-		formatted.absorb = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.absorb)
+		if IsBarTextVariableShown("$absorb") then
+			formatted.absorb = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.absorb)
+		else
+			formatted.absorb = nil
+		end
 	end
 	if incomingHeal then
-		formatted.incomingHeal = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.incomingHeal)
+		if IsBarTextVariableShown("$incomingHeal") then
+			formatted.incomingHeal = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.incomingHeal)
+		else
+			formatted.incomingHeal = nil
+		end
 	end
 	if healAbsorb then
-		formatted.healAbsorb = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.healAbsorb)
+		if IsBarTextVariableShown("$healAbsorb") then
+			formatted.healAbsorb = TRB.Functions.String:ConvertToAbbreviatedNumber(attributes.healAbsorb)
+		else
+			formatted.healAbsorb = nil
+		end
 	end
 	if health then
 		-- healthPercent requires precision from settings
