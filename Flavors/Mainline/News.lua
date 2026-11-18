@@ -18,7 +18,7 @@ TRB.Flavor.newsContent = [====[
 
 ### Color Indicators
 
-- Gradient Colors (Secrets) rows can now turn on Border Glows, shown while your resource is at or above the row's threshold.
+- [#1018](#1018) Gradient Colors (Secrets) rows can now turn on Border Glows, shown while your resource is at or above the row's threshold.
 
 ### Custom Bars
 
