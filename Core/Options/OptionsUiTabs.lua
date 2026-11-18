@@ -24,18 +24,18 @@ local function GetCastbarSpecMap()
 	return castbarSpecByNamePrefix
 end
 
--- The nav sections a panel's tabs are split into, in nav order, with the locale key of each one's label.
+-- The nav sections a panel's tabs are split into, in nav order, with each one's label.
 local sectionOrder = { "general", "visibility", "thresholds", "customBars", "castbar", "otherBars", "petBars", "skyriding", "resetDefaults" }
-local sectionLabelKeys = {
-	general = "NavSectionGeneral",
-	visibility = "NavSectionVisibilityAndBehavior",
-	thresholds = "NavSectionThresholds",
-	customBars = "TabCustomBars",
-	castbar = "TabCastbars",
-	otherBars = "TabOtherBars",
-	petBars = "TabPetBars",
-	skyriding = "TabSkyriding",
-	resetDefaults = "TabResetDefaults",
+local sectionLabels = {
+	general = TRB.Localization["NavSectionGeneral"],
+	visibility = TRB.Localization["NavSectionVisibilityAndBehavior"],
+	thresholds = TRB.Localization["NavSectionThresholds"],
+	customBars = TRB.Localization["TabCustomBars"],
+	castbar = TRB.Localization["TabCastbars"],
+	otherBars = TRB.Localization["TabOtherBars"],
+	petBars = TRB.Localization["TabPetBars"],
+	skyriding = TRB.Localization["TabSkyriding"],
+	resetDefaults = TRB.Localization["TabResetDefaults"],
 }
 
 -- The section each settings tab sits in; a tab not listed is a bar's, in General.
@@ -737,7 +737,7 @@ function TRB.Functions.OptionsUi.Tabs:BuildSectionedTabGroup(parent, namePrefix,
 			local frame = CreateFrame("Frame", nil, parent) --[[@as TRB.Classes.OptionsUi.TabbedPanel]]
 			frame:SetAllPoints(parent)
 			frame:Hide()
-			frame.sectionNavKey = TRB.Options.OptionsFrame:RegisterSection(navKey, sectionKey, TRB.Localization[sectionLabelKeys[sectionKey]], parent)
+			frame.sectionNavKey = TRB.Options.OptionsFrame:RegisterSection(navKey, sectionKey, sectionLabels[sectionKey], parent)
 			local build
 			if group ~= nil then
 				build = function()
