@@ -35,6 +35,9 @@
 	Shield's talent, the aura sync, node fill, bar text, and audio counter; it runs once per class.
 	timer-precision checks Timer Precision's decimals, m:ss, and duration object times matching plain ones; it runs once
 	per flavor.
+	bartext-display-list checks that a bar text pass draws exactly the enabled entries on showing bars through enable
+	toggles, moves, added, reordered, and replaced entries, a reset frame cache, and bars hiding, showing, and fading; it
+	runs once per flavor.
 	mounted-conditions checks the Mounted visibility conditions in the Live probe's states and TBC's, and that the Steady Flight
 	split evaluates exactly as before, runs once per save, splits old imports, and keeps presets linked; it runs once per flavor.
 	See build\harness\README.md.
@@ -43,7 +46,7 @@
 	Lua 5.1 interpreter to use. Defaults to "lua5.1" on the PATH.
 
 .PARAMETER Driver
-	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, five-second-rule, combat-conditions, classic-overcap, totems, preview-mode, indicator-copies, indicator-modifiers, bartext-conformance, inner-fire, slice-and-dice, brews, arcane-blast, spell-data, custom-bars, eclipse, elemental-shield, timer-precision, mounted-conditions). Default: all.
+	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, five-second-rule, combat-conditions, classic-overcap, totems, preview-mode, indicator-copies, indicator-modifiers, bartext-conformance, inner-fire, slice-and-dice, brews, arcane-blast, spell-data, custom-bars, eclipse, elemental-shield, timer-precision, mounted-conditions, bartext-display-list). Default: all.
 
 .PARAMETER Flavor
 	Restrict to one flavor (mainline, forever, classic, tbc). Default: all.
@@ -94,7 +97,8 @@ $drivers = @(
 	[pscustomobject]@{ Name = "eclipse"; EveryClass = $true },
 	[pscustomobject]@{ Name = "elemental-shield"; EveryClass = $true },
 	[pscustomobject]@{ Name = "timer-precision"; EveryClass = $false },
-	[pscustomobject]@{ Name = "mounted-conditions"; EveryClass = $false }
+	[pscustomobject]@{ Name = "mounted-conditions"; EveryClass = $false },
+	[pscustomobject]@{ Name = "bartext-display-list"; EveryClass = $false }
 )
 $known = $drivers | ForEach-Object { $_.Name }
 if ($Driver -ne "" -and $known -notcontains $Driver) {
