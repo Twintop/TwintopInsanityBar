@@ -820,10 +820,20 @@ function M.install(opts)
 	-- instead of auto-stubbing for a 1.x or 2.x TOC, so a leftover call fails the way it does in that client.
 	local absentGlobals = {}
 	if interfaceVersion < 30000 then
-		for _, name in ipairs({ "GetSpecialization", "GetSpecializationInfo", "GetNumSpecializationsForClassID", "CombatLogGetCurrentEventInfo" }) do
+		for _, name in ipairs({ "GetSpecialization", "GetSpecializationInfo", "GetNumSpecializationsForClassID" }) do
 			G[name] = nil
 			absentGlobals[name] = true
 		end
+	end
+	-- Only Classic and TBC hand addons the combat log's payload; Forever's and Live's public C_CombatLog lack it.
+	local hasCombatLogPayload = (interfaceVersion >= 11300 and interfaceVersion < 16000) or (interfaceVersion >= 20000 and interfaceVersion < 30000)
+	G.C_CombatLog = setmetatable({ GetCurrentEventInfo = hasCombatLogPayload and G.CombatLogGetCurrentEventInfo or nil }, { __index = function(_, k)
+		if k == "GetCurrentEventInfo" then return nil end
+		return noop
+	end })
+	if not hasCombatLogPayload then
+		G.CombatLogGetCurrentEventInfo = nil
+		absentGlobals.CombatLogGetCurrentEventInfo = true
 	end
 	G.C_PetBattles = ns({ IsInBattle = retFalse })
 	G.C_PlayerInfo = ns({ GetGlidingInfo = function() return false, false, 0 end, IsPlayerNPERestricted = retFalse, GetPlayerCharacterData = retNil, UnitIsSameServer = retTrue, GetClass = function() return classId end, GetRace = function() return 1 end, GetSex = function() return 2 end, IsPlayerInGuildFromGUID = retFalse, GUIDIsPlayer = retTrue, GetContentDifficultyCreatureForPlayer = retNil, GetInstancedContentDifficulty = retNil, IsMercenary = retFalse, CanPlayerEnterChromieTime = retFalse, IsPlayerEligibleForNPE = retFalse, IsConnectionValid = retTrue })

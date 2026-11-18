@@ -13,6 +13,7 @@ TRB.Flavor.newsContent = [====[
 ### Timer Bars
 
 - Fix the Use Global checkbox tooltip in the Position and Size section of Main Hand Swing, Off Hand Swing, Ranged Swing, and Five Second Rule showing a placeholder.
+- Fix Main Hand Swing and Off Hand Swing not running when Blizzard's deprecated API fallbacks are turned off.
 
 ### Totems
 

@@ -23,6 +23,7 @@ function GetNumTalentTabs(isInspect, isPet) end
 function GetNumTalents(tabIndex, isInspect, isPet) end
 
 ---The current COMBAT_LOG_EVENT_UNFILTERED's payload: timestamp, subevent, hideCaster, source and dest GUID/name/flags/raid flags, then the subevent's own values.
+---Classic Era's and TBC's public C_CombatLog has it; the CombatLogGetCurrentEventInfo global is only a deprecation fallback.
 ---@return number timestamp
 ---@return string subevent
 ---@return boolean hideCaster
@@ -35,7 +36,7 @@ function GetNumTalents(tabIndex, isInspect, isPet) end
 ---@return number destFlags
 ---@return number destRaidFlags
 ---@return any ...
-function CombatLogGetCurrentEventInfo() end
+function C_CombatLog.GetCurrentEventInfo() end
 
 ---Classic Era's MirrorTimer.lua: shows a mirror timer on MirrorTimer1-3, reusing the frame already showing that type.
 ---@param timer string # "BREATH", "EXHAUSTION", or "FEIGNDEATH"
