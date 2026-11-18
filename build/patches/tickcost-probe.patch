@@ -1,5 +1,7 @@
-Tick cost probe: /trb tickcost [seconds 1-600|stop|calibrate|powercheck].
+Tick cost probe: /trb tickcost [detail] [seconds 1-600] | stop | calibrate | powercheck.
 Times the 20Hz tick by section and the addon's frame scripts. Local measurement only: never merge it.
+detail adds sections that split the lookup refresh, the text render, and the class module's own update; each wrapped
+call costs about 1us, so a detail run does not compare with a plain one.
 
 Apply:   git apply build/patches/tickcost-probe.patch
 Remove:  git apply -R build/patches/tickcost-probe.patch
@@ -11,10 +13,10 @@ When a Core change stops it applying, refresh it in the same pull request:
   4. git checkout HEAD -- Core/Init.lua Core/Classes/BarVisibility.lua Core/Functions/CurveMemo.lua
 
 diff --git a/Core/Classes/BarVisibility.lua b/Core/Classes/BarVisibility.lua
-index 5509256e..1235cab9 100644
+index 41b11256..adc82532 100644
 --- a/Core/Classes/BarVisibility.lua
 +++ b/Core/Classes/BarVisibility.lua
-@@ -776,6 +776,10 @@ function TRB.Functions.BarVisibility:NeedsFullPass(force)
+@@ -778,6 +778,10 @@ function TRB.Functions.BarVisibility:NeedsFullPass(force)
  		self.curveDirty = false
  		if not force and not self.fading and self.dirtyToken == self.lastAppliedToken
  			and UneventedInputsUnchanged(self.curveRecheck) and self:ReplayCurves() then
@@ -25,7 +27,7 @@ index 5509256e..1235cab9 100644
  			return false
  		end
  		self:MarkDirty()
-@@ -1302,6 +1306,11 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
+@@ -1304,6 +1308,11 @@ function TRB.Functions.BarVisibility:ProcessBars(context, entries, snapshotData,
  	local conditionsChanged = (self.dirtyToken ~= self.lastAppliedToken) or context.force
  	local isRenderTransition = TRB.Functions.Bar:IsRenderTransitionActive()
  
@@ -80,7 +82,7 @@ index 49575f68..c112af0c 100644
  end
  
 diff --git a/Core/Init.lua b/Core/Init.lua
-index 08c36674..83912739 100644
+index 08c36674..da9993c8 100644
 --- a/Core/Init.lua
 +++ b/Core/Init.lua
 @@ -298,6 +298,15 @@ TRB.Frames.textFrames = {}
@@ -95,11 +97,11 @@ index 08c36674..83912739 100644
 +---@field public RunCostCalibration fun(self: TRB.Classes.TimerFrame)
 +---@field public RunPowerCheck fun(self: TRB.Classes.TimerFrame, seconds: number)
 +---@field public FinishCostProbe fun(self: TRB.Classes.TimerFrame, reason: string)
-+---@field public StartCostProbe fun(self: TRB.Classes.TimerFrame, seconds: number)
++---@field public StartCostProbe fun(self: TRB.Classes.TimerFrame, seconds: number, detail: boolean?)
  
  TRB.Frames.targetsTimerFrame = CreateFrame("Frame") --[[@as TRB.Classes.TimerFrame]]
  TRB.Frames.targetsTimerFrame.sinceLastUpdate = 0
-@@ -306,11 +315,603 @@ TRB.Frames.timerFrame = CreateFrame("Frame") --[[@as TRB.Classes.TimerFrame]]
+@@ -306,11 +315,662 @@ TRB.Frames.timerFrame = CreateFrame("Frame") --[[@as TRB.Classes.TimerFrame]]
  TRB.Frames.timerFrame.sinceLastUpdate = 0
  TRB.Frames.timerFrame.characterCheckSinceLastUpdate = 0
  
@@ -186,6 +188,38 @@ index 08c36674..83912739 100644
 +	{ "custom bars", "CustomBars", "Render" },
 +}
 +
++-- /trb tickcost detail adds these: where the lookup refresh and the text render go. Each wrapped call costs about
++-- 1us, so a detail run doesn't compare with a plain one.
++local probeDetailTargets = {
++	{ "lookup stats", "Character", "UpdatePrimaryStatsSnapshot" },
++	{ "lookup stats", "Character", "UpdateSecondaryStatsSnapshot" },
++	{ "lookup speed", "Character", "GetMovementSpeed" },
++	{ "lookup cast bar", "BarText", "RefreshCastbarLookupData" },
++	{ "lookup target cast", "BarText", "RefreshTargetCastbarLookupData" },
++	{ "lookup other bars", "BarText", "RefreshOtherBarsLookupData" },
++	{ "lookup pet", "BarText", "RefreshPetLookupData" },
++	{ "lookup totems", "BarText", "RefreshTotemLookupData" },
++	{ "lookup custom bars", "BarText", "RefreshCustomBarLookupData" },
++	{ "lookup skyriding", "BarText", "RefreshSkyridingLookupData" },
++	{ "timer format", "BarText", "TimerPrecision" },
++	{ "timer format", "BarText", "DurationTimerPrecision" },
++	{ "buff times", "Classes.SnapshotBuff", "GetRemainingTime" },
++	{ "text class anchors", "Class", "GetBarTextFrame" },
++	{ "text validators", "Class", "IsValidVariableForSpec" },
++	{ "text timers gate", "Class", "HasActiveTimers" },
++	-- What "other" holds: the class module's own update, and the shared pieces it calls outside every section above.
++	{ "class update", "Class", "TriggerResourceBarUpdates" },
++	{ "buff resets", "Classes.SnapshotBuff", "Reset" },
++	{ "cooldown times", "Classes.SnapshotCooldown", "GetRemainingTime" },
++	{ "cooldown times", "Classes.SnapshotCooldown", "Refresh" },
++	{ "spell usable", "Classes.SpellBase", "IsUsable" },
++	{ "spell cost", "Classes.SpellBase", "GetPrimaryResourceCost" },
++	{ "gradient targets", "Color", "ResolveGradientTargets" },
++	{ "threshold curve build", "Color", "BuildResourceThresholdCurve" },
++	{ "totems", "Totems", "Render" },
++	{ "talent checks", "Classes.Talents", "IsTalentActive" },
++}
++
 +---Wraps one function so calls made inside a tick charge their exclusive time to the section.
 +---@param state table
 +---@param section string
@@ -223,11 +257,22 @@ index 08c36674..83912739 100644
 +end
 +
 +---Builds a run's section state and wraps every section target.
++---@param detail boolean? # Also wrap the detail targets
 +---@return table state
-+local function InstallProbeSections()
++local function InstallProbeSections(detail)
 +	local state = { inTick = false, depth = 0, calls = 0, sectionCalls = {}, child = {}, stack = {}, tick = {}, order = {}, buckets = {}, installed = {} }
 +	local owners = {}
-+	for i, target in ipairs(probeSectionTargets) do
++	local targets = probeSectionTargets
++	if detail then
++		targets = {}
++		for _, target in ipairs(probeSectionTargets) do
++			targets[#targets + 1] = target
++		end
++		for _, target in ipairs(probeDetailTargets) do
++			targets[#targets + 1] = target
++		end
++	end
++	for i, target in ipairs(targets) do
 +		local ownerName, key = target[2], target[3]
 +		local className = ownerName ~= nil and string.match(ownerName, "^Classes%.(.+)$") or nil
 +		if className ~= nil then
@@ -240,7 +285,7 @@ index 08c36674..83912739 100644
 +			error("TRB TickCost: section target " .. (ownerName or "Functions") .. "." .. key .. " is not a function; update probeSectionTargets.")
 +		end
 +	end
-+	for i, target in ipairs(probeSectionTargets) do
++	for i, target in ipairs(targets) do
 +		local section = target[1]
 +		WrapProbeSection(state, section, owners[i], target[3])
 +		if state.buckets[section] == nil then
@@ -478,6 +523,8 @@ index 08c36674..83912739 100644
 +	local powerType = TRB.Data.resource or 0
 +	local level = frame:GetFrameLevel()
 +	local holder = { value = 1 }
++	local list = { 1, 2, 3, 4, 5 }
++	local usableSpellId = TRB.Flavor.gcdSpellId
 +	local font, texture = frame.font, frame.texture
 +	local function Noop() end
 +	local function Time(fn)
@@ -503,6 +550,19 @@ index 08c36674..83912739 100644
 +		{ "SetColorTexture", function(n) for _ = 1, n do texture:SetColorTexture(1, 1, 1, 1) end end },
 +		{ "UnitPower", function(n) for _ = 1, n do UnitPower("player", powerType) end end },
 +		{ "UnitPowerPercent curve", function(n) for _ = 1, n do UnitPowerPercent("player", powerType, true, curve) end end },
++		{ "tostring", function(n) local s for _ = 1, n do s = tostring(holder.value) end return s end },
++		{ "ipairs step (5 items)", function(n) for _ = 1, n / 5 do for _, v in ipairs(list) do holder.last = v end end end },
++		{ "pairs step (5 items)", function(n) for _ = 1, n / 5 do for _, v in pairs(list) do holder.last = v end end end },
++		{ "GetUnitSpeed", function(n) for _ = 1, n do GetUnitSpeed("player") end end },
++		{ "GetGlidingInfo", function(n) for _ = 1, n do C_PlayerInfo.GetGlidingInfo() end end },
++		{ "IsSpellUsable", function(n) for _ = 1, n do C_Spell.IsSpellUsable(usableSpellId) end end },
++		{ "UnitSpellHaste", function(n) for _ = 1, n do UnitSpellHaste("player") end end },
++		{ "RoundTo", function(n) for _ = 1, n do TRB.Functions.Number:RoundTo(12.3456, 2) end end },
++		{ "ShortNumber", function(n) for _ = 1, n do TRB.Functions.String:ConvertToShortNumberNotation(12345, 2, "floor", true) end end },
++		{ "AbbreviatedNumber", function(n) for _ = 1, n do TRB.Functions.String:ConvertToAbbreviatedNumber(123456) end end },
++		{ "UnitHealth", function(n) for _ = 1, n do UnitHealth("player", true) end end },
++		{ "UnitGetTotalAbsorbs", function(n) for _ = 1, n do UnitGetTotalAbsorbs("player") end end },
++		{ "UnitHealthPercent curve", function(n) for _ = 1, n do UnitHealthPercent("player", true, curve) end end },
 +	}
 +	local parts = {}
 +	for _, op in ipairs(ops) do
@@ -657,7 +717,8 @@ index 08c36674..83912739 100644
 +
 +---Starts a run that reports after the given number of seconds, replacing any run in progress.
 +---@param seconds number
-+function TRB.Frames.timerFrame:StartCostProbe(seconds)
++---@param detail boolean? # Also time the detail sections
++function TRB.Frames.timerFrame:StartCostProbe(seconds, detail)
 +	if self.costProbe ~= nil then
 +		self:FinishCostProbe("replaced")
 +	end
@@ -668,13 +729,13 @@ index 08c36674..83912739 100644
 +		timeOrder = {},
 +		counts = {},
 +		countOrder = {},
-+		sections = InstallProbeSections(),
++		sections = InstallProbeSections(detail),
 +		scripts = InstallProbeScripts(),
 +		curveHits = TRB.Functions.CurveMemo.hits,
 +		curveMisses = TRB.Functions.CurveMemo.misses,
 +	}
 +	self.costProbe = probe
-+	print(string.format("|cFF00FF00TRB TickCost:|r Measuring for %ds.", seconds))
++	print(string.format("|cFF00FF00TRB TickCost:|r Measuring for %ds%s.", seconds, detail and " with detail sections" or ""))
 +	C_Timer.After(seconds, function()
 +		-- A stop or a newer run already replaced this one.
 +		if self.costProbe == probe then
@@ -703,7 +764,7 @@ index 08c36674..83912739 100644
  		---@type TRB.Classes.TargetData
  		local targetData = TRB.Data.snapshotData.targetData
  
-@@ -343,6 +944,29 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
+@@ -343,6 +1003,29 @@ function TRB.Frames.timerFrame:onUpdate(sinceLastUpdate)
  		TRB.Classes.SpellBase.SetTickTime(nil)
  		TRB.Functions.CurveMemo:SetActive(false)
  		self.sinceLastUpdate = 0
@@ -733,15 +794,21 @@ index 08c36674..83912739 100644
  	end
  end
  
-@@ -482,6 +1106,29 @@ function SlashCmdList.TWINTOP(msg)
+@@ -482,6 +1165,35 @@ function SlashCmdList.TWINTOP(msg)
  		TRB.Functions.Bar:PrintDiagnostics()
  	elseif cmd == "castname" then
  		TRB.Functions.Castbar:ToggleCastNameEcho()
 +	elseif cmd == "tickcost" then
 +		local probeArg, extra = ParseCmdString(subcmd)
++		local detail = probeArg == "detail"
++		if detail then
++			probeArg, extra = ParseCmdString(extra or "")
++		end
 +		local seconds = tonumber(probeArg)
-+		local usage = "Usage: /trb tickcost [seconds 1-600|stop|calibrate|powercheck]"
-+		if extra ~= nil and extra ~= "" then
++		local usage = "Usage: /trb tickcost [detail] [seconds 1-600] | stop | calibrate | powercheck"
++		if detail and probeArg ~= nil and probeArg ~= "" and seconds == nil then
++			print("|cFFFF8800TRB TickCost:|r Unknown argument '" .. subcmd .. "'. " .. usage)
++		elseif extra ~= nil and extra ~= "" then
 +			print("|cFFFF8800TRB TickCost:|r Unknown argument '" .. subcmd .. "'. " .. usage)
 +		elseif probeArg == "stop" then
 +			if TRB.Frames.timerFrame.costProbe == nil then
@@ -754,9 +821,9 @@ index 08c36674..83912739 100644
 +		elseif probeArg == "powercheck" then
 +			TRB.Frames.timerFrame:RunPowerCheck(15)
 +		elseif probeArg == nil or probeArg == "" then
-+			TRB.Frames.timerFrame:StartCostProbe(130)
++			TRB.Frames.timerFrame:StartCostProbe(130, detail)
 +		elseif seconds ~= nil and seconds >= 1 and seconds <= 600 then
-+			TRB.Frames.timerFrame:StartCostProbe(seconds)
++			TRB.Frames.timerFrame:StartCostProbe(seconds, detail)
 +		else
 +			print("|cFFFF8800TRB TickCost:|r Unknown argument '" .. probeArg .. "'. " .. usage)
 +		end
