@@ -538,8 +538,8 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@field public isSkyriding boolean? # Show when able to glide on a skyriding-capable mount or in a Druid flight form
 ---@field public isSkyridingFlying boolean? # Show when actively skyriding (skyriding and flying)
 ---@field public isNotSkyriding boolean? # Skyriding bars only: show while not skyriding
----@field public isSteadyFlight boolean? # Show when mounted and in real (non-gliding) flight (false while skyriding-gliding)
----@field public isSteadyFlightFlying boolean? # Show when mounted and in real (non-gliding) flight (same as isSteadyFlight; steady flight only exists while airborne)
+---@field public isSteadyFlight boolean? # Show on a flying mount, not skyriding, somewhere flying works, on the ground or in the air
+---@field public isSteadyFlightFlying boolean? # Show while mounted, flying, and not skyriding
 ---@field public inGroup boolean? # Show when the player is in a group (party or raid)
 ---@field public inRaid boolean? # Show when the player is in a raid group
 ---@field public inInstance boolean? # Show when the player is in any instance (catch-all)
@@ -564,9 +564,9 @@ TRB.Classes.Settings = TRB.Classes.Settings or {}
 ---@class trbBarVisibilityHideConditions
 ---@field public isMountedAny boolean? # Hide when the player is mounted (any mount)
 ---@field public isMountedGround boolean? # Hide when the player is on a ground mount (mounted + not flying)
----@field public isMountedFlying boolean? # Hide when mounted and in real (non-gliding) flight
+---@field public isMountedFlying boolean? # Steady Flight: hide on a flying mount, not skyriding, somewhere flying works, on the ground or in the air
 ---@field public isSteadyFlight boolean? # DEPRECATED: migrated to isMountedFlying
----@field public isSteadyFlightFlying boolean? # Hide when mounted and in real (non-gliding) flight (same as isMountedFlying; steady flight only exists while airborne)
+---@field public isSteadyFlightFlying boolean? # Hide while mounted, flying, and not skyriding
 ---@field public isSkyriding boolean? # Hide when able to glide on a skyriding-capable mount or in a Druid flight form
 ---@field public isSkyridingFlying boolean? # Hide when actively skyriding (skyriding and flying)
 ---@field public isNotSkyriding boolean? # Skyriding bars only: hide while not skyriding

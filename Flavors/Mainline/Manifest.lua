@@ -19,6 +19,22 @@ local addonName, TRB = ...
 --   specs[].specGlobalId  global specialization ID (GetSpecializationInfoByID); informational, names come from GetSpecializationInfoForClassID
 --   specs[].resources     per-resource maximums shared by options panels and custom thresholds
 
+-- Mount types with a steady flight capability (MountCapability Flags 0x2, no FlightCapabilityID, any map), from the 12.1.5.70783 DB2s.
+local FLYING_MOUNT_TYPES = {
+	[205] = true, [207] = true, [242] = true, [245] = true, [246] = true, [247] = true, [248] = true, [293] = true, [398] = true, [401] = true,
+	[402] = true, [407] = true, [424] = true, [433] = true, [436] = true, [437] = true, [442] = true, [444] = true, [445] = true, [447] = true,
+}
+
+-- The mount found by the last scan, checked first so remounting it skips the scan.
+local lastActiveMountId = nil
+
+---@param mountId integer
+---@return boolean
+local function IsActiveMount(mountId)
+	local _, _, _, isActive = C_MountJournal.GetMountInfoByID(mountId)
+	return isActive == true
+end
+
 -- Stats.lua adds stats and statEvents.
 ---@class TRB.Flavor
 TRB.Flavor = {
@@ -46,6 +62,25 @@ TRB.Flavor = {
 		-- Dragon Isles UiMap ids, matched against the player's map and its parents.
 		dragonIslesMapIds = { 1978, 2057, 2107, 2131, 2241 },
 	},
+
+	---Whether the summoned mount's type can fly in steady flight, by the mount journal's active mount.
+	---@return boolean
+	IsFlyingMountActive = function()
+		if lastActiveMountId == nil or not IsActiveMount(lastActiveMountId) then
+			lastActiveMountId = nil
+			for _, mountId in ipairs(C_MountJournal.GetMountIDs()) do
+				if IsActiveMount(mountId) then
+					lastActiveMountId = mountId
+					break
+				end
+			end
+		end
+		if lastActiveMountId == nil then
+			return false
+		end
+		local mountTypeId = select(5, C_MountJournal.GetMountInfoExtraByID(lastActiveMountId))
+		return FLYING_MOUNT_TYPES[mountTypeId] == true
+	end,
 	-- Blizzard's TotemFrame under the player frame, which the Totems bar can hide.
 	blizzardTotemFrame = true,
 	-- Creating an aura container in combat errors on builds up to 68675.

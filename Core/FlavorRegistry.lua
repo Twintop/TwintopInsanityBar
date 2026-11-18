@@ -73,6 +73,7 @@ local addonName, TRB = ...
 ---@field public swingSpells TRB.Flavor.SwingSpells? # Required with swingTimers when blizzardSwingTimer is off
 ---@field public fiveSecondRule { duration: number }? # Mana regen pauses after each mana spend, so the Five Second Rule bar exists for mana specs
 ---@field public skyriding TRB.Flavor.Skyriding? # The client has skyriding, so the Skyriding bars exist
+---@field public IsFlyingMountActive (fun(): boolean)? # Whether the summoned mount can fly in steady flight; a flavor without flying leaves it unset
 ---@field public totemElements boolean? # Totem slots are the four elements (1 Fire, 2 Earth, 3 Water, 4 Air), so the Totems bar shows four fixed element nodes (default false)
 ---@field public specOwnedTotems boolean? # Each spec owns its Totems bar outright, so Global Options has none for specs to follow (default false)
 ---@field public blizzardTotemFrame boolean? # The client draws Blizzard's TotemFrame under the player frame, which the Totems bar can hide (default false)
