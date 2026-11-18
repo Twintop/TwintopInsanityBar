@@ -385,14 +385,14 @@ local fontTextPanel = withSpec(function(parent, specSettings, controls)
 		local overThresholdKey = formBar.key .. "OverThreshold"
 		local overcapKey = formBar.key .. "Overcap"
 		yCoord = yCoord - 30
-		textPicker(overThresholdKey, L[labels.textOverThresholdKey], oUi.xCoord)
-		textPicker(overcapKey, L[labels.textOvercapKey], oUi.xCoord2)
+		textPicker(overThresholdKey, labels.textOverThreshold, oUi.xCoord)
+		textPicker(overcapKey, labels.textOvercap, oUi.xCoord2)
 
 		yCoord = yCoord - 30
 		controls.checkBoxes[overThresholdKey .. "Enabled"] = TRB.Functions.OptionsUi.Primitives:BuildEnabledCheckbox(parent, "TwintopResourceBar_" .. namePrefix .. "_" .. overThresholdKey .. "TextEnable",
-			L[labels.textOverThresholdTooltipKey], specSettings.colors.text[overThresholdKey], oUi.xCoord + oUi.xPadding, yCoord)
+			labels.textOverThresholdTooltip, specSettings.colors.text[overThresholdKey], oUi.xCoord + oUi.xPadding, yCoord)
 		controls.checkBoxes[overcapKey .. "Enabled"] = TRB.Functions.OptionsUi.Primitives:BuildEnabledCheckbox(parent, "TwintopResourceBar_" .. namePrefix .. "_" .. overcapKey .. "TextEnable",
-			L[labels.textOvercapTooltipKey], specSettings.colors.text[overcapKey], oUi.xCoord2 + oUi.xPadding, yCoord)
+			labels.textOvercapTooltip, specSettings.colors.text[overcapKey], oUi.xCoord2 + oUi.xPadding, yCoord)
 	end
 	TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, specSettings, classId, specId, yCoord)
 end)
@@ -401,7 +401,7 @@ local indicatorColorsPanel = withSpec(function(parent, specSettings, controls)
 	local gradientDefs = {}
 	for _, formBar in ipairs(formBars) do
 		local labels = formBar.archetype.overcap
-		gradientDefs[#gradientDefs + 1] = { key = formBar.overcapKey, label = L[labels.indicatorKey], tooltip = L[labels.indicatorTooltipKey], colorLabel = L[labels.indicatorColorKey], barKeys = { formBar.indicator } }
+		gradientDefs[#gradientDefs + 1] = { key = formBar.overcapKey, label = labels.indicatorLabel, tooltip = labels.indicatorTooltip, colorLabel = labels.indicatorColorLabel, barKeys = { formBar.indicator } }
 	end
 
 	local yCoord = TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent, controls, specSettings, classId, specId, 5, {

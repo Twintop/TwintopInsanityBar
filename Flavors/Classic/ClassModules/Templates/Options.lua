@@ -237,7 +237,7 @@ end
 local function BuildComboPointsPanel(classDef, spec)
 	local classId, specId = classDef.classId, spec.entry.specId
 	local compositeKey = spec.entry.compositeKey
-	local resourceName = L[spec.archetype.nameKey]
+	local resourceName = spec.archetype.resourceName
 	local secondary = spec.secondary --[[@as TRB.Classic.ArchetypeSecondary]]
 	local secondaryName = secondary.name
 	local labels = secondary.colorLabels
@@ -317,7 +317,7 @@ function TRB.Classic.Templates.Options:Install(className, specThresholds)
 		local specId = spec.entry.specId
 		local compositeKey = spec.entry.compositeKey
 		local archetype = spec.archetype
-		local resourceName = L[archetype.nameKey]
+		local resourceName = archetype.resourceName
 		local maxResource = spec.entry.resources[archetype.variable] or archetype.defaultMax
 		local secondaryName = spec.secondary ~= nil and spec.secondary.name or nil
 		local hasSecondary = secondaryName ~= nil
@@ -423,14 +423,14 @@ function TRB.Classic.Templates.Options:Install(className, specThresholds)
 
 			if archetype.overcap ~= nil then
 				yCoord = yCoord - 30
-				textPicker("overThreshold", L[archetype.overcap.textOverThresholdKey], oUi.xCoord)
-				textPicker("overcap", L[archetype.overcap.textOvercapKey], oUi.xCoord2)
+				textPicker("overThreshold", archetype.overcap.textOverThreshold, oUi.xCoord)
+				textPicker("overcap", archetype.overcap.textOvercap, oUi.xCoord2)
 
 				yCoord = yCoord - 30
 				controls.checkBoxes.overThresholdEnabled = TRB.Functions.OptionsUi.Primitives:BuildEnabledCheckbox(parent, "TwintopResourceBar_" .. namePrefix .. "_OverThresholdTextEnable",
-					L[archetype.overcap.textOverThresholdTooltipKey], specSettings.colors.text.overThreshold, oUi.xCoord + oUi.xPadding, yCoord)
+					archetype.overcap.textOverThresholdTooltip, specSettings.colors.text.overThreshold, oUi.xCoord + oUi.xPadding, yCoord)
 				controls.checkBoxes.overcapTextEnabled = TRB.Functions.OptionsUi.Primitives:BuildEnabledCheckbox(parent, "TwintopResourceBar_" .. namePrefix .. "_OvercapTextEnable",
-					L[archetype.overcap.textOvercapTooltipKey], specSettings.colors.text.overcap, oUi.xCoord2 + oUi.xPadding, yCoord)
+					archetype.overcap.textOvercapTooltip, specSettings.colors.text.overcap, oUi.xCoord2 + oUi.xPadding, yCoord)
 			end
 			TRB.Functions.OptionsUi.Text:GenerateUseDefaultDecimalPrecision(parent, controls, specSettings, classId, specId, yCoord)
 		end)
@@ -444,24 +444,24 @@ function TRB.Classic.Templates.Options:Install(className, specThresholds)
 			end
 			local endOfConfigs = {}
 			for _, indicator in ipairs(spec.indicators or {}) do
-				indicatorDefs[#indicatorDefs + 1] = { key = indicator.key, label = L[indicator.labelKey], tooltip = L[indicator.tooltipKey], colorLabel = L[indicator.colorLabelKey] }
+				indicatorDefs[#indicatorDefs + 1] = { key = indicator.key, label = indicator.label, tooltip = indicator.tooltip, colorLabel = indicator.colorLabel }
 				local endOf = indicator.endOf
 				if endOf ~= nil then
 					endOfConfigs[#endOfConfigs + 1] = {
 						endOfKey = endOf.key,
-						sectionHeader = L[endOf.headerKey],
-						gcdRadioLabel = L[endOf.gcdRadioKey],
-						gcdSliderLabel = L[endOf.gcdSliderKey],
-						timeRadioLabel = L[endOf.timeRadioKey],
-						timeSliderLabel = L[endOf.timeSliderKey],
+						sectionHeader = endOf.sectionHeader,
+						gcdRadioLabel = endOf.gcdRadioLabel,
+						gcdSliderLabel = endOf.gcdSliderLabel,
+						timeRadioLabel = endOf.timeRadioLabel,
+						timeSliderLabel = endOf.timeSliderLabel,
 					}
 				end
 			end
 			local overcap = archetype.overcap
 			if overcap ~= nil then
-				indicatorDefs[#indicatorDefs + 1] = { key = "borderOvercap", label = L[overcap.indicatorKey], tooltip = L[overcap.indicatorTooltipKey], colorLabel = L[overcap.indicatorColorKey] }
+				indicatorDefs[#indicatorDefs + 1] = { key = "borderOvercap", label = overcap.indicatorLabel, tooltip = overcap.indicatorTooltip, colorLabel = overcap.indicatorColorLabel }
 			end
-			local barTargetDefs = { { key = "resourceBar", label = overcap ~= nil and L[overcap.barNameKey] or resourceName } }
+			local barTargetDefs = { { key = "resourceBar", label = overcap ~= nil and overcap.barName or resourceName } }
 			if hasSecondary then
 				barTargetDefs[2] = { key = "comboPointsBar", label = secondaryName }
 			end
