@@ -254,7 +254,7 @@ local function SyncFireBlastChargeNodes(maxCharges, settings)
 
 	local previousMaxResource2 = TRB.Data.character.maxResource2
 	TRB.Data.character.maxResource2 = maxCharges
-	if previousMaxResource2 ~= maxCharges and TRB.Functions.BarVisibility and TRB.Functions.BarVisibility.MarkDirty then
+	if previousMaxResource2 ~= maxCharges then
 		TRB.Functions.BarVisibility:MarkDirty()
 	end
 
@@ -1942,11 +1942,7 @@ end
 local function SwitchSpec()
 	TRB.Data.prevLookupState = {}
 	TRB.Data.lookupDirty = true
-	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
-		Bar:QueueRenderTransition("switchSpec", 0.8)
-	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
-		Bar:HideResourceBar(true)
-	end
+	Bar:QueueRenderTransition("switchSpec", 0.8)
 	Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = TRB.Flavor.GetSpecializationIndex()
 	
@@ -2126,9 +2122,7 @@ local function HandleFireBlastChargesEvent(spellId)
 	if spellId ~= nil and spellId ~= spells.fireBlast.id then return end
 
 	TRB.Data.lookupDirty = true
-	if TRB.Functions.Class.TriggerResourceBarUpdates then
-		TRB.Functions.Class:TriggerResourceBarUpdates()
-	end
+	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
 -- Fired Up has no overlay, but each gain fires SPELL_UPDATE_COOLDOWN on its buff's id.
@@ -2163,9 +2157,7 @@ local function HandleArcaneSalvoEvent(spellId)
 	RefreshArcaneSalvoStacks()
 
 	TRB.Data.lookupDirty = true
-	if TRB.Functions.Class.TriggerResourceBarUpdates then
-		TRB.Functions.Class:TriggerResourceBarUpdates()
-	end
+	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
 -- Every Fingers of Frost charge change fires SPELL_UPDATE_USES on Ice Lance, not on the buff itself.
@@ -2183,9 +2175,7 @@ local function HandleFingersOfFrostEvent(spellId)
 	snapshot.buff:HandleProcChargeEvent()
 
 	TRB.Data.lookupDirty = true
-	if TRB.Functions.Class.TriggerResourceBarUpdates then
-		TRB.Functions.Class:TriggerResourceBarUpdates()
-	end
+	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
 ---Clears Clearcasting once a frame has passed with none of its overlays re-shown.
@@ -2398,9 +2388,7 @@ local function HandleSpellEvents(self, event, ...)
 		end
 
 		TRB.Data.lookupDirty = true
-		if TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
+		TRB.Functions.Class:TriggerResourceBarUpdates()
 	elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" or event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" then
 		local spellId = ...
 		local isShow = event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW"
@@ -2910,7 +2898,7 @@ function TRB.Functions.Class:HasActiveTimers()
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
-	if TRB.Functions.Bar and TRB.Functions.Bar.IsRenderTransitionActive and Bar:IsRenderTransitionActive() then
+	if Bar:IsRenderTransitionActive() then
 		Bar:HideResourceBar(true)
 		return
 	end

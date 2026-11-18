@@ -1213,7 +1213,7 @@ local function BloodConstructBoneShieldBarPanel(parent)
 				f:SetChecked(boneShieldColors.ossuary.enabled)
 				f:SetScript("OnClick", function(self, ...)
 					boneShieldColors.ossuary.enabled = self:GetChecked()
-					if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(6, 1) and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(6, 1) then
 						TRB.Data.cache.colors.bar = {}
 						TRB.Data.lookupDirty = true
 						TRB.Functions.Class:TriggerResourceBarUpdates()
@@ -1242,7 +1242,7 @@ local function BloodConstructBoneShieldBarPanel(parent)
 				f:SetChecked(boneShieldColors.ossuaryThreshold.enabled)
 				f:SetScript("OnClick", function(self, ...)
 					boneShieldColors.ossuaryThreshold.enabled = self:GetChecked()
-					if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(6, 1) and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+					if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(6, 1) then
 						TRB.Data.cache.colors.bar = {}
 						TRB.Data.lookupDirty = true
 						TRB.Functions.Class:TriggerResourceBarUpdates()

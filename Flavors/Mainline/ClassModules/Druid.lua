@@ -591,9 +591,7 @@ local function UpdateShapeshiftForm()
 	TRB.Functions.BarVisibility:MarkDirty()
 
 	-- Trigger resource bar update when form changes
-	if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
-		TRB.Functions.Class:CheckCharacter()
-	end
+	TRB.Functions.Class:CheckCharacter()
 	
 	if TRB.Data.snapshotData ~= nil and TRB.Data.snapshotData.snapshots ~= nil then
 		Character:ResetColorCaches()
@@ -608,9 +606,7 @@ local function UpdateShapeshiftForm()
 		TRB.Functions.BarText:CreateBarTextFrames(TRB.Data.character.classId, TRB.Data.character.specId)
 		TRB.Functions.BarText:InvalidateLookupMemoization()
 
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
+		TRB.Functions.Class:TriggerResourceBarUpdates()
 	end
 
 	-- Recalculate wrapper/CDM positioning for the new form.
@@ -619,9 +615,7 @@ local function UpdateShapeshiftForm()
 	-- Without this, the wrapper stays sized for the old form, causing:
 	-- - Wrong extendAbove (gap between CDM and top bar)
 	-- - Wrong baseOffsetX (primary shifted away from CDM center)
-	if TRB.Functions.Bar and TRB.Functions.Bar.RefreshWrapperPositioning then
-		Bar:RefreshWrapperPositioning()
-	end
+	Bar:RefreshWrapperPositioning()
 
 	-- Form change swaps which spec's settings govern the castbar and the Skyriding bars; re-evaluate their enablement.
 	TRB.Functions.Castbar:SyncEnabledState()
@@ -2945,11 +2939,7 @@ end
 local function SwitchSpec()
 	TRB.Data.prevLookupState = {}
 	TRB.Data.lookupDirty = true
-	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
-		Bar:QueueRenderTransition("switchSpec", 0.8)
-	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
-		Bar:HideResourceBar(true)
-	end
+	Bar:QueueRenderTransition("switchSpec", 0.8)
 	Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = TRB.Flavor.GetSpecializationIndex()
 	
@@ -3790,7 +3780,7 @@ function TRB.Functions.Class:HasActiveTimers()
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
-	if TRB.Functions.Bar and TRB.Functions.Bar.IsRenderTransitionActive and Bar:IsRenderTransitionActive() then
+	if Bar:IsRenderTransitionActive() then
 		Bar:HideResourceBar(true)
 		return
 	end

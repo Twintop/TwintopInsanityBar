@@ -1209,10 +1209,8 @@ local function DemonologyConstructSoulShardsBarPanel(parent)
 	f:SetChecked(spec.colors.comboPoints.refunding.enabled)
 	f:SetScript("OnClick", function(self, ...)
 		spec.colors.comboPoints.refunding.enabled = self:GetChecked()
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Data.lookupDirty = true
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
+		TRB.Data.lookupDirty = true
+		TRB.Functions.Class:TriggerResourceBarUpdates()
 	end)
 
 	yCoord = yCoord - 30

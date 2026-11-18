@@ -1796,7 +1796,7 @@ end
 
 ---Repaints the Shatter bar after one of its color settings changes.
 local function RepaintShatterBar()
-	if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(8, 3) and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+	if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(8, 3) then
 		TRB.Data.cache.colors.bar = {}
 		TRB.Data.lookupDirty = true
 		TRB.Functions.Class:TriggerResourceBarUpdates()
