@@ -348,7 +348,7 @@ end
 
 ---@param line TRB.Classes.ThresholdLine
 local function FinisherUnusable(line)
-	if line:IsComboPointFinisher() and not line.isUsable then
+	if line:IsComboPointFinisher() and not line:IsUsable() then
 		line:Unusable()
 	end
 end
@@ -1004,7 +1004,7 @@ TRB.Classes.Mainline.Rogue.SubtletySpells.thresholdSnowflakes = {
 		if not line:IsComboPointFinisher() then
 			return
 		end
-		if not line.isUsable then
+		if not line:IsUsable() then
 			line:Unusable()
 			return
 		end

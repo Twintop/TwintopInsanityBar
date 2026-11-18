@@ -3926,7 +3926,7 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 					line.snapshot = nil
 				end
 				line.resourceAmount = spell:GetPrimaryResourceCost()
-				line.isUsable = spell:IsUsable()
+				line.usable = nil
 				line.show = true
 				line.color = overColor
 				line.frameLevel = frameLevels.thresholdOver
@@ -3958,6 +3958,11 @@ function TRB.Functions.Threshold:UpdateSpellThresholds(bar, state, data, snowfla
 
 				if after ~= nil then
 					after(line)
+				end
+
+				-- Only the floor's re-read notices a change that fired no event, so a line no rule asked about keeps it.
+				if line.usable == nil then
+					spell:RefreshStaleUsable()
 				end
 
 				local isDrawn = self:AdjustThresholdDisplay(spell, spell.settingKey, frame, line.show, line.frameLevel, line.pairOffset, line.color, line.snapshot, settings, dictEntry, bar.barSettings, nil, cache)

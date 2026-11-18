@@ -523,6 +523,13 @@ function TRB.Classes.SpellBase:InsufficientPower()
 	return self._insufficientPower
 end
 
+---Re-reads usability once its floor has passed, for a caller with no use for the answer this tick.
+function TRB.Classes.SpellBase:RefreshStaleUsable()
+	if (self._lastSpellUsableCheck or 0) + spellUsableFloorTimespan <= (tickTime or GetTime()) then
+		self:UpdateIsSpellUsable()
+	end
+end
+
 ---Updates IsSpellUsable cache.
 function TRB.Classes.SpellBase:UpdateIsSpellUsable()
 	local currentTime = tickTime or GetTime()
