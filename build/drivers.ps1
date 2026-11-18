@@ -43,8 +43,8 @@
 	are replaced; it runs once per flavor.
 	mounted-conditions checks the Mounted visibility conditions in the Live probe's states and TBC's, and that the Steady Flight
 	split evaluates exactly as before, runs once per save, splits old imports, and keeps presets linked; it runs once per flavor.
-	spell-usable checks that spells sharing an ID share one usability read, that no spell holds a read past its second,
-	and that each spell still marks bar text dirty when its answer changes; it runs once per flavor.
+	spell-usable checks that spells sharing an ID share one usability read, that a threshold line reads usability only
+	when a rule asks, and that neither loses the one-second floor or the bar text repaint; it runs once per flavor.
 	See build\harness\README.md.
 
 .PARAMETER Lua

@@ -1,5 +1,5 @@
--- Checks that spells sharing an ID share one usability read, without holding it past the one-second floor or
--- dropping a spell's own bar text repaint (settings in harness/README.md).
+-- Checks that spells sharing an ID share one usability read, and that a threshold line reads usability only when a
+-- rule asks, without losing the one-second floor or the bar text repaint (settings in harness/README.md).
 local desktop = _G --[[@as table<string, any>]]
 local parity = desktop.require("drivers.parity")
 
@@ -109,6 +109,144 @@ function hooks.afterEvents(ctx)
 	first:IsUsable()
 	second:IsUsable()
 	check("An unchanged re-read leaves it clean", TRB.Data.lookupDirty == false)
+
+	-- A threshold pass: a line reads its spell's usability only when one of its rules asks.
+	local G = desktop
+	local Threshold = TRB.Functions.Threshold
+	local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+	local powerType = G.Enum.PowerType.Mana
+	-- A cost on the bar, so the generic rules reach their usability check.
+	G.C_Spell.GetSpellPowerCost = function()
+		return { { type = powerType, cost = 30, minCost = 30 } }
+	end
+	---@param key string
+	---@param id integer
+	---@param isSnowflake boolean
+	---@param stealth boolean?
+	---@return TRB.Classes.SpellThreshold
+	local function NewLine(key, id, isSnowflake, stealth)
+		return TRB.Classes.SpellThreshold:New({
+			id = id,
+			settingKey = key,
+			primaryResourceType = powerType,
+			isSnowflake = isSnowflake,
+			stealth = stealth,
+		})
+	end
+	local UNUSABLE_ID, USABLE_ID, UNASKED_ID, STEALTH_ID, TWICE_ID = 990011, 990012, 990013, 990014, 990015
+	local lineIds = { UNUSABLE_ID, USABLE_ID, UNASKED_ID, STEALTH_ID, TWICE_ID }
+	local twice = NewLine("driverTwice", TWICE_ID, true)
+	local twiceAsks = 0
+	rawset(twice, "IsUsable", function(self)
+		twiceAsks = twiceAsks + 1
+		return SpellBase.IsUsable(self)
+	end)
+	-- The unusable line goes first, so an answer carried over from the line before would show on the usable one.
+	local data = {
+		thresholdSpells = {
+			NewLine("driverUnusable", UNUSABLE_ID, false),
+			NewLine("driverUsable", USABLE_ID, false),
+			NewLine("driverUnasked", UNASKED_ID, true),
+			NewLine("driverStealth", STEALTH_ID, false, true),
+			twice,
+		},
+		spells = TRB.Data.spellsData.spells,
+		talents = TRB.Data.talents,
+		requireKnown = false,
+	}
+	local snowflakes = {
+		spells = {
+			driverUnasked = function(line) line:Unusable() end,
+			driverTwice = function(line)
+				if line:IsUsable() and line:IsUsable() then
+					line:Over()
+				end
+			end,
+		},
+	}
+	world.usable[UNUSABLE_ID] = { false, true }
+
+	local nodeFrame = G.CreateFrame("Frame")
+	local nodeThresholds = {}
+	local node = {
+		GetFrame = function() return nodeFrame end,
+		GetThresholds = function() return nodeThresholds end,
+		RegisterThreshold = function(_, frame) nodeThresholds[#nodeThresholds + 1] = frame end,
+	}
+	local bar = TRB.Classes.ThresholdBar:New()
+	bar:Set(node, 1000000)
+	local state = TRB.Classes.ThresholdState:New()
+
+	-- What each line was handed to the draw step with.
+	local drawn = {}
+	local adjust = Threshold.AdjustThresholdDisplay
+	Threshold.AdjustThresholdDisplay = function(self, spell, key, threshold, showThreshold, frameLevel, pairOffset, color, ...)
+		drawn[key] = { show = showThreshold, color = color }
+		return adjust(self, spell, key, threshold, showThreshold, frameLevel, pairOffset, color, ...)
+	end
+	local readsBefore = {}
+	---Runs one pass and returns how many reads each line's spell made in it.
+	---@return table<integer, integer>?
+	local function Pass()
+		for _, id in ipairs(lineIds) do
+			readsBefore[id] = Reads(id)
+		end
+		state:Refresh(settings)
+		local ok, err = pcall(Threshold.UpdateSpellThresholds, Threshold, bar, state, data, snowflakes)
+		if not ok then
+			check("A threshold pass runs without an error", false, err)
+			return nil
+		end
+		local made = {}
+		for _, id in ipairs(lineIds) do
+			made[id] = Reads(id) - readsBefore[id]
+		end
+		return made
+	end
+	---The next tick, with SPELL_UPDATE_USABLE fired since the last.
+	local function NextTick()
+		world.now = world.now + 0.05
+		SpellBase.InvalidateSpellUsable()
+	end
+
+	NewGeneration()
+	local made = Pass()
+	if made ~= nil then
+		local colors = settings.colors.threshold
+		check("A usable line after an unusable one draws in its own color", drawn.driverUsable.color == colors.over.color
+			and drawn.driverUnusable.color == colors.under.color and drawn.driverUsable.show == true,
+			tostring(drawn.driverUsable.color) .. " / " .. tostring(drawn.driverUnusable.color))
+		check("A stealth line out of stealth is hidden", drawn.driverStealth.show == false)
+
+		NextTick()
+		twiceAsks = 0
+		made = Pass() or {}
+		check("A line whose rule asks reads once in a pass", made[USABLE_ID] == 1 and made[UNUSABLE_ID] == 1, made[USABLE_ID])
+		check("A line hidden by its stealth gate reads nothing", made[STEALTH_ID] == 0, made[STEALTH_ID])
+		check("A line whose rule doesn't ask reads nothing", made[UNASKED_ID] == 0, made[UNASKED_ID])
+		check("A rule that asks twice asks the spell once", twiceAsks == 1, twiceAsks)
+
+		-- With no event, the floor's re-read still reaches a line nothing asked about.
+		world.now = world.now + 1.05
+		made = Pass() or {}
+		check("With no event, a line nothing asked about is re-read after a second", made[STEALTH_ID] == 1 and made[UNASKED_ID] == 1,
+			tostring(made[STEALTH_ID]) .. " / " .. tostring(made[UNASKED_ID]))
+		world.now = world.now + 0.05
+		made = Pass() or {}
+		check("It isn't read again on the next pass", made[STEALTH_ID] == 0 and made[UNASKED_ID] == 0 and made[USABLE_ID] == 0,
+			tostring(made[STEALTH_ID]) .. " / " .. tostring(made[UNASKED_ID]) .. " / " .. tostring(made[USABLE_ID]))
+
+		world.usable[STEALTH_ID] = { false, false }
+		world.now = world.now + 1.05
+		TRB.Data.lookupDirty = false
+		Pass()
+		check("That re-read marks bar text dirty when the answer changed", TRB.Data.lookupDirty == true)
+		world.now = world.now + 1.05
+		TRB.Data.lookupDirty = false
+		Pass()
+		check("An unchanged one leaves it clean", TRB.Data.lookupDirty == false)
+	end
+	Threshold.AdjustThresholdDisplay = adjust
 
 	print(string.format("DRIVER spell-usable: %d failures", errors))
 	return errors
