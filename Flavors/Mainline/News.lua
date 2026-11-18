@@ -10,6 +10,12 @@ TRB.Flavor.newsContent = [====[
 
 # 12.1.5.15-release (2026-11-18)
 ## General
+### Bar Visibility
+
+- Fix the Steady Flight and Steady Flight (Flying Only) bar visibility conditions matching while skyriding.
+- Steady Flight now matches on a flying mount wherever you can fly, on the ground or in the air.
+- Existing Steady Flight selections, including those in profiles and imports, become Skyriding (Flying Only) and Steady Flight (Flying Only), so every bar shows and hides as before.
+
 ### Custom Bars
 
 - [#1008](#1008) Fix the bar text of a custom bar on a Cooldown Manager buff ignoring the Cooldown Manager value when unavailable option.

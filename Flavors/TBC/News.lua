@@ -10,6 +10,11 @@ TRB.Flavor.newsContent = [====[
 
 # 2.5.6.4-release (2026-11-18)
 ## General
+### Bar Visibility
+
+- Fix the Steady Flight bar visibility condition matching only in the air: it now matches on a flying mount wherever you can fly, on the ground or in the air.
+- Existing Steady Flight selections, including those in profiles and imports, become Steady Flight (Flying Only), so every bar shows and hides as before.
+
 ### Timer Bars
 
 - [#1008](#1008) Fix the Use Global checkbox tooltip in the Position and Size section of Main Hand Swing, Off Hand Swing, Ranged Swing, and Five Second Rule showing a placeholder.
