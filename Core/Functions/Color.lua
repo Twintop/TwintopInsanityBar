@@ -1168,7 +1168,10 @@ TRB.Data.resolvedIndicators = {
 	specSettings = nil,
 	-- barKey -> { glows, color }, resolved for every bar at once: glows land on nodes, not on a color map.
 	---@type table<string, table>
-	barGlows = {}
+	barGlows = {},
+	-- barKey -> { count, [i] = { key, glows, indicator } }: every met gradient row picking a glow there, in list order.
+	---@type table<string, table>
+	gradientGlows = {}
 }
 
 -- Fill elements take the whole indicator entry (so ApplyFillColor can honor color2/gradientDirection);
@@ -1297,6 +1300,7 @@ local sharedIndicatorBars = {
 local sharedBarsWritten = true
 local gradientsWritten = true
 local glowsWritten = true
+local gradientGlowsWritten = true
 
 ---Resolves the indicator colors for a spec's own bars plus the shared health bar and cast bar. Walks
 ---nodeOrder back to front so earlier (higher-priority) entries overwrite later ones. The spec's bars are
@@ -1344,6 +1348,13 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 		end
 		gradientsWritten = false
 	end
+	local gradientGlows = resolved.gradientGlows
+	if gradientGlowsWritten then
+		for _, glowList in pairs(gradientGlows) do
+			glowList.count = 0
+		end
+		gradientGlowsWritten = false
+	end
 	if indicatorColors and gradientOrder then
 		for i = 1, #gradientOrder do
 			local key = gradientOrder[i]
@@ -1352,6 +1363,26 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 				gradientKeys[indicator] = indicator.copyOf or key
 				gradientsWritten = true
 				for barKey, elements in pairs(indicator.targets) do
+					-- Unlike flat rows, every met gradient row's glows run: each fades in at its own step.
+					if elements.glows ~= nil and next(elements.glows) ~= nil then
+						local glowList = gradientGlows[barKey]
+						if glowList == nil then
+							glowList = { count = 0 }
+							gradientGlows[barKey] = glowList
+						end
+						local count = glowList.count + 1
+						local glowEntry = glowList[count]
+						if glowEntry == nil then
+							glowEntry = {}
+							glowList[count] = glowEntry
+						end
+						glowEntry.key = key
+						glowEntry.glows = elements.glows
+						glowEntry.indicator = indicator
+						glowList.count = count
+						gradientGlowsWritten = true
+					end
+
 					local barGradients = gradients[barKey]
 					if barGradients == nil then
 						barGradients = {}
@@ -1502,6 +1533,18 @@ function TRB.Functions.Color:GetResolvedGradients(barKey)
 	return resolved.gradients[barKey]
 end
 
+---The Border Glows each met gradient row picks on a bar, as { count, [i] = { key, glows, indicator } } in list
+---order, or nil when the active spec hasn't resolved any.
+---@param barKey string
+---@return table?
+function TRB.Functions.Color:GetResolvedGradientGlows(barKey)
+	local resolved = TRB.Data.resolvedIndicators
+	if resolved.compositeKey ~= TRB.Data.character.compositeKey then
+		return nil
+	end
+	return resolved.gradientGlows[barKey]
+end
+
 ---Publishes where a gradient built-in steps on the shared bars and End Caps, as a fraction of the resource, for one
 ---not measured at the overcap threshold. nil clears it.
 ---@param builtInKey string
@@ -1518,18 +1561,20 @@ end
 
 ---A resolved gradient's step curve from baseColor up to its color: at the step its spec published, else at the
 ---overcap threshold of the raw spec settings, which the composed settings render paths carry don't include.
----@param gradient table # An indicator from GetResolvedGradients
+---@param gradient table # An indicator from GetResolvedGradients or GetResolvedGradientGlows
 ---@param baseColor string|table?
+---@param aboveColor string? # In place of the gradient's own color
 ---@return table?
-function TRB.Functions.Color:BuildResolvedGradientCurve(gradient, baseColor)
+function TRB.Functions.Color:BuildResolvedGradientCurve(gradient, baseColor, aboveColor)
 	local resolved = TRB.Data.resolvedIndicators
+	aboveColor = aboveColor or gradient.color
 	local step = nil
 	if resolved.gradientStepsKey == TRB.Data.character.compositeKey then
 		local builtInKey = resolved.gradientKeys[gradient]
 		step = builtInKey ~= nil and resolved.gradientSteps[builtInKey] or nil
 	end
 	if step == nil then
-		return self:BuildResourceThresholdCurve(resolved.specSettings, baseColor, gradient.color)
+		return self:BuildResourceThresholdCurve(resolved.specSettings, baseColor, aboveColor)
 	end
 	if type(baseColor) == "table" then
 		baseColor = baseColor.color
@@ -1537,7 +1582,7 @@ function TRB.Functions.Color:BuildResolvedGradientCurve(gradient, baseColor)
 	if type(baseColor) ~= "string" then
 		return nil
 	end
-	return self:GetStepColorCurve("resolvedGradient", baseColor, gradient.color, step)
+	return self:GetStepColorCurve("resolvedGradient", baseColor, aboveColor, step)
 end
 
 ---Fills `out` with each element of a bar's top-priority gradient indicator that is on and met, for a spec

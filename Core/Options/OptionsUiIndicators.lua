@@ -1948,7 +1948,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				ci.targets = ci.targets or {}
 
 				local rowBarTargetDefs = GetBarTargetDefsFor(indicatorDefByKey[ck])
-				ApplyTargetMenuScrollMode(rootDescription, rowBarTargetDefs, IsGradientExcluded)
+				ApplyTargetMenuScrollMode(rootDescription, rowBarTargetDefs, IsGradientExcluded, true)
 
 				local firstBar = true
 				for _, barDef in ipairs(rowBarTargetDefs) do
@@ -1989,6 +1989,17 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 								)
 							end
 						end
+
+						-- Only on bars that take a gradient: the glow fades in at the same step as the color.
+						CreateBorderGlowSubmenu(rootDescription, function()
+							local indicator = indicatorColors[orderedGradientKeys[capturedGradIdx]]
+							if not indicator then return nil end
+							indicator.targets = indicator.targets or {}
+							indicator.targets[barDef.key] = indicator.targets[barDef.key] or {}
+							return indicator.targets[barDef.key]
+						end, function()
+							SyncEnabled(indicatorColors[orderedGradientKeys[capturedGradIdx]], gradRow.colorPicker)
+						end)
 					end
 				end
 			end)

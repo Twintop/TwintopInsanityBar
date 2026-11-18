@@ -1,4 +1,5 @@
 local _, TRB = ...
+local UnitPowerPercent = TRB.Functions.CurveMemo.UnitPowerPercent
 TRB.Functions = TRB.Functions or {}
 TRB.Functions.Glow = TRB.Functions.Glow or {}
 local L = TRB.Localization
@@ -7,12 +8,25 @@ local L = TRB.Localization
 ---@class TRB.Classes.GlowTarget : Frame
 ---@field public trbGlows table<string, table>? # Running glows by glow id: { type, color, <style fields> }
 ---@field public trbButtonGlowOwner string? # Id of the glow holding the frame's single Action Button Glow
+---@field public trbGradientGlowHosts table<string, TRB.Classes.GradientGlowHost>? # Gradient row key -> the child frame its glows run on
+
+---A bar frame's child that one gradient row's glows run on; its alpha carries the row's step.
+---@class TRB.Classes.GradientGlowHost : TRB.Classes.GlowTarget
+---@field public trbGradientPass integer? # The last ApplyGradientGlows pass a met row claimed it in
+---@field public trbAlphaResult table? # The curve result its alpha was last set from
 
 -- Reused for the {r,g,b,a} the pixel, autocast, and proc styles want: they read the table without keeping it.
 local colorScratch = { 1, 1, 1, 1 }
 
 -- Lets Apply reach ApplySet without building a one-entry set per call.
 local singleScratch = {}
+
+-- A gradient glow's alpha curve: hidden below the row's step, shown at or above it.
+local GRADIENT_GLOW_HIDDEN = "00FFFFFF"
+local GRADIENT_GLOW_SHOWN = "FFFFFFFF"
+
+-- Bumped per ApplyGradientGlows call, so a host no met row claimed this pass can be told apart.
+local gradientPass = 0
 
 ---@class TRB.Classes.GlowTypeDef
 ---@field key string
@@ -335,6 +349,66 @@ function TRB.Functions.Glow:Clear(frame)
 	frame.trbButtonGlowOwner = nil
 end
 
+---The child frame one gradient row's glows run on, made the first time that row picks a glow on this frame.
+---@param frame TRB.Classes.GlowTarget
+---@param rowKey string
+---@return TRB.Classes.GradientGlowHost
+local function GetGradientGlowHost(frame, rowKey)
+	local hosts = frame.trbGradientGlowHosts
+	if hosts == nil then
+		hosts = {}
+		frame.trbGradientGlowHosts = hosts
+	end
+	local host = hosts[rowKey]
+	if host == nil then
+		---@type TRB.Classes.GradientGlowHost
+		host = CreateFrame("Frame", nil, frame)
+		host:SetAllPoints(frame)
+		-- Level with the bar, so the library's offset puts each glow where a flat one sits.
+		host:SetFrameLevel(frame:GetFrameLevel())
+		hosts[rowKey] = host
+	end
+	return host
+end
+
+---Runs each met gradient row's glows on its own host, which the engine fades in at the row's step, and stops
+---the glows of every row that isn't met.
+---@param frame TRB.Classes.GlowTarget
+---@param gradientGlows table? # From Color:GetResolvedGradientGlows
+function TRB.Functions.Glow:ApplyGradientGlows(frame, gradientGlows)
+	gradientPass = gradientPass + 1
+	local resource = TRB.Data.resource
+	if gradientGlows ~= nil and resource ~= nil then
+		local Color = TRB.Functions.Color
+		for i = 1, gradientGlows.count do
+			local entry = gradientGlows[i]
+			local curve = Color:BuildResolvedGradientCurve(entry.indicator, GRADIENT_GLOW_HIDDEN, GRADIENT_GLOW_SHOWN)
+			if curve ~= nil then
+				local host = GetGradientGlowHost(frame, entry.key)
+				host.trbGradientPass = gradientPass
+				self:ApplySet(host, entry.glows, entry.indicator.color)
+				-- The memo hands back the same result until the resource changes.
+				local result = UnitPowerPercent("player", resource, true, curve)
+				if host.trbAlphaResult ~= result then
+					host.trbAlphaResult = result
+					local _, _, _, alpha = result:GetRGBA()
+					host:SetAlpha(alpha)
+				end
+			end
+		end
+	end
+
+	local hosts = frame.trbGradientGlowHosts
+	if hosts ~= nil then
+		for _, host in pairs(hosts) do
+			if host.trbGradientPass ~= gradientPass and host.trbGlows ~= nil then
+				self:Clear(host)
+				host.trbAlphaResult = nil
+			end
+		end
+	end
+end
+
 ---Applies the glows a Color Indicator has claimed for a bar to one of its nodes, or clears them when
 ---nothing claims it. Resolved from the indicator state, so the caller only needs the node and its key.
 ---@param node TRB.Classes.BarNode?
@@ -351,21 +425,34 @@ function TRB.Functions.Glow:ApplyIndicatorGlow(node, barKey)
 
 	-- A node whose bar has no indicator key this frame (a slot reused for an untargetable spell) still has
 	-- to shed whatever it was glowing with before.
-	local resolved = barKey ~= nil and TRB.Functions.Color:GetResolvedGlow(barKey) or nil
+	local Color = TRB.Functions.Color
+	local resolved = barKey ~= nil and Color:GetResolvedGlow(barKey) or nil
 	if resolved == nil then
 		self:Clear(frame)
-		return
+	else
+		self:ApplySet(frame, resolved.glows, resolved.color)
 	end
 
-	self:ApplySet(frame, resolved.glows, resolved.color)
+	local gradientGlows = barKey ~= nil and Color:GetResolvedGradientGlows(barKey) or nil
+	if (gradientGlows ~= nil and gradientGlows.count > 0) or frame.trbGradientGlowHosts ~= nil then
+		self:ApplyGradientGlows(frame, gradientGlows)
+	end
 end
 
----Releases a node's glow back to the library's pool. Called as a node is torn down, before its frame is
----orphaned -- the glow frame is a child of it and would otherwise never return to the pool.
+---Releases a node's glows back to the library's pool. Called as a node is torn down, before its frame is
+---orphaned -- the glow frames are children of it and would otherwise never return to the pool.
 ---@param node TRB.Classes.BarNode?
 function TRB.Functions.Glow:ReleaseNode(node)
 	if node == nil then
 		return
 	end
-	self:Clear(node.frame)
+	local frame = node.frame
+	self:Clear(frame)
+	local hosts = frame ~= nil and frame.trbGradientGlowHosts or nil
+	if hosts ~= nil then
+		for _, host in pairs(hosts) do
+			self:Clear(host)
+			host.trbAlphaResult = nil
+		end
+	end
 end
