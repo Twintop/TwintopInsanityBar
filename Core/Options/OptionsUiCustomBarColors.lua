@@ -15,7 +15,7 @@ local gradientDirectionAbbrevLabels = {
 	vertical = L["GradientDirectionVerticalAbbrev"],
 }
 
----Repaints the live bar after an edit outside a color picker, such as a range or the Totems override.
+---Repaints the live bar after a range edit, from either the colors or the start values section.
 ---@param classId integer
 ---@param specId integer
 local function RepaintRangeBar(classId, specId)
@@ -308,7 +308,8 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 	-- Simple bar/border/background colors
 	-- Bar Color
 
-	if colorSettings.bar then
+	-- Where the Totems bar's nodes are elements, each element's color is its fill, so the bar has none of its own.
+	if colorSettings.bar and not (barTypeDef.key == "totems" and TRB.Flavor.totemElements) then
 		if type(colorSettings.bar) == "table" and colorSettings.bar.color2 then
 			colorControls.bar = TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, string.format(L["CustomBarColorBar"], displayName), colorSettings.bar, oUi.colorPickerTextWidth, oUi.gradientColorPickerFrameSize, oUi.xCoord2, yCoord)
 			f = colorControls.bar
@@ -326,17 +327,8 @@ function TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(p
 				TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorSettings, colorControls, "bar", nil, nil, classId, specId)
 			end)
 		end
-		-- Where the Totems bar's nodes are elements, an element color always wins unless this row's toggle overrides them.
-		if barTypeDef.key == "totems" and TRB.Flavor.totemElements and type(colorSettings.bar) == "table" then
-			controls.checkBoxes = controls.checkBoxes or {}
-			controls.checkBoxes.totemsOverrideElements = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, "TwintopResourceBar_" .. namePrefix .. "_overrideElements", L["TotemsOverrideElements"], L["TotemsOverrideElementsTooltip"], yCoord,
-				function() return colorSettings.bar.overrideElements end,
-				function(checked)
-					colorSettings.bar.overrideElements = checked
-					RepaintRangeBar(classId, specId)
-				end)
 		-- The reorderable node rows below name their node beside the arrows, so this row names itself there too.
-		elseif barTypeDef.hasOrdering then
+		if barTypeDef.hasOrdering then
 			local labelX = oUi.xCoord + ORDER_ARROWS_WIDTH
 			TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, string.format(L["CustomBarColorBar"], displayName), labelX, yCoord, oUi.xCoord2 - labelX - 10, 20, GameFontHighlight)
 		end

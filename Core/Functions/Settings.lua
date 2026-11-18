@@ -2453,24 +2453,24 @@ function TRB.Functions.Settings:DefaultTotemBarSettings(classic, builtIn)
 	return settings
 end
 
----Default Totems bar colors. Where slots are elements, each element has its own fill.
+---Default Totems bar colors. Where slots are elements, each element's color is its node's fill, so there is no bar color.
 ---@return table
 function TRB.Functions.Settings:DefaultTotemBarColors()
 	local colors = {
-		bar = { color = "FF0070DD", color2 = "FF0070DD", gradientDirection = "disabled" },
 		border = { color = "FF000000" },
 		background = { color = "66000000" },
 		endCap = self:DefaultEndCapColorEntry(),
 		ending = { color = "FFFF0000", enabled = true, mode = "time", timeMax = 3, gcdsMax = 2 }
 	}
 	if TRB.Flavor.totemElements then
-		colors.bar.overrideElements = false
 		colors.nodeColors = {
 			earth = { color = "FF9C7A3C", color2 = "FF9C7A3C", gradientDirection = "disabled" },
 			fire = { color = "FFFF5A1F", color2 = "FFFF5A1F", gradientDirection = "disabled" },
 			water = { color = "FF2E86FF", color2 = "FF2E86FF", gradientDirection = "disabled" },
 			air = { color = "FFB8E6FF", color2 = "FFB8E6FF", gradientDirection = "disabled" }
 		}
+	else
+		colors.bar = { color = "FF0070DD", color2 = "FF0070DD", gradientDirection = "disabled" }
 	end
 	return colors
 end

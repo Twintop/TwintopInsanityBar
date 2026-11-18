@@ -496,20 +496,19 @@ local function GetEndingSeconds(ending)
 	return ending.timeMax or 0
 end
 
----The fill color entry for a slot: its element's where slots are elements, unless the bar's overrides them, else the bar's.
+---The fill color entry for a slot: its element's where slots are elements, else the bar's.
 ---@param colors table
 ---@param slot integer
 ---@return string|TRB.Classes.Settings.ColorGradientEntry
 local function GetSlotColor(colors, slot)
-	local bar = colors.bar
-	if TRB.Flavor.totemElements and colors.nodeColors ~= nil and not (type(bar) == "table" and bar.overrideElements) then
+	if TRB.Flavor.totemElements and colors.nodeColors ~= nil then
 		for key, elementSlot in pairs(ELEMENT_SLOTS) do
 			if elementSlot == slot and colors.nodeColors[key] ~= nil then
 				return colors.nodeColors[key]
 			end
 		end
 	end
-	return bar or "FFFFFFFF"
+	return colors.bar or "FFFFFFFF"
 end
 
 ---Draws the Totems bar. Binds a node only when its slot changed, and paints the Ending color every tick while it's on.

@@ -17,7 +17,7 @@ TRB.Flavor.newsContent = [====[
 
 ### Totems
 
-- Add a Use for every element option to the Totems bar color, off by default, which fills every element's node with that color instead of its own.
+- Remove the Totems bar color, which each element's own color always replaced.
 
 ---
 

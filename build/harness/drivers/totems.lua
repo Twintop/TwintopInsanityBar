@@ -431,7 +431,6 @@ function hooks.afterEvents(ctx)
 	liveEntry.color2, liveEntry.gradientDirection = wasGradient.color2, wasGradient.gradientDirection
 	Render()
 	if elements then
-		check("an element bar defaults to its element colors", barColors.bar.overrideElements == false)
 		local elementOfSlot = { "fire", "earth", "water", "air" }
 		local function ElementFills()
 			for i = 1, group.nodeCount do
@@ -442,18 +441,25 @@ function hooks.afterEvents(ctx)
 			return true
 		end
 		check("each node fills with its element's color", ElementFills())
-		barColors.bar.overrideElements = true
+		-- A save from before the bar color went still holds one, which no node takes.
+		barColors.bar = { color = "FF123456", color2 = "FF123456", gradientDirection = "disabled" }
 		Render()
-		local allBar = true
-		for i = 1, group.nodeCount do
-			allBar = allBar and FlatFill(i, barColors.bar.color)
-		end
-		check("Use for every element fills every node with the Totems bar color", allBar)
-		barColors.bar.overrideElements = false
-		Render()
-		check("unchecking it brings the element colors back", ElementFills())
+		check("an element bar has no bar color, and a saved one fills no node", TRB.Functions.Settings:DefaultTotemBarColors().bar == nil
+			and ElementFills())
 	else
-		check("a bar without elements has no override", barColors.bar.overrideElements == nil)
+		check("a bar without elements keeps its bar color", TRB.Functions.Settings:DefaultTotemBarColors().bar ~= nil)
+	end
+	-- The Totems tab offers a bar color only where the nodes aren't elements.
+	local container = TRB.Frames.interfaceSettingsFrameContainer
+	TRB.Frames.interfaceSettingsFrameContainer = { controls = {} }
+	local panelBuilt = pcall(TRB.Functions.OptionsUi.Totems.ConstructPanel, TRB.Functions.OptionsUi.Totems, desktop.CreateFrame("Frame"), character.classId, character.specId)
+	local panelControls = TRB.Frames.interfaceSettingsFrameContainer.controls[character.className .. "_" .. character.specName]
+	local barRow = panelControls and panelControls.colors and panelControls.colors.bars and panelControls.colors.bars.totems
+		and panelControls.colors.bars.totems.bar
+	TRB.Frames.interfaceSettingsFrameContainer = container
+	check("the Totems tab has a bar color row only without elements", panelBuilt and (barRow == nil) == (elements == true))
+	if elements then
+		barColors.bar = nil
 	end
 	ending.enabled, ending.mode, ending.timeMax = wasEnding.enabled, wasEnding.mode, wasEnding.timeMax
 	OverlaySlot.SetFillTintColorResult = setTint
