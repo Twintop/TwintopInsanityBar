@@ -347,13 +347,6 @@ local function StealthViaBuff(line)
 end
 
 ---@param line TRB.Classes.ThresholdLine
-local function FinisherUnusable(line)
-	if line:IsComboPointFinisher() and not line:IsUsable() then
-		line:Unusable()
-	end
-end
-
----@param line TRB.Classes.ThresholdLine
 local function CoupDeGrace(line)
 	if not line.state.snapshotData.attributes.coupDeGraceActive then
 		line:Hide()
@@ -415,7 +408,7 @@ TRB.Classes.Mainline.Rogue.AssassinationSpells.thresholdSnowflakes = {
 			end
 		end,
 	},
-	after = FinisherUnusable,
+	after = TRB.Classes.ThresholdLine.UnusableWithoutComboPoints,
 }
 
 
@@ -718,7 +711,7 @@ TRB.Classes.Mainline.Rogue.OutlawSpells.thresholdSnowflakes = {
 		coupDeGrace = CoupDeGrace,
 	},
 	after = function(line)
-		FinisherUnusable(line)
+		line:UnusableWithoutComboPoints()
 		local spells = line.data.spells --[[@as TRB.Classes.Mainline.Rogue.OutlawSpells]]
 		local attributes = line.spell.attributes
 		local snapshot = line.snapshot
@@ -1004,13 +997,10 @@ TRB.Classes.Mainline.Rogue.SubtletySpells.thresholdSnowflakes = {
 		if not line:IsComboPointFinisher() then
 			return
 		end
-		if not line:IsUsable() then
-			line:Unusable()
-			return
-		end
+		line:UnusableWithoutComboPoints()
 		local spells = line.data.spells --[[@as TRB.Classes.Mainline.Rogue.SubtletySpells]]
 		if line.color ~= line.state.settings.colors.threshold.special.color and line.state.snapshotData.snapshots[spells.goremawsBite.id].buff.isActive
-			and (line.snapshot == nil or line.snapshot.cooldown:IsUsable()) then
+			and (line.snapshot == nil or line.snapshot.cooldown:IsUsable()) and line:IsUsable() then
 			line:Over()
 		end
 	end,
