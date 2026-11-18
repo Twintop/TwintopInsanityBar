@@ -9,6 +9,7 @@ TRB.Details.coreNewsContent = [====[
 
 - [#1013](#1013) Improve bar text update performance, primarily for bar text on bars that aren't showing.
 - [#1014](#1014) Improve bar text update performance, primarily for stats, cast bar text, and timer bar text.
+- [#1015](#1015) Improve bar text update performance, primarily for health and pet text.
 
 ## Custom Bars
 
