@@ -582,4 +582,6 @@ if locale == "enGB" then
 	L["ForeverShamanElementalShieldCheckboxUseHighestForAll"] = "Use highest shield orb colour for all?"
 	L["ForeverShamanElementalShieldCheckboxUseHighestForAllTooltip"] = "When checked, the highest shield orb's colour will be used for all shield orbs. E.g., if you have maximum %d shield orbs and currently have %d, the Penultimate colour will be used for all shield orbs instead of just the second to last."
 	L["TotemsOverrideElementsTooltip"] = "When checked, every element's node fills with the Totems bar colour instead of its own element colour."
+	L["CheckboxUseGlobalTooltip_TotemsDimensions"] = "When checked, this bar's position and size come from the global Totems screen instead of this specialisation's own settings."
+	L["CheckboxUseGlobalTooltip_TotemsColors"] = "When checked, this bar's colours come from the global Totems screen instead of this specialisation's own settings."
 end

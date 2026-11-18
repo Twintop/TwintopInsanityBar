@@ -17,7 +17,7 @@ local globalSettingDefinitions = {
 	healthBarColors = { checkboxSuffix = "healthBarColors", tabKey = "healthBar",       sectionLabel = L["CopyMenuSection_healthBarColors"], paths = { {"colors", "healthBar"} } },
 	thresholdIcons  = { checkboxSuffix = "thresholdIcons",  tabKey = "thresholds",      sectionLabel = L["CopyMenuSection_thresholdIcons"],  paths = { {"thresholds", "properties"}, {"thresholds", "icons"} }, shapeSensitive = true },
 	thresholdColors = { checkboxSuffix = "thresholdColors", tabKey = "thresholds",      sectionLabel = L["CopyMenuSection_thresholdColors"], paths = { {"colors", "threshold"} }, shapeSensitive = true },
-	thresholdBehavior = { checkboxSuffix = "thresholdBehavior", tabKey = "thresholds",  sectionLabel = L["CopyMenuSection_thresholdBehavior"], paths = { {"thresholds", "behavior"} } },
+	thresholdBehavior = { checkboxSuffix = "thresholdBehavior", tabKey = "thresholds",  useGlobalTooltip = L["CheckboxUseGlobalTooltip_ThresholdBehavior"], sectionLabel = L["CopyMenuSection_thresholdBehavior"], paths = { {"thresholds", "behavior"} } },
 	displayText     = { checkboxSuffix = "displayText",     tabKey = "fontText",        sectionLabel = L["CopyMenuSection_displayText"],     paths = { {"displayText", "default"} } },
 	textColors      = { checkboxSuffix = "textColors",      tabKey = "fontText",        sectionLabel = L["CopyMenuSection_textColors"],      paths = { {"colors", "text"} } },
 	precision       = { checkboxSuffix = "precision",       tabKey = "fontText",        sectionLabel = L["CopyMenuSection_precision"],       paths = { {"precision"} } },
@@ -26,85 +26,85 @@ local globalSettingDefinitions = {
 	-- useGlobalLabel gives their checkboxes distinct wording so users aren't sent looking in the
 	-- normal Global Options frame. Field-level paths so copies never clobber spec-only data
 	-- (enabled, tickProfiles).
-	castbarDimensions = { checkboxSuffix = "castbarDimensions", tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPlayerCastbar"], sectionLabel = L["CopyMenuSection_castbarDimensions"],
+	castbarDimensions = { checkboxSuffix = "castbarDimensions", tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPlayerCastbar"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_CastbarDimensions"], sectionLabel = L["CopyMenuSection_castbarDimensions"],
 		paths = { {"bars", "castbar", "width"}, {"bars", "castbar", "height"}, {"bars", "castbar", "border"}, {"bars", "castbar", "xPos"}, {"bars", "castbar", "yPos"}, {"bars", "castbar", "anchor"}, {"bars", "castbar", "fillDirection"}, {"bars", "castbar", "icon"} } },
-	castbarColors   = { checkboxSuffix = "castbarColors",   tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPlayerCastbar"], sectionLabel = L["CopyMenuSection_castbarColors"],
+	castbarColors   = { checkboxSuffix = "castbarColors",   tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPlayerCastbar"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_CastbarColors"], sectionLabel = L["CopyMenuSection_castbarColors"],
 		paths = { {"colors", "bars", "castbar", "bar"}, {"colors", "bars", "castbar", "channel"}, {"colors", "bars", "castbar", "uninterruptible"}, {"colors", "bars", "castbar", "uninterruptibleBorder"}, {"colors", "bars", "castbar", "border"}, {"colors", "bars", "castbar", "background"}, {"colors", "bars", "castbar", "endCap"}, {"colors", "bars", "castbar", "useClassColor"} } },
-	castbarOverlays = { checkboxSuffix = "castbarOverlays", tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPlayerCastbar"], sectionLabel = L["CopyMenuSection_castbarOverlays"],
+	castbarOverlays = { checkboxSuffix = "castbarOverlays", tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPlayerCastbar"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_CastbarOverlays"], sectionLabel = L["CopyMenuSection_castbarOverlays"],
 		paths = { {"colors", "bars", "castbar", "latency"}, {"colors", "bars", "castbar", "pushback"}, {"colors", "bars", "castbar", "tick"} } },
-	castbarEmpower  = { checkboxSuffix = "castbarEmpower",  tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPlayerCastbar"], sectionLabel = L["CopyMenuSection_castbarEmpower"],
+	castbarEmpower  = { checkboxSuffix = "castbarEmpower",  tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPlayerCastbar"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_CastbarEmpower"], sectionLabel = L["CopyMenuSection_castbarEmpower"],
 		paths = { {"colors", "bars", "castbar", "empowerStages"}, {"bars", "castbar", "empowerSegmentedFill"} } },
-	castbarText     = { checkboxSuffix = "castbarText",     tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPlayerCastbar"], sectionLabel = L["CopyMenuSection_castbarText"],
+	castbarText     = { checkboxSuffix = "castbarText",     tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPlayerCastbar"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_CastbarText"], sectionLabel = L["CopyMenuSection_castbarText"],
 		paths = { {"bars", "castbar", "castTimePrecision"}, {"bars", "castbar", "durationPrecision"}, {"bars", "castbar", "latencyPrecision"}, {"bars", "castbar", "targetClassColor"}, {"bars", "castbar", "targetClassColorPvpOnly"}, {"bars", "castbar", "targetClassColorFriendly"} } },
-	castbarShield   = { checkboxSuffix = "castbarShield",   tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPlayerCastbar"], sectionLabel = L["CopyMenuSection_castbarShield"],
+	castbarShield   = { checkboxSuffix = "castbarShield",   tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalPlayerCastbar"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_CastbarShield"], sectionLabel = L["CopyMenuSection_castbarShield"],
 		paths = { {"bars", "castbar", "uninterruptibleShield"} } },
 	-- Target/Focus cast bars mirror the player cast bar's per-section "Use Global" toggles: Dimensions
 	-- (position/size/icon), Colors (fill/interrupt/border/background), and Empower (empower fill color +
 	-- stage lines). Secret-safe render, so no latency/pushback/tick overlays section.
-	targetCastbarDimensions = { checkboxSuffix = "targetCastbarDimensions", tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalTargetCastbar"], sectionLabel = L["CopyMenuSection_targetCastbarDimensions"],
+	targetCastbarDimensions = { checkboxSuffix = "targetCastbarDimensions", tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalTargetCastbar"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_TargetCastbarDimensions"], sectionLabel = L["CopyMenuSection_targetCastbarDimensions"],
 		paths = { {"bars", "targetCastbar", "width"}, {"bars", "targetCastbar", "height"}, {"bars", "targetCastbar", "border"}, {"bars", "targetCastbar", "xPos"}, {"bars", "targetCastbar", "yPos"}, {"bars", "targetCastbar", "anchor"}, {"bars", "targetCastbar", "fillDirection"}, {"bars", "targetCastbar", "icon"} } },
-	targetCastbarColors     = { checkboxSuffix = "targetCastbarColors",     tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalTargetCastbar"], sectionLabel = L["CopyMenuSection_targetCastbarColors"],
+	targetCastbarColors     = { checkboxSuffix = "targetCastbarColors",     tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalTargetCastbar"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_TargetCastbarColors"], sectionLabel = L["CopyMenuSection_targetCastbarColors"],
 		paths = { {"bars", "targetCastbar", "interruptColor"}, {"bars", "targetCastbar", "interruptHostileOnly"}, {"colors", "bars", "targetCastbar", "bar"}, {"colors", "bars", "targetCastbar", "channel"}, {"colors", "bars", "targetCastbar", "uninterruptible"}, {"colors", "bars", "targetCastbar", "uninterruptibleBorder"}, {"colors", "bars", "targetCastbar", "border"}, {"colors", "bars", "targetCastbar", "background"}, {"colors", "bars", "targetCastbar", "endCap"} } },
-	targetCastbarEmpower    = { checkboxSuffix = "targetCastbarEmpower",    tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalTargetCastbar"], sectionLabel = L["CopyMenuSection_targetCastbarEmpower"],
+	targetCastbarEmpower    = { checkboxSuffix = "targetCastbarEmpower",    tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalTargetCastbar"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_TargetCastbarEmpower"], sectionLabel = L["CopyMenuSection_targetCastbarEmpower"],
 		paths = { {"bars", "targetCastbar", "showEmpowerStages"}, {"bars", "targetCastbar", "empowerStageLineWidth"}, {"colors", "bars", "targetCastbar", "empower"}, {"colors", "bars", "targetCastbar", "empowerStageLine"} } },
-	targetCastbarText       = { checkboxSuffix = "targetCastbarText",       tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalTargetCastbar"], sectionLabel = L["CopyMenuSection_targetCastbarText"],
+	targetCastbarText       = { checkboxSuffix = "targetCastbarText",       tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalTargetCastbar"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_TargetCastbarText"], sectionLabel = L["CopyMenuSection_targetCastbarText"],
 		paths = { {"bars", "targetCastbar", "classColor"}, {"bars", "targetCastbar", "classColorPvpOnly"}, {"bars", "targetCastbar", "classColorFriendly"}, {"bars", "targetCastbar", "castTimePrecision"}, {"bars", "targetCastbar", "durationPrecision"} } },
-	targetCastbarShield     = { checkboxSuffix = "targetCastbarShield",     tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalTargetCastbar"], sectionLabel = L["CopyMenuSection_targetCastbarShield"],
+	targetCastbarShield     = { checkboxSuffix = "targetCastbarShield",     tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalTargetCastbar"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_TargetCastbarShield"], sectionLabel = L["CopyMenuSection_targetCastbarShield"],
 		paths = { {"bars", "targetCastbar", "uninterruptibleShield"} } },
-	focusCastbarDimensions  = { checkboxSuffix = "focusCastbarDimensions",  tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalFocusCastbar"], sectionLabel = L["CopyMenuSection_focusCastbarDimensions"],
+	focusCastbarDimensions  = { checkboxSuffix = "focusCastbarDimensions",  tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalFocusCastbar"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_FocusCastbarDimensions"], sectionLabel = L["CopyMenuSection_focusCastbarDimensions"],
 		paths = { {"bars", "focusCastbar", "width"}, {"bars", "focusCastbar", "height"}, {"bars", "focusCastbar", "border"}, {"bars", "focusCastbar", "xPos"}, {"bars", "focusCastbar", "yPos"}, {"bars", "focusCastbar", "anchor"}, {"bars", "focusCastbar", "fillDirection"}, {"bars", "focusCastbar", "icon"} } },
-	focusCastbarColors      = { checkboxSuffix = "focusCastbarColors",      tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalFocusCastbar"], sectionLabel = L["CopyMenuSection_focusCastbarColors"],
+	focusCastbarColors      = { checkboxSuffix = "focusCastbarColors",      tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalFocusCastbar"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_FocusCastbarColors"], sectionLabel = L["CopyMenuSection_focusCastbarColors"],
 		paths = { {"bars", "focusCastbar", "interruptColor"}, {"bars", "focusCastbar", "interruptHostileOnly"}, {"colors", "bars", "focusCastbar", "bar"}, {"colors", "bars", "focusCastbar", "channel"}, {"colors", "bars", "focusCastbar", "uninterruptible"}, {"colors", "bars", "focusCastbar", "uninterruptibleBorder"}, {"colors", "bars", "focusCastbar", "border"}, {"colors", "bars", "focusCastbar", "background"}, {"colors", "bars", "focusCastbar", "endCap"} } },
-	focusCastbarEmpower     = { checkboxSuffix = "focusCastbarEmpower",     tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalFocusCastbar"], sectionLabel = L["CopyMenuSection_focusCastbarEmpower"],
+	focusCastbarEmpower     = { checkboxSuffix = "focusCastbarEmpower",     tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalFocusCastbar"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_FocusCastbarEmpower"], sectionLabel = L["CopyMenuSection_focusCastbarEmpower"],
 		paths = { {"bars", "focusCastbar", "showEmpowerStages"}, {"bars", "focusCastbar", "empowerStageLineWidth"}, {"colors", "bars", "focusCastbar", "empower"}, {"colors", "bars", "focusCastbar", "empowerStageLine"} } },
-	focusCastbarText        = { checkboxSuffix = "focusCastbarText",        tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalFocusCastbar"], sectionLabel = L["CopyMenuSection_focusCastbarText"],
+	focusCastbarText        = { checkboxSuffix = "focusCastbarText",        tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalFocusCastbar"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_FocusCastbarText"], sectionLabel = L["CopyMenuSection_focusCastbarText"],
 		paths = { {"bars", "focusCastbar", "classColor"}, {"bars", "focusCastbar", "classColorPvpOnly"}, {"bars", "focusCastbar", "classColorFriendly"}, {"bars", "focusCastbar", "castTimePrecision"}, {"bars", "focusCastbar", "durationPrecision"} } },
-	focusCastbarShield      = { checkboxSuffix = "focusCastbarShield",      tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalFocusCastbar"], sectionLabel = L["CopyMenuSection_focusCastbarShield"],
+	focusCastbarShield      = { checkboxSuffix = "focusCastbarShield",      tabKey = "castbar", categoryKey = "castbar", useGlobalLabel = L["CheckboxUseGlobalFocusCastbar"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_FocusCastbarShield"], sectionLabel = L["CopyMenuSection_focusCastbarShield"],
 		paths = { {"bars", "focusCastbar", "uninterruptibleShield"} } },
 	-- Other Bars: Dimensions, and Colors with the bar's behavior options; field-level paths spare spec-only data.
-	gcdDimensions        = { checkboxSuffix = "gcdDimensions",        tabKey = "gcd",        categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = L["CopyMenuSection_gcdDimensions"],
+	gcdDimensions        = { checkboxSuffix = "gcdDimensions",        tabKey = "gcd",        categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_GcdDimensions"], sectionLabel = L["CopyMenuSection_gcdDimensions"],
 		paths = { {"bars", "gcd", "width"}, {"bars", "gcd", "height"}, {"bars", "gcd", "border"}, {"bars", "gcd", "xPos"}, {"bars", "gcd", "yPos"}, {"bars", "gcd", "anchor"}, {"bars", "gcd", "fillDirection"} } },
 	gcdColors            = { checkboxSuffix = "gcdColors",            tabKey = "gcd",        categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = L["CopyMenuSection_gcdColors"],
 		paths = { {"colors", "bars", "gcd", "bar"}, {"colors", "bars", "gcd", "border"}, {"colors", "bars", "gcd", "background"}, {"colors", "bars", "gcd", "endCap"}, {"bars", "gcd", "durationPrecision"}, {"bars", "gcd", "timerDirection"} } },
-	fatigueDimensions    = { checkboxSuffix = "fatigueDimensions",    tabKey = "fatigue",    categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = L["CopyMenuSection_fatigueDimensions"],
+	fatigueDimensions    = { checkboxSuffix = "fatigueDimensions",    tabKey = "fatigue",    categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_FatigueDimensions"], sectionLabel = L["CopyMenuSection_fatigueDimensions"],
 		paths = { {"bars", "fatigue", "width"}, {"bars", "fatigue", "height"}, {"bars", "fatigue", "border"}, {"bars", "fatigue", "xPos"}, {"bars", "fatigue", "yPos"}, {"bars", "fatigue", "anchor"}, {"bars", "fatigue", "fillDirection"} } },
 	fatigueColors        = { checkboxSuffix = "fatigueColors",        tabKey = "fatigue",    categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = L["CopyMenuSection_fatigueColors"],
 		paths = { {"colors", "bars", "fatigue", "bar"}, {"colors", "bars", "fatigue", "border"}, {"colors", "bars", "fatigue", "background"}, {"colors", "bars", "fatigue", "endCap"}, {"bars", "fatigue", "disableBlizzardBar"} } },
-	breathDimensions     = { checkboxSuffix = "breathDimensions",     tabKey = "breath",     categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = L["CopyMenuSection_breathDimensions"],
+	breathDimensions     = { checkboxSuffix = "breathDimensions",     tabKey = "breath",     categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_BreathDimensions"], sectionLabel = L["CopyMenuSection_breathDimensions"],
 		paths = { {"bars", "breath", "width"}, {"bars", "breath", "height"}, {"bars", "breath", "border"}, {"bars", "breath", "xPos"}, {"bars", "breath", "yPos"}, {"bars", "breath", "anchor"}, {"bars", "breath", "fillDirection"} } },
 	breathColors         = { checkboxSuffix = "breathColors",         tabKey = "breath",     categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = L["CopyMenuSection_breathColors"],
 		paths = { {"colors", "bars", "breath", "bar"}, {"colors", "bars", "breath", "border"}, {"colors", "bars", "breath", "background"}, {"colors", "bars", "breath", "endCap"}, {"bars", "breath", "disableBlizzardBar"} } },
 	-- Pet bar sections live on Global Options' Pet Bars screen, two per bar. Whole-table paths, not
 	-- field-level: these tables carry nothing spec-only, so there is no spec data for a copy to clobber.
-	petPowerDimensions   = { checkboxSuffix = "petPowerDimensions",   tabKey = "petPower",   categoryKey = "petBars", barKey = "petPower", useGlobalLabel = L["CheckboxUseGlobalPetBars"], sectionLabel = L["CopyMenuSection_petPowerDimensions"],
+	petPowerDimensions   = { checkboxSuffix = "petPowerDimensions",   tabKey = "petPower",   categoryKey = "petBars", barKey = "petPower", useGlobalLabel = L["CheckboxUseGlobalPetBars"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_PetPowerDimensions"], sectionLabel = L["CopyMenuSection_petPowerDimensions"],
 		paths = { {"bars", "petPower"} } },
-	petPowerColors       = { checkboxSuffix = "petPowerColors",       tabKey = "petPower",   categoryKey = "petBars", barKey = "petPower", useGlobalLabel = L["CheckboxUseGlobalPetBars"], sectionLabel = L["CopyMenuSection_petPowerColors"],
+	petPowerColors       = { checkboxSuffix = "petPowerColors",       tabKey = "petPower",   categoryKey = "petBars", barKey = "petPower", useGlobalLabel = L["CheckboxUseGlobalPetBars"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_PetPowerColors"], sectionLabel = L["CopyMenuSection_petPowerColors"],
 		paths = { {"colors", "bars", "petPower"} } },
-	petHealthDimensions  = { checkboxSuffix = "petHealthDimensions",  tabKey = "petHealth",  categoryKey = "petBars", barKey = "petHealth", useGlobalLabel = L["CheckboxUseGlobalPetBars"], sectionLabel = L["CopyMenuSection_petHealthDimensions"],
+	petHealthDimensions  = { checkboxSuffix = "petHealthDimensions",  tabKey = "petHealth",  categoryKey = "petBars", barKey = "petHealth", useGlobalLabel = L["CheckboxUseGlobalPetBars"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_PetHealthDimensions"], sectionLabel = L["CopyMenuSection_petHealthDimensions"],
 		paths = { {"bars", "petHealth"} } },
-	petHealthColors      = { checkboxSuffix = "petHealthColors",      tabKey = "petHealth",  categoryKey = "petBars", barKey = "petHealth", useGlobalLabel = L["CheckboxUseGlobalPetBars"], sectionLabel = L["CopyMenuSection_petHealthColors"],
+	petHealthColors      = { checkboxSuffix = "petHealthColors",      tabKey = "petHealth",  categoryKey = "petBars", barKey = "petHealth", useGlobalLabel = L["CheckboxUseGlobalPetBars"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_PetHealthColors"], sectionLabel = L["CopyMenuSection_petHealthColors"],
 		paths = { {"colors", "bars", "petHealth"} } },
 	-- The Totems bar's sections live on Global Options' Totems screen. Whole tables, as for the pet bars.
-	totemsDimensions     = { checkboxSuffix = "totemsDimensions",     tabKey = "totems",     categoryKey = "totems", barKey = "totems", useGlobalLabel = L["CheckboxUseGlobalTotems"], sectionLabel = L["CopyMenuSection_totemsDimensions"],
+	totemsDimensions     = { checkboxSuffix = "totemsDimensions",     tabKey = "totems",     categoryKey = "totems", barKey = "totems", useGlobalLabel = L["CheckboxUseGlobalTotems"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_TotemsDimensions"], sectionLabel = L["CopyMenuSection_totemsDimensions"],
 		paths = { {"bars", "totems"} } },
-	totemsColors         = { checkboxSuffix = "totemsColors",         tabKey = "totems",     categoryKey = "totems", barKey = "totems", useGlobalLabel = L["CheckboxUseGlobalTotems"], sectionLabel = L["CopyMenuSection_totemsColors"],
+	totemsColors         = { checkboxSuffix = "totemsColors",         tabKey = "totems",     categoryKey = "totems", barKey = "totems", useGlobalLabel = L["CheckboxUseGlobalTotems"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_TotemsColors"], sectionLabel = L["CopyMenuSection_totemsColors"],
 		paths = { {"colors", "bars", "totems"} } },
 	-- The Pet Cast Bar takes the player Cast Bar's sections, less Empower and the player-only overlays.
-	petCastbarDimensions    = { checkboxSuffix = "petCastbarDimensions",    tabKey = "castbar", categoryKey = "castbar", barKey = "petCastbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], sectionLabel = L["CopyMenuSection_petCastbarDimensions"],
+	petCastbarDimensions    = { checkboxSuffix = "petCastbarDimensions",    tabKey = "castbar", categoryKey = "castbar", barKey = "petCastbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_PetCastbarDimensions"], sectionLabel = L["CopyMenuSection_petCastbarDimensions"],
 		paths = { {"bars", "petCastbar", "width"}, {"bars", "petCastbar", "height"}, {"bars", "petCastbar", "border"}, {"bars", "petCastbar", "xPos"}, {"bars", "petCastbar", "yPos"}, {"bars", "petCastbar", "anchor"}, {"bars", "petCastbar", "fillDirection"}, {"bars", "petCastbar", "icon"} } },
-	petCastbarColors        = { checkboxSuffix = "petCastbarColors",        tabKey = "castbar", categoryKey = "castbar", barKey = "petCastbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], sectionLabel = L["CopyMenuSection_petCastbarColors"],
+	petCastbarColors        = { checkboxSuffix = "petCastbarColors",        tabKey = "castbar", categoryKey = "castbar", barKey = "petCastbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_PetCastbarColors"], sectionLabel = L["CopyMenuSection_petCastbarColors"],
 		paths = { {"colors", "bars", "petCastbar", "bar"}, {"colors", "bars", "petCastbar", "channel"}, {"colors", "bars", "petCastbar", "uninterruptible"}, {"colors", "bars", "petCastbar", "uninterruptibleBorder"}, {"colors", "bars", "petCastbar", "border"}, {"colors", "bars", "petCastbar", "background"}, {"colors", "bars", "petCastbar", "endCap"}, {"colors", "bars", "petCastbar", "useClassColor"} } },
-	petCastbarOverlays      = { checkboxSuffix = "petCastbarOverlays",      tabKey = "castbar", categoryKey = "castbar", barKey = "petCastbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], sectionLabel = L["CopyMenuSection_petCastbarOverlays"],
+	petCastbarOverlays      = { checkboxSuffix = "petCastbarOverlays",      tabKey = "castbar", categoryKey = "castbar", barKey = "petCastbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_PetCastbarOverlays"], sectionLabel = L["CopyMenuSection_petCastbarOverlays"],
 		paths = { {"colors", "bars", "petCastbar", "pushback"}, {"colors", "bars", "petCastbar", "tick"}, {"bars", "petCastbar", "tickWidth"} } },
-	petCastbarText          = { checkboxSuffix = "petCastbarText",          tabKey = "castbar", categoryKey = "castbar", barKey = "petCastbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], sectionLabel = L["CopyMenuSection_petCastbarText"],
+	petCastbarText          = { checkboxSuffix = "petCastbarText",          tabKey = "castbar", categoryKey = "castbar", barKey = "petCastbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_PetCastbarText"], sectionLabel = L["CopyMenuSection_petCastbarText"],
 		paths = { {"bars", "petCastbar", "castTimePrecision"}, {"bars", "petCastbar", "durationPrecision"} } },
-	petCastbarShield        = { checkboxSuffix = "petCastbarShield",        tabKey = "castbar", categoryKey = "castbar", barKey = "petCastbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], sectionLabel = L["CopyMenuSection_petCastbarShield"],
+	petCastbarShield        = { checkboxSuffix = "petCastbarShield",        tabKey = "castbar", categoryKey = "castbar", barKey = "petCastbar", useGlobalLabel = L["CheckboxUseGlobalPetCastbar"], useGlobalTooltip = L["CheckboxUseGlobalTooltip_PetCastbarShield"], sectionLabel = L["CopyMenuSection_petCastbarShield"],
 		paths = { {"bars", "petCastbar", "uninterruptibleShield"} } },
 }
 
 -- Five Second Rule sections, shaped like the GCD's; Colors also carries Show Below and Inside Anchor Border.
 if TRB.Flavor.fiveSecondRule ~= nil then
-	globalSettingDefinitions.fiveSecondRuleDimensions = { checkboxSuffix = "fiveSecondRuleDimensions", tabKey = "fiveSecondRule", categoryKey = "otherBars", barKey = "fiveSecondRule", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = L["CopyMenuSection_fiveSecondRuleDimensions"],
+	globalSettingDefinitions.fiveSecondRuleDimensions = { checkboxSuffix = "fiveSecondRuleDimensions", tabKey = "fiveSecondRule", categoryKey = "otherBars", barKey = "fiveSecondRule", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], useGlobalTooltip = L["CheckboxUseGlobalTooltipOtherBars"], sectionLabel = L["CopyMenuSection_fiveSecondRuleDimensions"],
 		paths = { {"bars", "fiveSecondRule", "width"}, {"bars", "fiveSecondRule", "height"}, {"bars", "fiveSecondRule", "border"}, {"bars", "fiveSecondRule", "xPos"}, {"bars", "fiveSecondRule", "yPos"}, {"bars", "fiveSecondRule", "anchor"}, {"bars", "fiveSecondRule", "fillDirection"} } }
 	globalSettingDefinitions.fiveSecondRuleColors = { checkboxSuffix = "fiveSecondRuleColors", tabKey = "fiveSecondRule", categoryKey = "otherBars", barKey = "fiveSecondRule", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = L["CopyMenuSection_fiveSecondRuleColors"],
 		paths = { {"colors", "bars", "fiveSecondRule", "bar"}, {"colors", "bars", "fiveSecondRule", "border"}, {"colors", "bars", "fiveSecondRule", "background"}, {"colors", "bars", "fiveSecondRule", "endCap"}, {"bars", "fiveSecondRule", "durationPrecision"}, {"bars", "fiveSecondRule", "timerDirection"}, {"bars", "fiveSecondRule", "showBelow"}, {"bars", "fiveSecondRule", "insideAnchorBorder"} } }
@@ -120,7 +120,7 @@ local swingSectionLabels = {
 	rangedSwingColors = L["CopyMenuSection_rangedSwingColors"],
 }
 for _, key in ipairs(TRB.Classes.BarTypeRegistry.swingBarKeys) do
-	globalSettingDefinitions[key .. "Dimensions"] = { checkboxSuffix = key .. "Dimensions", tabKey = key, categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], sectionLabel = swingSectionLabels[key .. "Dimensions"],
+	globalSettingDefinitions[key .. "Dimensions"] = { checkboxSuffix = key .. "Dimensions", tabKey = key, categoryKey = "otherBars", useGlobalLabel = L["CheckboxUseGlobalOtherBars"], useGlobalTooltip = L["CheckboxUseGlobalTooltipOtherBars"], sectionLabel = swingSectionLabels[key .. "Dimensions"],
 		paths = { {"bars", key, "width"}, {"bars", key, "height"}, {"bars", key, "border"}, {"bars", key, "xPos"}, {"bars", key, "yPos"}, {"bars", key, "anchor"}, {"bars", key, "fillDirection"} } }
 	local colorPaths = { {"colors", "bars", key, "bar"}, {"colors", "bars", key, "border"}, {"colors", "bars", key, "background"}, {"colors", "bars", key, "endCap"}, {"bars", key, "durationPrecision"}, {"bars", key, "timerDirection"} }
 	-- The one Hide Blizzard switch for all three swing bars is stored on Main Hand, where the client has Blizzard's bars.
@@ -146,7 +146,7 @@ local skyridingSectionLabels = {
 	secondWindColors = L["CopyMenuSection_secondWindColors"],
 }
 for _, key in ipairs(TRB.Classes.BarTypeRegistry.skyridingBarKeys) do
-	globalSettingDefinitions[key .. "Dimensions"] = { checkboxSuffix = key .. "Dimensions", tabKey = key, categoryKey = "skyriding", useGlobalLabel = L["CheckboxUseGlobalSkyriding"], sectionLabel = skyridingSectionLabels[key .. "Dimensions"],
+	globalSettingDefinitions[key .. "Dimensions"] = { checkboxSuffix = key .. "Dimensions", tabKey = key, categoryKey = "skyriding", useGlobalLabel = L["CheckboxUseGlobalSkyriding"], useGlobalTooltip = L["CheckboxUseGlobalTooltipSkyridingDimensions"], sectionLabel = skyridingSectionLabels[key .. "Dimensions"],
 		paths = { {"bars", key} } }
 	globalSettingDefinitions[key .. "Colors"] = { checkboxSuffix = key .. "Colors", tabKey = key, categoryKey = "skyriding", useGlobalLabel = L["CheckboxUseGlobalSkyriding"], sectionLabel = skyridingSectionLabels[key .. "Colors"],
 		paths = { {"colors", "bars", key} } }
@@ -221,7 +221,7 @@ function TRB.Functions.OptionsUi.GlobalSettings:BuildUseGlobalSectionRow(parent,
 	getglobal(cb:GetName() .. "Text"):SetText(settingDef and settingDef.useGlobalLabel or L["CheckboxUseGlobal"])
 	getglobal(cb:GetName() .. "Text"):SetTextColor(TRB.Functions.OptionsUi.ColorPickers:GetUseGlobalSettingsColor())
 	self:BuildUseGlobalShortcutLink(cb, settingDef and settingDef.tabKey or "resourceBar", settingDef and settingDef.categoryKey or nil)
-	cb.tooltip = (options and options.tooltip) or L["CheckboxUseGlobalTooltip_" .. settingKeyUpper]
+	cb.tooltip = (options and options.tooltip) or (settingDef and settingDef.useGlobalTooltip)
 	cb:SetChecked(TRB.Data.settings.core.global[lowerClassName][specName][settingKey])
 	cb:SetScript("OnClick", function(checkbox)
 		local orientations = TRB.Functions.OptionsUi.Layout:SnapshotRenderedOrientations()

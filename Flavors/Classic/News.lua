@@ -10,6 +10,10 @@ TRB.Flavor.newsContent = [====[
 
 # 1.15.9.6-release (2026-11-18)
 ## General
+### Timer Bars
+
+- Fix the Use Global checkbox tooltip in the Position and Size section of Main Hand Swing, Off Hand Swing, Ranged Swing, and Five Second Rule showing a placeholder.
+
 ### Totems
 
 - Add a 'Use for every element' option to the Totems bar color, off by default, which fills every element's node with that color instead of its own.

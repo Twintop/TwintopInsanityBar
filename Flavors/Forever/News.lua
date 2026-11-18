@@ -14,6 +14,10 @@ TRB.Flavor.newsContent = [====[
 
 - Fix the bar text of a custom bar on a Cooldown Manager buff ignoring the 'Cooldown Manager value when unavailable' option.
 
+### Timer Bars
+
+- Fix the Use Global checkbox tooltip in the Position and Size section of Main Hand Swing, Off Hand Swing, Ranged Swing, and Five Second Rule showing a placeholder.
+
 ### Totems
 
 - Add a 'Use for every element' option to the Totems bar color, off by default, which fills every element's node with that color instead of its own.
