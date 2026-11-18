@@ -57,7 +57,7 @@ TRB.Flavor = {
 
 	---True when the running client is this flavor's game. Checked by the version gate when the TOC
 	---sets X-FlavorCheck to enabled. An unreadable project ID or interface number is not evidence of a
-	---mismatch. WoW Forever also reports the mainline project; only its 1.x interface number tells it apart.
+	---mismatch. The Forever beta reported the mainline project, so the interface number is checked too.
 	---@return boolean
 	IsClientMatch = function()
 		if WOW_PROJECT_ID == nil or WOW_PROJECT_MAINLINE == nil then

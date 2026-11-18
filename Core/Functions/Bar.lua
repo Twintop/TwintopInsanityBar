@@ -502,8 +502,7 @@ function TRB.Functions.Bar:HideResourceBar(force)
 		return
 	end
 
-	-- If Edit Mode is active, ensure bars stay visible so they can be repositioned
-	-- Primary bar ALWAYS shows; other bars show unless configured to "never" display
+	-- Edit Mode and Preview Mode show every bar for repositioning, except one set to Never Show.
 	if TRB.Functions.EditMode:IsShowingAllBars() then
 		local barGroups = TRB.Frames.barGroups
 		local displayBar = nil

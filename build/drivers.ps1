@@ -10,7 +10,7 @@
 	threshold-behavior checks the threshold line cooldown tracker; it runs once per class.
 	range-checks checks that range checks stay on after a loading screen, a talent change, and a specialization change;
 	it runs once per class. aura-conditions checks custom indicators and Buff Alerts that follow a buff by spell ID; it runs
-	once per class. swing-timers checks the swing bars: the combat log tracker on Classic and PLAYER_SWING on Forever; it
+	once per class. swing-timers checks the swing bars: the combat log tracker on Classic and TBC and PLAYER_SWING on Forever; it
 	runs once per class. five-second-rule checks the Five Second Rule bar: which classes and flavors get it, the pause a mana
 	cast starts, and Show Below; it runs once per class. combat-conditions checks the In Combat and Out of Combat visibility
 	conditions on the shared bar checks; it runs once per flavor. classic-overcap checks Classic's flat Overcap indicators and
@@ -21,7 +21,7 @@
 	resolution, the options, and every specialization's render; it runs once per class. bartext-conformance checks that the bar text engine renders exactly what
 	the legacy resolver does, and skips only when nothing it shows changed; it runs once per class. inner-fire checks the Forever, Classic, and TBC
 	Priest's Inner Fire charges, timer, bar text, and Color Indicator, and Forever's diagnostic; it runs once per class. slice-and-dice checks the
-	Forever, Classic, and TBC Rogue's Slice and Dice timer, bar text, Active and Ending Color Indicators, and diagnostic; it runs once per class.
+	Forever, Classic, and TBC Rogue's Slice and Dice timer, bar text, and Active and Ending Color Indicators; it runs once per class.
 	brews checks the Live Brewmaster's Brews bar: its nodes by talent, order, and enable, charges counted from the plain cooldown flags, bar text,
 	timer bindings, and Color Indicator targets; it runs once per class. arcane-blast checks the Forever and TBC Mage's Arcane Blast bar: its
 	gate, cast-tracked stacks and timer, node fill, bar text, and audio counter; it runs once per class. spell-data checks that every
@@ -32,7 +32,7 @@
 	eclipse checks the Forever Druid's Eclipse bar: its talent gate, cast-tracked charges and timer, node fill, bar text, and
 	audio counter; it runs once per class.
 	elemental-shield checks the Forever Shaman's Elemental Shield bar: its gate, casts, orb spends and their lockout, Water
-	Shield's mana gains, the aura sync, node fill, bar text, and audio counter; it runs once per class.
+	Shield's talent, the aura sync, node fill, bar text, and audio counter; it runs once per class.
 	timer-precision checks Timer Precision's decimals, m:ss, and duration object times matching plain ones; it runs once
 	per flavor.
 	See build\harness\README.md.

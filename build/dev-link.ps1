@@ -4,9 +4,9 @@
 
 .DESCRIPTION
 	Creates <AddOnsPath>\TwintopInsanityBar as a real folder containing directory junctions
-	(mklink /J; no administrator rights needed) back to the repository's Core, Libs, media and Flavors
-	folders, plus a copy of the flavor's TOC. Edits in the repository are live in the client; the TOC
-	is the only copied file, so re-run this after changing it.
+	(mklink /J; no administrator rights needed) back to the repository's Core, Libs, media, and Flavors
+	folders, plus copies of LICENSE, README.md, and the flavor's TOC. Edits in the repository are live in
+	the client; the copies are not, so re-run this after changing one.
 
 	Because each client gets its own folder with its own TOC, one checkout can serve several clients
 	at once (e.g. _retail_ with -Flavor mainline and a Forever install with -Flavor forever). The
@@ -25,7 +25,7 @@
 	Remove the linked folder (junctions are unlinked, never followed).
 
 .EXAMPLE
-	.\build\dev-link.ps1 -Flavor forever -AddOnsPath "C:\Program Files (x86)\World of Warcraft\_forever_retail_\Interface\AddOns"
+	.\build\dev-link.ps1 -Flavor forever -AddOnsPath "C:\Program Files (x86)\World of Warcraft\_forever_\Interface\AddOns"
 #>
 [CmdletBinding()]
 param(
