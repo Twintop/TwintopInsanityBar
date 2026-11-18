@@ -168,20 +168,30 @@ function TRB.Functions.BarText:GetTotemSlotAnchorLabel(slot)
 	return DescribeTotemSlot(slot, L["BarTextAnchorTotemElement"], L["BarTextAnchorTotemSlot"])
 end
 
----Is this cast bar or Other Bar finishing its fade? Text anchored to it then holds its last value.
+---The check for a cast bar or Other Bar finishing its fade; text anchored to it then holds its last value.
 ---@param groupKey string # A castbarAnchorGroupKeys value
----@return boolean
-local function IsSelfDrivenBarFading(groupKey)
+---@return fun(): boolean
+local function GetFadeCheck(groupKey)
 	if groupKey == "castbar" then
-		return TRB.Functions.Castbar:IsFadingOut()
+		return function()
+			return TRB.Functions.Castbar:IsFadingOut()
+		end
 	elseif groupKey == "petCastbar" then
-		return TRB.Functions.PetCastbar:IsFadingOut()
+		return function()
+			return TRB.Functions.PetCastbar:IsFadingOut()
+		end
 	elseif groupKey == "targetCastbar" or groupKey == "focusCastbar" then
-		return TRB.Functions.TargetCastbar:IsFadingOut(groupKey)
+		return function()
+			return TRB.Functions.TargetCastbar:IsFadingOut(groupKey)
+		end
 	elseif TRB.Classes.BarTypeRegistry:IsSkyridingBar(groupKey) then
-		return TRB.Functions.Skyriding:IsFadingOut(groupKey)
+		return function()
+			return TRB.Functions.Skyriding:IsFadingOut(groupKey)
+		end
 	end
-	return TRB.Functions.OtherBars:IsFadingOut(groupKey)
+	return function()
+		return TRB.Functions.OtherBars:IsFadingOut(groupKey)
+	end
 end
 
 -- Anchor names come from a small set of settings strings, so the per-tick lookups memoize their
@@ -573,7 +583,7 @@ local ANCHOR_BAR_GROUP = 7
 ---@field public groupKey string? # The bar group every kind but screen and class rides
 ---@field public slot integer? # The totem slot a totem slot anchor rides
 ---@field public wantsIcon boolean? # A self-driven anchor on the bar's side icon instead of the bar
----@field public fadeKey string? # The self-driven bar whose fade-out holds this anchor's text
+---@field public isFading (fun(): boolean)? # Whether the self-driven bar is fading out, which holds this anchor's text
 
 ---@type table<string, TRB.Classes.BarTextAnchorPlan>
 local anchorPlans = {}
@@ -613,7 +623,9 @@ local function GetAnchorPlan(relativeToFrame)
 			end
 		end
 	end
-	plan.fadeKey = selfDrivenKey
+	if selfDrivenKey ~= nil then
+		plan.isFading = GetFadeCheck(selfDrivenKey)
+	end
 	anchorPlans[relativeToFrame] = plan
 	return plan
 end
@@ -690,10 +702,10 @@ function TRB.Functions.BarText:GetAnchorFrame(relativeToFrame, classId, specId)
 end
 
 ---Whether the active spec's anchor is enabled and visible, as GetAnchorFrame reports it.
+---@param plan TRB.Classes.BarTextAnchorPlan
 ---@param relativeToFrame string
 ---@return boolean
-local function IsAnchorShown(relativeToFrame)
-	local plan = anchorPlans[relativeToFrame] or GetAnchorPlan(relativeToFrame)
+local function IsAnchorShown(plan, relativeToFrame)
 	local kind = plan.kind
 	if kind == ANCHOR_SCREEN then
 		return true
@@ -716,15 +728,16 @@ local ANCHOR_STATE_FADING = 1
 local ANCHOR_STATE_HIDDEN = 2
 local ANCHOR_STATE_SHOWN = 3
 
+---@param plan TRB.Classes.BarTextAnchorPlan
 ---@param relativeToFrame string
 ---@return integer # One of the ANCHOR_STATE_ values
-local function ResolveAnchorState(relativeToFrame)
+local function ResolveAnchorState(plan, relativeToFrame)
 	-- Only cast bar and Other Bars anchors can be fading.
-	local fadeKey = (anchorPlans[relativeToFrame] or GetAnchorPlan(relativeToFrame)).fadeKey
-	if fadeKey ~= nil and IsSelfDrivenBarFading(fadeKey) then
+	local isFading = plan.isFading
+	if isFading ~= nil and isFading() then
 		return ANCHOR_STATE_FADING
 	end
-	return IsAnchorShown(relativeToFrame) and ANCHOR_STATE_SHOWN or ANCHOR_STATE_HIDDEN
+	return IsAnchorShown(plan, relativeToFrame) and ANCHOR_STATE_SHOWN or ANCHOR_STATE_HIDDEN
 end
 
 ---@param frame Frame?
@@ -806,6 +819,8 @@ local barTextEntryStates = {}
 local barTextSignatureFns = {}
 -- Consecutive render throws before an entry gives up and stays on the legacy resolver.
 local maxEngineFailures = 3
+-- Whether the display list a bar text pass walks still matches the entries; false rebuilds it on the next pass.
+local displayListValid = false
 
 ---Returns true if the value or color has changed for this key, indicating the
 ---formatted lookup string needs updating. Reuses existing prevState entries to
@@ -928,6 +943,7 @@ function TRB.Functions.BarText:BuildActiveVariableSet(settings)
 	skyridingTextOffBar = offBar
 	speedTextOffBar = speedOffBar
 	inCombatTimeWholeSeconds = wholeSeconds
+	displayListValid = false
 	TRB.Functions.Skyriding:SetBarTextUse(offBar, skyridingAnchors)
 end
 
@@ -3655,9 +3671,7 @@ local selfDrivenBarWasInUse = false
 -- Previous tick's HasActiveTimers result: a timer can run out mid-tick with nothing marking the lookup dirty.
 local classTimersWereActive = false
 
--- Reused per-call caches by anchor name: UpdateResourceBarText's ANCHOR_STATE_ values, and whether Show finds the
--- anchor enabled and visible.
-local anchorStates = {}
+-- Reused per-call cache by anchor name: whether Show finds the anchor enabled and visible.
 local anchorsShown = {}
 
 -- Reusable table for passing to GetReturnText (avoids per-entry table allocation)
@@ -3683,6 +3697,72 @@ local function GetTextFrameKey(i)
 		textFrameKeys[i] = key
 	end
 	return key
+end
+
+---An enabled entry as a bar text pass draws it.
+---@class TRB.Classes.BarTextDisplayRecord
+---@field public index integer # Its index in the drawn list, and its text frame's
+---@field public entry TRB.Classes.Settings.DisplayTextEntry
+---@field public frameCache table
+---@field public sourceText string? # The entry's text as last resolved
+---@field public text string? # What sourceText renders, with a custom bar's own variables named
+
+---An anchor with the enabled entries on it.
+---@class TRB.Classes.BarTextDisplayAnchor
+---@field public name string
+---@field public plan TRB.Classes.BarTextAnchorPlan
+---@field public groupKey string? # The bar group the anchor rides, when its plan names one
+---@field public isScreen boolean
+---@field public records TRB.Classes.BarTextDisplayRecord[]
+---@field public unwritten boolean # Its entries were marked unwritten since it last showed
+---@field public level string? # The strata its entries' frames were last raised to
+
+-- The enabled entries grouped by anchor, so a pass resolves each anchor once and skips a hidden anchor's entries.
+---@type TRB.Classes.BarTextDisplayAnchor[]
+local displayAnchors = {}
+---@type TRB.Classes.BarTextDisplayRecord[]
+local displayConstrained = {}
+-- What the display list was built from; a different list, length, or frame cache rebuilds it.
+local displayListSource = nil
+local displayListCount = 0
+local displayListFrameCaches = nil
+
+---Groups a drawn list's enabled entries by anchor for the passes that follow.
+---@param barTextList TRB.Classes.Settings.DisplayTextEntry[]
+---@param frameCaches table
+local function BuildDisplayList(barTextList, frameCaches)
+	wipe(displayAnchors)
+	wipe(displayConstrained)
+	local byName = {}
+	local entries = #barTextList
+	for i = 1, entries do
+		local e = barTextList[i]
+		if e.enabled then
+			local name = e.position.relativeToFrame
+			local anchor = byName[name]
+			if anchor == nil then
+				local plan = anchorPlans[name] or GetAnchorPlan(name)
+				anchor = { name = name, plan = plan, groupKey = plan.groupKey, isScreen = name == "UIParent", records = {}, unwritten = false }
+				byName[name] = anchor
+				displayAnchors[#displayAnchors + 1] = anchor
+			end
+			local tfKey = textFrameKeys[i] or GetTextFrameKey(i)
+			local frameCache = frameCaches[tfKey]
+			if frameCache == nil then
+				frameCache = {}
+				frameCaches[tfKey] = frameCache
+			end
+			local record = { index = i, entry = e, frameCache = frameCache }
+			anchor.records[#anchor.records + 1] = record
+			if e.constrainToParent then
+				displayConstrained[#displayConstrained + 1] = record
+			end
+		end
+	end
+	displayListSource = barTextList
+	displayListCount = entries
+	displayListFrameCaches = frameCaches
+	displayListValid = true
 end
 
 ---The strata bar text draws in. Edit Mode raises every bar stack to DIALOG, which would bury text left below it.
@@ -3764,71 +3844,81 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 
 	--Only parse bar text if we need to refresh the text (or if there are Screen-bound entries)
 	if settings ~= nil and settings.displayText ~= nil then
-		-- Clear the per-call anchor states so entries get fresh visibility data
-		wipe(anchorStates)
-
 		---@type TRB.Classes.BarTextFrame[]
 		local textFrames = TRB.Frames.textFrames
 		local displayText = settings.displayText --[[@as TRB.Classes.Settings.DisplayText]]
-		local entries = #displayText.barText
 		-- Ensure frames exist before trying to update them.
 		-- This used to be guaranteed by the legacy bar constructor; the OOP bar system must do this too.
 		if textFrames == nil or textFrames[1] == nil then
 			TRB.Functions.BarText:CreateBarTextFrames()
 			textFrames = TRB.Frames.textFrames
 		end
-		-- Read once per call; nothing in the loop replaces these tables.
 		local barTextList = displayText.barText
 		local frameCaches = TRB.Data.cache.values.frame
+		if not displayListValid or displayListSource ~= barTextList or displayListCount ~= #barTextList or displayListFrameCaches ~= frameCaches then
+			BuildDisplayList(barTextList, frameCaches)
+		end
+
+		-- Re-apply the width constraint against the bound bar's live width so the clamp
+		-- tracks bar resizes (the font's parent is the bound bar). Runs independent of the
+		-- refreshText gate below so it still updates when only the bar width changed; memoized,
+		-- so it's a no-op unless the width actually changed.
+		for c = 1, #displayConstrained do
+			local record = displayConstrained[c]
+			local textFrame = textFrames[record.index]
+			if textFrame ~= nil then
+				local entryFont = textFrame.font
+				if entryFont ~= nil then
+					ApplyBarTextWidthConstraint(entryFont, record.entry, textFrame:GetParent())
+				end
+			end
+		end
+
 		local strataLevel = GetBarTextStrata()
 		local previewActive = TRB.Functions.EditMode:IsShowingAllBars()
-		for i = 1, entries do
-			local e = barTextList[i]
-			if e.enabled then
-				local relativeToFrame = e.position.relativeToFrame
-				local isScreenText = relativeToFrame == "UIParent"
-
-				-- Re-apply the width constraint against the bound bar's live width so the clamp
-				-- tracks bar resizes (the font's parent is the bound bar). Runs independent of the
-				-- refreshText gate below so it still updates when only the bar width changed; memoized,
-				-- so it's a no-op unless the width actually changed.
-				if e.constrainToParent and textFrames[i] ~= nil then
-					local entryFont = textFrames[i].font
-					if entryFont ~= nil then
-						ApplyBarTextWidthConstraint(entryFont, e, textFrames[i]:GetParent())
-					end
+		-- displayText.default.color uses the new table format { color = "..." }
+		local defaultColor = displayText.default and displayText.default.color
+		local defaultColorType = type(defaultColor)
+		local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+		local processBarText = refreshText or visibilityRefresh
+		for a = 1, #displayAnchors do
+			local anchor = displayAnchors[a]
+			-- Screen-bound text is always processed; other text only when refreshText is true. Text on a
+			-- fading self-driven bar is skipped regardless, which holds its last value on screen.
+			local anchorState = nil
+			if processBarText or anchor.isScreen then
+				local groupKey = anchor.groupKey
+				local barGroup = groupKey ~= nil and barGroups ~= nil and barGroups[groupKey] or nil
+				if groupKey ~= nil and (barGroup == nil or not barGroup.isVisible) then
+					-- Every bar group kind resolves hidden while its group is missing or hidden.
+					anchorState = ANCHOR_STATE_HIDDEN
+				else
+					anchorState = ResolveAnchorState(anchor.plan, anchor.name)
 				end
-
-				-- Screen-bound text is always processed; other text only when refreshText is true. Text on a
-				-- fading self-driven bar is skipped regardless, which holds its last value on screen.
-				local anchorState
-				if refreshText or isScreenText or visibilityRefresh then
-					anchorState = anchorStates[relativeToFrame]
-					if anchorState == nil then
-						anchorState = ResolveAnchorState(relativeToFrame)
-						anchorStates[relativeToFrame] = anchorState
+			end
+			if anchorState ~= nil and anchorState ~= ANCHOR_STATE_FADING then
+				local records = anchor.records
+				if anchorState == ANCHOR_STATE_HIDDEN then
+					-- A hidden anchor's entries are marked once, then cost nothing until it shows again.
+					if not anchor.unwritten then
+						anchor.unwritten = true
+						for r = 1, #records do
+							records[r].frameCache.written = false
+						end
 					end
-				end
-				if anchorState ~= nil and anchorState ~= ANCHOR_STATE_FADING then
-					local tfKey = textFrameKeys[i] or GetTextFrameKey(i)
-					local frameCache = frameCaches[tfKey]
-					if frameCache == nil then
-						frameCache = {}
-						frameCaches[tfKey] = frameCache
-					end
-
-					-- Skip expensive text processing if the target bar is not visible
-					if anchorState == ANCHOR_STATE_HIDDEN then
-						frameCache.written = false
-					else
+				else
+					anchor.unwritten = false
+					for r = 1, #records do
+						local record = records[r]
+						local i = record.index
+						local e = record.entry
+						local frameCache = record.frameCache
 						local color = e.color and e.color.color
-						
+
 						if e.useDefaultFontColor then
-							-- displayText.default.color uses the new table format { color = "..." }
-							local defaultColor = displayText.default and displayText.default.color
-							if type(defaultColor) == "table" then
+							if defaultColorType == "table" then
 								color = defaultColor.color
-							elseif type(defaultColor) == "string" then
+							elseif defaultColorType == "string" then
 								color = defaultColor
 							end
 						end
@@ -3845,7 +3935,13 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 							entryState = {}
 							barTextEntryStates[i] = entryState
 						end
-						local entryText = ResolveEntryText(e)
+						local sourceText = e.text
+						local entryText = record.text
+						if record.sourceText ~= sourceText or entryText == nil then
+							entryText = ResolveEntryText(e)
+							record.sourceText = sourceText
+							record.text = entryText
+						end
 						-- A frame hidden or never written may hold stale text, so it bypasses the unchanged-skip.
 						local forceWrite = visibilityRefresh or not frameCache.written
 						-- An entry that keeps throwing latches to legacy so it stops paying for both paths
@@ -3894,13 +3990,21 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 							frameCache.written = true
 						end
 					end
-					
-					if frameCache.level ~= strataLevel then
-						if textFrames ~= nil and textFrames[i] ~= nil then
-							textFrames[i]:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
-							textFrames[i]:SetFrameStrata(strataLevel)
+				end
+
+				if anchor.level ~= strataLevel then
+					anchor.level = strataLevel
+					for r = 1, #records do
+						local record = records[r]
+						local frameCache = record.frameCache
+						if frameCache.level ~= strataLevel then
+							local textFrame = textFrames ~= nil and textFrames[record.index] or nil
+							if textFrame ~= nil then
+								textFrame:SetFrameLevel(TRB.Data.constants.frameLevels.barText)
+								textFrame:SetFrameStrata(strataLevel)
+							end
+							frameCache.level = strataLevel
 						end
-						frameCache.level = strataLevel
 					end
 				end
 			end
@@ -3955,6 +4059,9 @@ function TRB.Functions.BarText:RepositionBarTextEntry(entryIndex, classId, specI
 	if font == nil then
 		return false
 	end
+
+	-- The entry may have moved to another anchor.
+	displayListValid = false
 
 	local relativeToFrame
 	local isEnabled = true
@@ -4051,6 +4158,7 @@ function TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
 
 	-- New font strings start empty; drop the unchanged-skip states so every entry rewrites.
 	wipe(barTextEntryStates)
+	displayListValid = false
 
 	local className, specName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId, true)
 	local compositeKey = TRB.Functions.Character:GetCompositeKey(className, specName)
@@ -4396,7 +4504,7 @@ function TRB.Functions.BarText:Show(settings)
 			if e.enabled then
 				anchorShown = anchorsShown[key]
 				if anchorShown == nil then
-					anchorShown = IsAnchorShown(key)
+					anchorShown = IsAnchorShown(anchorPlans[key] or GetAnchorPlan(key), key)
 					anchorsShown[key] = anchorShown
 				end
 			end
