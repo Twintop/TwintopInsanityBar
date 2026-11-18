@@ -1396,10 +1396,24 @@ local function UpdateStatsSnapshot(bucket)
 	local shortNum = TRB.Functions.String.ConvertToShortNumberNotation
 	local roundTo = TRB.Functions.Number.RoundTo
 
+	-- Formatting is most of a stat's cost, so only a stat some enabled bar text shows gets it; a changed set reads again.
+	local activeVariables = TRB.Data.activeVariables
 	for _, stat in ipairs(TRB.Data.statsByBucket[bucket]) do
 		local value = stat.read()
 		attributes[stat.key] = value
-		if value == nil then
+		local shown = true
+		if activeVariables ~= nil then
+			shown = false
+			for _, variable in ipairs(stat.variables) do
+				if activeVariables[variable] then
+					shown = true
+					break
+				end
+			end
+		end
+		if not shown then
+			formatted[stat.key] = nil
+		elseif value == nil then
 			formatted[stat.key] = ""
 		elseif stat.format == "percent" then
 			formatted[stat.key] = roundTo(TRB.Functions.Number, value, precision)

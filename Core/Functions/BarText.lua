@@ -821,6 +821,8 @@ local barTextSignatureFns = {}
 local maxEngineFailures = 3
 -- Whether the display list a bar text pass walks still matches the entries; false rebuilds it on the next pass.
 local displayListValid = false
+-- Set when the active variables change: the shared refreshers skip what nothing shows, so each writes everything again.
+local refreshersStale = true
 
 ---Returns true if the value or color has changed for this key, indicating the
 ---formatted lookup string needs updating. Reuses existing prevState entries to
@@ -944,6 +946,13 @@ function TRB.Functions.BarText:BuildActiveVariableSet(settings)
 	speedTextOffBar = speedOffBar
 	inCombatTimeWholeSeconds = wholeSeconds
 	displayListValid = false
+	refreshersStale = true
+	-- Stats are formatted only when shown, so a changed set reads them again.
+	local snapshotData = TRB.Data.snapshotData
+	if snapshotData ~= nil then
+		snapshotData.attributes.primaryRefresh = true
+		snapshotData.attributes.secondaryRefresh = true
+	end
 	TRB.Functions.Skyriding:SetBarTextUse(offBar, skyridingAnchors)
 end
 
@@ -2601,10 +2610,10 @@ local targetCastbarLookupUnits = {
 local castbarLookupUnits = {
 	{ modelKey = "castbar", time = "$castTime", remaining = "$castTimeRemaining", latency = "$castLatency", latencyMs = "$castLatencyMs",
 		pushback = "$castPushback", spellName = "$castSpellName", spellId = "$castSpellId", interruptible = "$castInterruptible",
-		uninterruptible = "$castUninterruptible", wasActive = true },
+		uninterruptible = "$castUninterruptible", wasActive = true, written = {} },
 	{ modelKey = "petCastbar", time = "$petCastTime", remaining = "$petCastTimeRemaining", pushback = "$petCastPushback",
 		spellName = "$petCastSpellName", spellId = "$petCastSpellId", interruptible = "$petCastInterruptible",
-		uninterruptible = "$petCastUninterruptible", icon = "#petCasting", wasActive = true },
+		uninterruptible = "$petCastUninterruptible", icon = "#petCasting", wasActive = true, written = {} },
 }
 local targetCastbarLookupWasActive = true
 local otherBarsLookupWasActive = true
@@ -2679,8 +2688,24 @@ local function RefreshCastbarUnitLookupData(unit, settings)
 			castSpellName = castSpellName ~= "" and (castSpellName .. " " .. progress) or progress
 		end
 	end
-	lookup[unit.time] = castTime > 0 and string.format(durationFormat, castTime) or ""
 	lookup[unit.remaining] = castTime > 0 and string.format(castTimeFormat, castRemaining) or ""
+	lookupLogic[unit.remaining] = castRemaining
+
+	-- Everything else holds through a cast, so it is written only when one of its inputs changes.
+	local written = unit.written
+	if written.lookup == lookup and written.castTime == castTime
+		and written.pushback == castPushback and written.latency == castLatency and written.spellName == castSpellName
+		and written.spellId == castSpellId and written.isCasting == isCasting and written.notInterruptible == notInterruptible
+		and written.durationFormat == durationFormat and written.latencyFormat == latencyFormat then
+		return
+	end
+	written.lookup = lookup
+	written.castTime, written.pushback, written.latency = castTime, castPushback, castLatency
+	written.spellName, written.spellId = castSpellName, castSpellId
+	written.isCasting, written.notInterruptible = isCasting, notInterruptible
+	written.durationFormat, written.latencyFormat = durationFormat, latencyFormat
+
+	lookup[unit.time] = castTime > 0 and string.format(durationFormat, castTime) or ""
 	lookup[unit.pushback] = castTime > 0 and string.format(pushbackFormat, castPushback) or ""
 	lookup[unit.spellName] = castSpellName
 	lookup[unit.spellId] = castTime > 0 and tostring(castSpellId) or ""
@@ -2690,7 +2715,6 @@ local function RefreshCastbarUnitLookupData(unit, settings)
 	lookup[unit.interruptible] = tostring(interruptible)
 	lookup[unit.uninterruptible] = tostring(uninterruptible)
 	lookupLogic[unit.time] = castTime
-	lookupLogic[unit.remaining] = castRemaining
 	lookupLogic[unit.pushback] = castPushback
 	lookupLogic[unit.spellId] = castSpellId
 	-- Stored as strings, matching how $inCombat feeds the conditional engine.
@@ -2903,10 +2927,12 @@ function TRB.Functions.BarText:RefreshLookupDataBase(settings)
 
 	-- A spec change replaces lookupLogic wholesale, stranding the idle latches. Re-arm on identity
 	-- change rather than depending on SwitchSpec call order.
-	if TRB.Data.lookupLogic ~= lastLookupLogicTable then
+	if TRB.Data.lookupLogic ~= lastLookupLogicTable or refreshersStale then
 		lastLookupLogicTable = TRB.Data.lookupLogic
+		refreshersStale = false
 		for _, unit in ipairs(castbarLookupUnits) do
 			unit.wasActive = true
+			wipe(unit.written)
 		end
 		targetCastbarLookupWasActive = true
 		otherBarsLookupWasActive = true
@@ -3153,21 +3179,23 @@ function TRB.Functions.BarText:RefreshOtherBarsLookupData(settings)
 	end
 	otherBarsLookupWasActive = isActive
 
+	local activeVars = TRB.Data.activeVariables
 	for _, entry in ipairs(TRB.Functions.OtherBars:GetBars()) do
 		local barKey = entry.key
 		local barSettings = settings and settings.bars and settings.bars[barKey] --[[@as TRB.Classes.Settings.OtherBar?]]
+		local names = GetOtherBarsVarNames(barKey)
+		local totalVar = names.total
+		local remVar = names.remaining
 		-- A spec without this bar's settings doesn't have the bar at all (Feign Death outside Hunter),
-		-- so it gets no lookup entries either.
-		if barSettings ~= nil then
+		-- so it gets no lookup entries either. Nor does a bar whose variables no enabled entry shows.
+		if barSettings ~= nil and (activeVars == nil or activeVars[totalVar] or activeVars[remVar]
+			or (entry.heldByMovement and activeVars[RANGED_READY_VAR])) then
 			local isMirror = entry.kind == "mirror"
 			-- Only the GCD and swing bars carry durationPrecision; the mirror timers have no decimals to configure.
 			local fmt
 			if not isMirror then
 				fmt = GetPrecisionFormat(barSettings.durationPrecision)
 			end
-			local names = GetOtherBarsVarNames(barKey)
-			local totalVar = names.total
-			local remVar = names.remaining
 			local isSecret = otherBarsSecretVars[totalVar] == true
 
 			-- Default to an idle 0, then fill. Never use `secret or ""` -- that tests the secret's truthiness,
