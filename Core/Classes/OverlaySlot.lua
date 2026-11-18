@@ -63,6 +63,13 @@ TRB.Classes = TRB.Classes or {}
 ---@field public endCapWidth number? # Configured fill-axis width of the end cap in pixels
 ---@field private _endCapColor string? # Last end cap color applied
 ---@field private _endCapColorFlat boolean? # Whether _endCapColor is current, since nil is a valid color
+---@field public fillTintBoundsFrame Frame? # Outer clip trimming the fill tint to the inner bar
+---@field public fillTintClipFrame Frame? # Clip container tracking the fill edge for the fill tint
+---@field public fillTintFrame StatusBar? # Always-full copy of the parent's fill inside the clip
+---@field public fillTintTexture Texture? # The fill tint's own fill texture, which takes the tint
+---@field public fillTintReady boolean? # Whether the fill tint is anchored, so it may show
+---@field private _fillTintTexturePath string|integer? # Last texture copied from the parent
+---@field private _fillTintShown boolean? # Shown state last written, so repeat writes are skipped
 TRB.Classes.OverlaySlot = {}
 TRB.Classes.OverlaySlot.__index = TRB.Classes.OverlaySlot
 
@@ -144,6 +151,11 @@ function TRB.Classes.OverlaySlot:New(parentNode, slotName)
 	self.endCapPinnedFrame = nil
 	self.endCapReady = nil
 	self.endCapWidth = nil
+	self.fillTintBoundsFrame = nil
+	self.fillTintClipFrame = nil
+	self.fillTintFrame = nil
+	self.fillTintTexture = nil
+	self.fillTintReady = nil
 
 	return self
 end
@@ -968,6 +980,39 @@ local RANGE_MAX_LEVEL_SPREAD = 3
 -- texture can be left transparent rather than bleeding through a range color that has alpha.
 local RANGE_BASELINE_INDEX = 0
 
+---Anchors an outer clip to the inner bar and, inside it, a clip spanning exactly the visible fill.
+---@param slot TRB.Classes.OverlaySlot
+---@param bounds Frame # The outer clip
+---@param clip Frame # The clip tracking the fill edge
+---@param fillTexture Texture # The parent's fill texture
+---@param fillDirection string
+local function AnchorFillEdgeClips(slot, bounds, clip, fillTexture, fillDirection)
+	local parent = slot.parentNode
+	local border = parent.border or 0
+	local crossInset = slot.fullHeight and 0 or border
+
+	bounds:ClearAllPoints()
+	local boundsLX, boundsTY, boundsRX, boundsBY = slot:GetClipInsets(fillDirection)
+	bounds:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", boundsLX, boundsTY)
+	bounds:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", boundsRX, boundsBY)
+
+	-- The fill texture spans the whole frame across the fill, under the border, so its corner takes the cross inset too.
+	clip:ClearAllPoints()
+	if fillDirection == "rightLeft" then
+		clip:SetPoint("TOPLEFT", fillTexture, "TOPLEFT", 0, -crossInset)
+		clip:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -border, crossInset)
+	elseif fillDirection == "bottomTop" then
+		clip:SetPoint("TOPLEFT", fillTexture, "TOPLEFT", crossInset, 0)
+		clip:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -crossInset, border)
+	elseif fillDirection == "topBottom" then
+		clip:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", crossInset, -border)
+		clip:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", -crossInset, 0)
+	else -- leftRight
+		clip:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", border, -crossInset)
+		clip:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", 0, crossInset)
+	end
+end
+
 ---Re-anchors the range overlay clip frame and its gate StatusBars.
 ---Called when border, fill texture, or fill direction changes on the parent node.
 ---@param force boolean? # When true, always re-anchors. When false/nil, skips when no geometry-relevant input changed.
@@ -1003,32 +1048,8 @@ function TRB.Classes.OverlaySlot:ReanchorRangeOverlays(force)
 		return
 	end
 
-	local border = parent.border or 0
-	local crossInset = self.fullHeight and 0 or border
-
-	self.rangeBoundsClipFrame:ClearAllPoints()
-	local boundsLX, boundsTY, boundsRX, boundsBY = self:GetClipInsets(fillDirection)
-	self.rangeBoundsClipFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", boundsLX, boundsTY)
-	self.rangeBoundsClipFrame:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", boundsRX, boundsBY)
+	AnchorFillEdgeClips(self, self.rangeBoundsClipFrame, self.rangeClipFrame, fillTexture, fillDirection)
 	self.rangeBoundsClipFrame:Show()
-
-	-- Leading corner comes from the bar's inner edge, trailing corner from the fill texture, so the
-	-- clip spans exactly the visible fill. The fill texture covers the whole frame on the cross axis
-	-- (the border is drawn over it), so the cross inset applies to its corner as it does the frame's.
-	self.rangeClipFrame:ClearAllPoints()
-	if fillDirection == "rightLeft" then
-		self.rangeClipFrame:SetPoint("TOPLEFT", fillTexture, "TOPLEFT", 0, -crossInset)
-		self.rangeClipFrame:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -border, crossInset)
-	elseif fillDirection == "bottomTop" then
-		self.rangeClipFrame:SetPoint("TOPLEFT", fillTexture, "TOPLEFT", crossInset, 0)
-		self.rangeClipFrame:SetPoint("BOTTOMRIGHT", parent.frame, "BOTTOMRIGHT", -crossInset, border)
-	elseif fillDirection == "topBottom" then
-		self.rangeClipFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", crossInset, -border)
-		self.rangeClipFrame:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", -crossInset, 0)
-	else -- leftRight
-		self.rangeClipFrame:SetPoint("TOPLEFT", parent.frame, "TOPLEFT", border, -crossInset)
-		self.rangeClipFrame:SetPoint("BOTTOMRIGHT", fillTexture, "BOTTOMRIGHT", 0, crossInset)
-	end
 	self.rangeClipFrame:Show()
 	self.rangeOverlayReady = true
 
@@ -1333,6 +1354,105 @@ function TRB.Classes.OverlaySlot:SetParentFillHidden(hidden)
 end
 
 -- ============================================================================
+-- Fill Tint (a recolor drawn over the fill, leaving the fill's own colors alone)
+-- ============================================================================
+
+-- Above the casting and spending overlays (+1, +2), below the range overlays (+4) and the end cap (+8).
+local FILL_TINT_LEVEL_OFFSET = 3
+local FILL_TINT_DEFAULT_TEXTURE = "Interface\\Buttons\\WHITE8X8"
+
+---Re-anchors the fill tint and copies the parent's fill texture. Geometry and texture changes only; the clip follows the fill.
+function TRB.Classes.OverlaySlot:ReanchorFillTint()
+	local bounds, clip, tint = self.fillTintBoundsFrame, self.fillTintClipFrame, self.fillTintFrame
+	if bounds == nil or clip == nil or tint == nil then return end
+
+	local parent = self.parentNode
+	-- The engine's fill texture is forbidden: SetPoint against it errors.
+	if parent:IsEngineDriven() then
+		self.fillTintReady = false
+		self:SetFillTintShown(false)
+		return
+	end
+	local fillTexture = parent.frame:GetStatusBarTexture()
+	if fillTexture == nil then return end
+
+	local fillDirection = parent.fillDirection or "leftRight"
+	AnchorFillEdgeClips(self, bounds, clip, fillTexture, fillDirection)
+	self.fillTintReady = true
+
+	local Bar = TRB.Functions.Bar
+	tint:SetOrientation(Bar:GetOrientationFromFillDirection(fillDirection))
+	tint:SetReverseFill(Bar:GetReverseFillFromFillDirection(fillDirection))
+	tint:SetRotatesTexture(Bar:IsVerticalFill(fillDirection))
+	-- The whole frame, which the parent's fill texture spans when full, so the two textures line up.
+	tint:ClearAllPoints()
+	tint:SetAllPoints(parent.frame)
+
+	local texturePath = parent.resourceTexture
+	if texturePath ~= nil and texturePath ~= self._fillTintTexturePath then
+		self._fillTintTexturePath = texturePath
+		tint:SetStatusBarTexture(texturePath)
+		-- A new texture resets its vertex color, so it stays clear until the next tint.
+		local texture = tint:GetStatusBarTexture()
+		texture:SetVertexColor(0, 0, 0, 0)
+		self.fillTintTexture = texture
+	end
+end
+
+---Creates the fill tint: a full copy of the parent's fill, clipped on both axes to the visible fill, that takes a
+---color result without touching the fill's own color or gradient. Starts hidden. Idempotent.
+function TRB.Classes.OverlaySlot:CreateFillTint()
+	if self.fillTintBoundsFrame then return end
+
+	local parent = self.parentNode
+	local prefix = parent.name .. "_" .. self.slotName .. "_FillTint"
+	local bounds = CreateFrame("Frame", prefix .. "Bounds", parent.frame)
+	bounds:SetFrameLevel(parent.frame:GetFrameLevel() + FILL_TINT_LEVEL_OFFSET)
+	bounds:SetClipsChildren(true)
+	bounds:Hide()
+
+	local clip = CreateFrame("Frame", prefix .. "Clip", bounds)
+	clip:SetFrameLevel(bounds:GetFrameLevel())
+	clip:SetClipsChildren(true)
+
+	local tint = CreateFrame("StatusBar", prefix, clip)
+	tint:SetFrameLevel(bounds:GetFrameLevel())
+	tint:SetStatusBarTexture(FILL_TINT_DEFAULT_TEXTURE)
+	tint:SetMinMaxValues(0, 1)
+	tint:SetValue(1, Enum.StatusBarInterpolation.Immediate)
+	local texture = tint:GetStatusBarTexture()
+	texture:SetVertexColor(0, 0, 0, 0)
+
+	self.fillTintBoundsFrame = bounds
+	self.fillTintClipFrame = clip
+	self.fillTintFrame = tint
+	self.fillTintTexture = texture
+	self.fillTintReady = false
+	self._fillTintTexturePath = FILL_TINT_DEFAULT_TEXTURE
+	self._fillTintShown = false
+	self:ReanchorFillTint()
+end
+
+---Tints the fill from a ColorCurve result, which may hold secrets. No-op if not created.
+---@param colorResult LuaCurveEvaluatedResult
+function TRB.Classes.OverlaySlot:SetFillTintColorResult(colorResult)
+	local texture = self.fillTintTexture
+	if texture == nil then return end
+	texture:SetVertexColor(colorResult:GetRGBA())
+end
+
+---Shows or hides the fill tint; it shows only once anchored. No-op if not created.
+---@param shown boolean
+function TRB.Classes.OverlaySlot:SetFillTintShown(shown)
+	local bounds = self.fillTintBoundsFrame
+	if bounds == nil then return end
+	shown = shown and self.fillTintReady == true
+	if self._fillTintShown == shown then return end
+	self._fillTintShown = shown
+	bounds:SetShown(shown)
+end
+
+-- ============================================================================
 -- End Cap (fixed-width band at the fill's leading edge, growing inward)
 -- ============================================================================
 -- The end cap anchors a fixed-width colored band's leading edge to the primary
@@ -1567,6 +1687,8 @@ function TRB.Classes.OverlaySlot:Reanchor()
 	-- Re-anchor range overlays if they exist
 	self:ReanchorRangeOverlays(true)
 
+	self:ReanchorFillTint()
+
 	-- Re-anchor end cap if it exists
 	self:ReanchorEndCap()
 end
@@ -1621,5 +1743,6 @@ function TRB.Classes.OverlaySlot:HideAll()
 	self:HideAppendedOverlay()
 	self:HideInsetOverlay()
 	self:HideRangeOverlays()
+	self:SetFillTintShown(false)
 	self:HideEndCap()
 end

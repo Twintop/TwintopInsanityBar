@@ -4545,3 +4545,5 @@ L["ForeverShamanElementalShieldCheckboxUseHighestForAll"] = "Use highest shield 
 L["ForeverShamanElementalShieldCheckboxUseHighestForAllTooltip"] = "When checked, the highest shield orb's color will be used for all shield orbs. E.g., if you have maximum %d shield orbs and currently have %d, the Penultimate color will be used for all shield orbs instead of just the second to last."
 L["TimerShowMinutes"] = "Show times of a minute or more as m:ss"
 L["TimerShowMinutesTooltip"] = "Shows bar text times of a minute or more as minutes and seconds, such as 4:54. The seconds keep the decimal places set by Timer Precision."
+L["TotemsOverrideElements"] = "Use for every element"
+L["TotemsOverrideElementsTooltip"] = "When checked, every element's node fills with the Totems bar color instead of its own element color."

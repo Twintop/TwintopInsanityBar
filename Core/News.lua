@@ -4,6 +4,13 @@ local _, TRB = ...
 -- first. Titles name the Live, Forever, Classic, and TBC releases; the tab keeps only the running flavor's.
 TRB.Details.coreNewsContent = [====[
 
+# Live 12.1.5.15-release / Forever 1.60.1.21-release / Classic 1.15.9.6-release / TBC 2.5.6.4-release (2026-11-18)
+## Totems
+
+- Fix the Totems bar ignoring its gradient colors.
+
+---
+
 # Live 12.1.5.14-release / Forever 1.60.1.20-release / Classic 1.15.9.5-release / TBC 2.5.6.3-release (2026-11-17)
 ## General
 

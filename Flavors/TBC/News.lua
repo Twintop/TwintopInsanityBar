@@ -8,6 +8,14 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 2.5.6.4-release (2026-11-18)
+## General
+### Totems
+
+- Add a 'Use for every element' option to the Totems bar color, off by default, which fills every element's node with that color instead of its own.
+
+---
+
 # 2.5.6.3-release (2026-11-17)
 ## General
 ### Core Changes

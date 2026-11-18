@@ -2464,6 +2464,7 @@ function TRB.Functions.Settings:DefaultTotemBarColors()
 		ending = { color = "FFFF0000", enabled = true, mode = "time", timeMax = 3, gcdsMax = 2 }
 	}
 	if TRB.Flavor.totemElements then
+		colors.bar.overrideElements = false
 		colors.nodeColors = {
 			earth = { color = "FF9C7A3C", color2 = "FF9C7A3C", gradientDirection = "disabled" },
 			fire = { color = "FFFF5A1F", color2 = "FFFF5A1F", gradientDirection = "disabled" },
