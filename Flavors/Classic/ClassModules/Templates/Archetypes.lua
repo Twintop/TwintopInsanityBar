@@ -22,7 +22,7 @@ TRB.Classic.Templates = TRB.Classic.Templates or {}
 ---@field public powerType integer # Enum.PowerType of the primary resource
 ---@field public powerToken string # UNIT_POWER_UPDATE token of the primary resource
 ---@field public resourceType string # GetSpecConfiguration resourceType, a TRB.Flavor.resourceTypes key
----@field public nameKey string # localization key of the resource name
+---@field public resourceName string # localized resource name
 ---@field public variable string # bar text variable stem (without "$"), e.g. "mana" -> $mana, $manaMax
 ---@field public defaultMax integer # maxResource before the client reports one
 ---@field public resourceFactor integer? # raw UnitPower units per displayed unit; nil means 1
@@ -31,17 +31,17 @@ TRB.Classic.Templates = TRB.Classic.Templates or {}
 ---@field public secondary TRB.Classic.ArchetypeSecondary?
 ---@field public overcap TRB.Classic.ArchetypeOvercap? # a resource that can overcap: its Overcap indicator and text colors
 
----The default Overcap indicator color and the locale keys labelling a resource's overcap and over-threshold options.
+---The default Overcap indicator color and the localized labels of a resource's overcap and over-threshold options.
 ---@class TRB.Classic.ArchetypeOvercap
 ---@field public color string
----@field public barNameKey string
----@field public indicatorKey string
----@field public indicatorTooltipKey string
----@field public indicatorColorKey string
----@field public textOverThresholdKey string
----@field public textOverThresholdTooltipKey string
----@field public textOvercapKey string
----@field public textOvercapTooltipKey string
+---@field public barName string
+---@field public indicatorLabel string
+---@field public indicatorTooltip string
+---@field public indicatorColorLabel string
+---@field public textOverThreshold string
+---@field public textOverThresholdTooltip string
+---@field public textOvercap string
+---@field public textOvercapTooltip string
 
 ---@class TRB.Classic.ArchetypeColors
 ---@field public textCurrent string
@@ -97,27 +97,27 @@ local comboPointsSecondary = {
 ---@type TRB.Classic.ArchetypeOvercap
 local rageOvercap = {
 	color = "FF800000",
-	barNameKey = "BarNameRageBar",
-	indicatorKey = "ClassicIndicatorOvercap",
-	indicatorTooltipKey = "ClassicIndicatorRageOvercapTooltip",
-	indicatorColorKey = "WarriorIndicatorOvercapColor",
-	textOverThresholdKey = "WarriorColorPickerThresholdOver",
-	textOverThresholdTooltipKey = "WarriorCheckboxThresholdOverTooltip",
-	textOvercapKey = "WarriorColorPickerOvercap",
-	textOvercapTooltipKey = "WarriorCheckboxThresholdOvercapTooltip",
+	barName = L["BarNameRageBar"],
+	indicatorLabel = L["ClassicIndicatorOvercap"],
+	indicatorTooltip = L["ClassicIndicatorRageOvercapTooltip"],
+	indicatorColorLabel = L["WarriorIndicatorOvercapColor"],
+	textOverThreshold = L["WarriorColorPickerThresholdOver"],
+	textOverThresholdTooltip = L["WarriorCheckboxThresholdOverTooltip"],
+	textOvercap = L["WarriorColorPickerOvercap"],
+	textOvercapTooltip = L["WarriorCheckboxThresholdOvercapTooltip"],
 }
 
 ---@type TRB.Classic.ArchetypeOvercap
 local energyOvercap = {
 	color = "FFFF0000",
-	barNameKey = "BarNameEnergyBar",
-	indicatorKey = "ClassicIndicatorOvercap",
-	indicatorTooltipKey = "ClassicIndicatorEnergyOvercapTooltip",
-	indicatorColorKey = "RogueIndicatorOvercapColor",
-	textOverThresholdKey = "ColorPickerHaveEnoughEnergyToUseAbilityThreshold",
-	textOverThresholdTooltipKey = "CheckboxThresholdOverTooltip",
-	textOvercapKey = "RogueColorPickerOvercap",
-	textOvercapTooltipKey = "RogueCheckboxThresholdOvercapTooltip",
+	barName = L["BarNameEnergyBar"],
+	indicatorLabel = L["ClassicIndicatorOvercap"],
+	indicatorTooltip = L["ClassicIndicatorEnergyOvercapTooltip"],
+	indicatorColorLabel = L["RogueIndicatorOvercapColor"],
+	textOverThreshold = L["ColorPickerHaveEnoughEnergyToUseAbilityThreshold"],
+	textOverThresholdTooltip = L["CheckboxThresholdOverTooltip"],
+	textOvercap = L["RogueColorPickerOvercap"],
+	textOvercapTooltip = L["RogueCheckboxThresholdOvercapTooltip"],
 }
 
 ---@type table<string, TRB.Classic.Archetype>
@@ -127,7 +127,7 @@ TRB.Classic.Archetypes = {
 		powerType = Enum.PowerType.Mana,
 		powerToken = "MANA",
 		resourceType = "Mana",
-		nameKey = "ResourceMana",
+		resourceName = L["ResourceMana"],
 		variable = "mana",
 		defaultMax = 100,
 		defaultText = "mana",
@@ -138,7 +138,7 @@ TRB.Classic.Archetypes = {
 		powerType = Enum.PowerType.Rage,
 		powerToken = "RAGE",
 		resourceType = "Rage",
-		nameKey = "ResourceRage",
+		resourceName = L["ResourceRage"],
 		variable = "rage",
 		defaultMax = 100,
 		resourceFactor = 10,
@@ -151,7 +151,7 @@ TRB.Classic.Archetypes = {
 		powerType = Enum.PowerType.Energy,
 		powerToken = "ENERGY",
 		resourceType = "Energy",
-		nameKey = "ResourceEnergy",
+		resourceName = L["ResourceEnergy"],
 		variable = "energy",
 		defaultMax = 100,
 		defaultText = "resource",
@@ -163,7 +163,7 @@ TRB.Classic.Archetypes = {
 		powerType = Enum.PowerType.Energy,
 		powerToken = "ENERGY",
 		resourceType = "Energy",
-		nameKey = "ResourceEnergy",
+		resourceName = L["ResourceEnergy"],
 		variable = "energy",
 		defaultMax = 100,
 		defaultText = "resource",
@@ -203,9 +203,9 @@ TRB.Classic.Archetypes = {
 ---@field public color string # default color
 ---@field public targets table<string, table<string, boolean>>? # default targets; none when nil
 ---@field public modifiers TRB.IndicatorModifiers? # default modifiers
----@field public labelKey string # locale key of the row's name in the Add Built-in and Change Source menus
----@field public tooltipKey string
----@field public colorLabelKey string # locale key of the row's label
+---@field public label string # the row's localized name in the Add Built-in and Change Source menus
+---@field public tooltip string
+---@field public colorLabel string # the row's localized label
 ---@field public endOf TRB.Classic.SpecIndicatorEndOf? # makes the row an ending one, with its own configuration section
 
 ---How an ending indicator's window is set: within some GCDs or seconds of the buff ending.
@@ -214,11 +214,11 @@ TRB.Classic.Archetypes = {
 ---@field public mode string # default mode, "gcd" or "time"
 ---@field public gcdsMax number # default GCD count
 ---@field public timeMax number # default seconds
----@field public headerKey string # locale key of the configuration section's header
----@field public gcdRadioKey string
----@field public gcdSliderKey string
----@field public timeRadioKey string
----@field public timeSliderKey string
+---@field public sectionHeader string # the configuration section's localized header
+---@field public gcdRadioLabel string
+---@field public gcdSliderLabel string
+---@field public timeRadioLabel string
+---@field public timeSliderLabel string
 
 ---How one spec is declared to DefineClass: an archetype key on its own, or a table when the spec
 ---brings abilities, icons, stealth, buffs, bar text values, indicators, or a secondary bar along with it.
@@ -312,7 +312,7 @@ local function DefineSpellsClass(classModule, spec)
 
 	local archetype = spec.archetype
 	local variable = archetype.variable
-	local resourceName = L[archetype.nameKey]
+	local resourceName = archetype.resourceName
 	local icons = spec.icons
 	local stealth = spec.stealth
 	local barTextValues = spec.barTextValues

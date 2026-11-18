@@ -11,6 +11,7 @@ end })
 --   L[specLocaleKey]            e.g. L["HunterBeastMastery"] -> client-localized spec name
 --   L[specLocaleKey .. "Full"]  e.g. L["PriestShadowFull"]   -> "Shadow Priest"
 -- A spec without a resolvable global ID falls back to its settings key so the UI still has a label.
+-- The registry entries carry the same names as localizedName and localizedFullName, for code that picks one at runtime.
 do
 	-- Classic Era has no LocalizedClassList, only the older fill-a-table form.
 	local classList = {}
@@ -20,7 +21,8 @@ do
 		FillLocalizedClassList(classList)
 	end
 	for _, classEntry in ipairs(TRB.Data.classRegistryOrder) do
-		L[classEntry.classModuleName] = classList[classEntry.classToken] or classEntry.classModuleName
+		classEntry.localizedName = classList[classEntry.classToken] or classEntry.classModuleName
+		L[classEntry.classModuleName] = classEntry.localizedName
 	end
 
 	for _, specEntry in ipairs(TRB.Data.specRegistryOrder) do
@@ -31,16 +33,19 @@ do
 		if specName == nil or specName == "" then
 			specName = string.upper(string.sub(specEntry.specName, 1, 1)) .. string.sub(specEntry.specName, 2)
 		end
+		specEntry.localizedName = specName
 		L[specEntry.specLocaleKey] = specName
 	end
 
 	-- A class with a single specialization (Forever) is labelled by its class name alone.
 	for _, specEntry in ipairs(TRB.Data.specRegistryOrder) do
-		if #TRB.Data.classRegistry[specEntry.className].specs == 1 then
-			L[specEntry.specLocaleKey .. "Full"] = L[specEntry.classModuleName]
+		local classEntry = TRB.Data.classRegistry[specEntry.className]
+		if #classEntry.specs == 1 then
+			specEntry.localizedFullName = classEntry.localizedName
 		else
-			L[specEntry.specLocaleKey .. "Full"] = string.format("%s %s", L[specEntry.specLocaleKey], L[specEntry.classModuleName])
+			specEntry.localizedFullName = string.format("%s %s", specEntry.localizedName, classEntry.localizedName)
 		end
+		L[specEntry.specLocaleKey .. "Full"] = specEntry.localizedFullName
 	end
 end
 

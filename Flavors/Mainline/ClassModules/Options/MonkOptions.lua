@@ -943,10 +943,8 @@ local function BrewmasterConstructStaggerBarPanel(parent)
 		-- Store as decimal (e.g., 100% -> 1.0, 200% -> 2.0)
 		spec.bars.stagger.maxScale = value / 100
 		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(10, 1) then
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end)
 end
@@ -1151,10 +1149,8 @@ local function BrewmasterConstructThresholdSettingsPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.stagger.medium.enabled = self:GetChecked()
 		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(10, 1) then
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end)
 
@@ -1167,10 +1163,8 @@ local function BrewmasterConstructThresholdSettingsPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.stagger.heavy.enabled = self:GetChecked()
 		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(10, 1) then
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end)
 
@@ -1184,10 +1178,8 @@ local function BrewmasterConstructThresholdSettingsPanel(parent)
 	f:SetScript("OnClick", function(self, ...)
 		spec.thresholds.stagger.extreme.enabled = self:GetChecked()
 		if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(10, 1) then
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end)
 
@@ -1316,9 +1308,7 @@ local function BrewmasterConstructFontAndTextPanel(parent)
 		staggerModeDropdown:SetDefaultText(staggerModeLabels[newValue])
 		StaggerModeUpdateSwatch()
 		TRB.Data.lookupDirty = true
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
+		TRB.Functions.Class:TriggerResourceBarUpdates()
 	end
 
 	local function StaggerModeGenerator(dropdown, rootDescription)

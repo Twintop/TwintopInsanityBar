@@ -10,6 +10,8 @@ local Totems = TRB.Functions.Totems
 local MIN_VISIBLE_NODES = 4
 -- Element slots on a flavor whose slots are elements (Blizzard's FIRE/EARTH/WATER/AIR_TOTEM_SLOT).
 local ELEMENT_SLOTS = { fire = 1, earth = 2, water = 3, air = 4 }
+-- The overlay slot whose fill tint paints the Ending color over a node.
+local ENDING_SLOT = "totemsEnding"
 
 ---@class TRB.Functions.Totems.Slot
 ---@field slot integer
@@ -446,6 +448,8 @@ function Totems:LayoutGroup(group, groupSettings, colors)
 				else
 					x = x + position
 				end
+				-- Ending paints over the fill, so the fill keeps its own color and gradient; SetDimensions anchors it.
+				node:GetOrCreateOverlaySlot(ENDING_SLOT):CreateFillTint()
 				node:SetDimensions(barWidth, nodeHeight, border)
 				node.frame:ClearAllPoints()
 				node.frame:SetPoint("TOPLEFT", group.containerFrame, "TOPLEFT", x, y)
@@ -492,19 +496,19 @@ local function GetEndingSeconds(ending)
 	return ending.timeMax or 0
 end
 
----The fill color for a slot: its element's color where slots are elements, else the bar's.
+---The fill color entry for a slot: its element's where slots are elements, else the bar's.
 ---@param colors table
 ---@param slot integer
----@return string
+---@return string|TRB.Classes.Settings.ColorGradientEntry
 local function GetSlotColor(colors, slot)
 	if TRB.Flavor.totemElements and colors.nodeColors ~= nil then
 		for key, elementSlot in pairs(ELEMENT_SLOTS) do
 			if elementSlot == slot and colors.nodeColors[key] ~= nil then
-				return colors.nodeColors[key].color
+				return colors.nodeColors[key]
 			end
 		end
 	end
-	return colors.bar and colors.bar.color or "FFFFFFFF"
+	return colors.bar or "FFFFFFFF"
 end
 
 ---Draws the Totems bar. Binds a node only when its slot changed, and paints the Ending color every tick while it's on.
@@ -530,6 +534,8 @@ function Totems:Render(barGroups, settings)
 	local endingSeconds = GetEndingSeconds(colors.ending)
 	local layoutVersion = layoutVersions[group] or 0
 	local Color = TRB.Functions.Color
+	-- Clear outside the window, so the fill's own color shows through until then.
+	local endingCurve = endingSeconds ~= nil and Color:BuildRemainingTimeCurve(endingSeconds, colors.ending.color, "00000000") or nil
 	local indicators = Color:GetResolvedIndicators("totemsBar")
 	local borderColor = (indicators and indicators.border) or colors.border.color
 	local backgroundColor = (indicators and indicators.background) or colors.background.color
@@ -569,12 +575,15 @@ function Totems:Render(barGroups, settings)
 				end
 			end
 
-			local baseColor = GetSlotColor(colors, slot)
-			if active and endingSeconds ~= nil and record.duration ~= nil then
-				local curve = Color:BuildRemainingTimeCurve(endingSeconds, colors.ending.color, baseColor)
-				node:SetColorCurve(record.duration:EvaluateRemainingDuration(curve))
-			else
-				node:SetColor(baseColor)
+			Color:ApplyFillColor(node, GetSlotColor(colors, slot))
+			local ending = node:GetOverlaySlot(ENDING_SLOT)
+			if ending ~= nil then
+				if active and endingCurve ~= nil and record.duration ~= nil then
+					ending:SetFillTintColorResult(record.duration:EvaluateRemainingDuration(endingCurve))
+					ending:SetFillTintShown(true)
+				else
+					ending:SetFillTintShown(false)
+				end
 			end
 			Color:ApplyResolvedBorderOrBackground(node, "totemsBar", "border", borderColor)
 			Color:ApplyResolvedBorderOrBackground(node, "totemsBar", "background", backgroundColor)

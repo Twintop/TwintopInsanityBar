@@ -315,7 +315,7 @@ function TRB.Functions.OptionsUi.Visibility:ApplyVisibilityChange(classId, specI
 			TRB.Functions.BarVisibility:MarkDirty()
 		end
 		TRB.Functions.Bar:HideResourceBar()
-		if includeAppearance and TRB.Frames.barGroups ~= nil and TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
+		if includeAppearance and TRB.Frames.barGroups ~= nil then
 			TRB.Data.lookupDirty = true
 			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
@@ -1288,6 +1288,17 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	end
 	-- The selected bar's definitions, so the detail panel's labels follow its profile.
 	local activeThresholdDefinitions = thresholdTypeDefinitions
+	-- Custom bars: When Active and the standard lists, plus the thresholds.
+	local userBarProfile = {
+		showKeys = timerEnvironmentKeys,
+		showLabels = timerEnvironmentProfile.showLabels,
+		showGroups = timerEnvironmentGroups,
+		hideKeys = hideConditionKeys,
+		hideLabels = hideConditionLabels,
+		hideGroups = hideConditionGroups,
+		supportsThresholds = true,
+		thresholdDefinitions = thresholdTypeDefinitions,
+	}
 
 	-- Pet bars: the standard lists and thresholds, each list closed by a Pet group of pet states.
 	local petShowKeys, petShowGroups = AppendGroup(conditionKeys, conditionGroups, L["ShowBarVisibilityGroupPet"], CopyKeys(PET_CONDITION_KEYS))
@@ -1362,6 +1373,10 @@ function TRB.Functions.OptionsUi.Visibility:GenerateBarVisibilityOptions(parent,
 	local function GetProfileForEntry(barEntry)
 		if barEntry == nil then
 			return standardProfile
+		end
+		-- Its presets share the timer lists, but the bar itself offers thresholds, which the visibility pass applies.
+		if barEntry.isUserBar then
+			return userBarProfile
 		end
 		local profileKey = barEntry.isPreset and barEntry.profileKey or barVisibility:GetProfileKeyForBar(barEntry.displayBarKey)
 		return profilesByKey[profileKey] or standardProfile

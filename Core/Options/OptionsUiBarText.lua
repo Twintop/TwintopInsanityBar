@@ -147,12 +147,10 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 			TRB.Data.activeVariables = nil
 			TRB.Functions.BarText:Hide(spec)
 			TRB.Functions.BarText:CreateBarTextFrames(classId, specId)
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				C_Timer.After(0, function()
-					TRB.Data.lookupDirty = true
-					TRB.Functions.Class:TriggerResourceBarUpdates()
-				end)
-			end
+			C_Timer.After(0, function()
+				TRB.Data.lookupDirty = true
+				TRB.Functions.Class:TriggerResourceBarUpdates()
+			end)
 			TRB.Functions.OptionsUi.GlobalSettings:RefreshBulkGlobalToggleCheckbox("globalBarText")
 			TRB.Functions.OptionsUi.BarText:RefreshUseGlobalBarText()
 		end)
@@ -346,9 +344,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 
 		TRB.Functions.BarText:CreateBarTextFrames(TRB.Data.character.classId, TRB.Data.character.specId)
 		TRB.Functions.BarText:InvalidateLookupMemoization()
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			TRB.Functions.Class:TriggerResourceBarUpdates()
-		end
+		TRB.Functions.Class:TriggerResourceBarUpdates()
 	end
 
 	controls.barTextContainer = CreateFrame("Frame", nil, parent, "BackdropTemplate")
@@ -1198,12 +1194,10 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 			end
 		else
 			TRB.Functions.Profiles:InvalidateCache()
-			if TRB.Functions.OptionsUi.Profiles and TRB.Functions.OptionsUi.Profiles.RefreshProfileDropdownForScope then
-				if destScope == "global" then
-					TRB.Functions.OptionsUi.Profiles:RefreshProfileDropdownForScope("core")
-				else
-					TRB.Functions.OptionsUi.Profiles:RefreshProfileDropdownForScope("spec", destClassName, destSpecName)
-				end
+			if destScope == "global" then
+				TRB.Functions.OptionsUi.Profiles:RefreshProfileDropdownForScope("core")
+			else
+				TRB.Functions.OptionsUi.Profiles:RefreshProfileDropdownForScope("spec", destClassName, destSpecName)
 			end
 			TRB.Functions.Profiles:FlushActive()
 		end
@@ -1211,9 +1205,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		if DestinationAffectsActiveBarText(destScope, destProfileName, destClassName, destSpecName) then
 			ClearBarTextRuntimeCaches()
 			TRB.Functions.BarText:CreateBarTextFrames()
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end
 
@@ -1662,10 +1654,8 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 				local activeSettings = TRB.Data.specCache[activeCompositeKey] and TRB.Data.specCache[activeCompositeKey].settings
 				TRB.Functions.BarText:Hide(activeSettings or spec)
 				TRB.Functions.BarText:CreateBarTextFrames()
-				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-					TRB.Data.lookupDirty = true
-					TRB.Functions.Class:TriggerResourceBarUpdates()
-				end
+				TRB.Data.lookupDirty = true
+				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		elseif classId == TRB.Data.character.classId and specId == TRB.Data.character.specId then
 			TRB.Data.cache.barText = {}

@@ -2453,11 +2453,10 @@ function TRB.Functions.Settings:DefaultTotemBarSettings(classic, builtIn)
 	return settings
 end
 
----Default Totems bar colors. Where slots are elements, each element has its own fill.
+---Default Totems bar colors. Where slots are elements, each element's color is its node's fill, so there is no bar color.
 ---@return table
 function TRB.Functions.Settings:DefaultTotemBarColors()
 	local colors = {
-		bar = { color = "FF0070DD", color2 = "FF0070DD", gradientDirection = "disabled" },
 		border = { color = "FF000000" },
 		background = { color = "66000000" },
 		endCap = self:DefaultEndCapColorEntry(),
@@ -2470,6 +2469,8 @@ function TRB.Functions.Settings:DefaultTotemBarColors()
 			water = { color = "FF2E86FF", color2 = "FF2E86FF", gradientDirection = "disabled" },
 			air = { color = "FFB8E6FF", color2 = "FFB8E6FF", gradientDirection = "disabled" }
 		}
+	else
+		colors.bar = { color = "FF0070DD", color2 = "FF0070DD", gradientDirection = "disabled" }
 	end
 	return colors
 end
@@ -3047,6 +3048,91 @@ function TRB.Functions.Settings:MigrateThresholdIconCooldownText(settings)
 		if type(classPiece) == "table" then
 			for _, specEntry in ipairs(classEntry.specs) do
 				Migrate(classPiece[specEntry.specName])
+			end
+		end
+	end
+end
+
+-- What a Steady Flight tick becomes: together these mean exactly its old "mounted and flying".
+local STEADY_FLIGHT_SPLIT_KEYS = { "isSkyridingFlying", "isSteadyFlightFlying" }
+
+---Steady Flight and Steady Flight (Flying Only) both meant mounted and flying. Each tick becomes Skyriding (Flying Only) and
+---Steady Flight (Flying Only), or the second alone on a flavor without skyriding, so every bar shows exactly as before.
+---@param settings table # A saved-variables shaped table, one stored profile, or an import
+function TRB.Functions.Settings:SplitSteadyFlightTicks(settings)
+	local splitKeys = {}
+	for _, key in ipairs(STEADY_FLIGHT_SPLIT_KEYS) do
+		if not TRB.Flavor.unavailableVisibilityConditions[key] then
+			splitKeys[#splitKeys + 1] = key
+		end
+	end
+
+	---@param conditions table?
+	---@param steadyKey string # The list's Steady Flight key
+	local function Split(conditions, steadyKey)
+		if type(conditions) ~= "table" or (conditions[steadyKey] ~= true and conditions.isSteadyFlightFlying ~= true) then
+			return
+		end
+		if conditions[steadyKey] == true then
+			conditions[steadyKey] = false
+		end
+		for _, key in ipairs(splitKeys) do
+			conditions[key] = true
+		end
+	end
+
+	---@param entry table
+	local function SplitEntry(entry)
+		Split(entry.conditions, "isSteadyFlight")
+		Split(entry.hideConditions, "isMountedFlying")
+	end
+
+	---@param displayBar table?
+	local function SplitDisplayBar(displayBar)
+		if type(displayBar) ~= "table" then
+			return
+		end
+		for barKey, entry in pairs(displayBar) do
+			-- The Skyriding bars read their own Skyriding (Flying Only), whatever the mount, and never list Steady Flight.
+			if type(entry) == "table" and not TRB.Classes.BarTypeRegistry:IsSkyridingBar(barKey) then
+				SplitEntry(entry)
+			end
+		end
+	end
+
+	local core = type(settings.core) == "table" and settings.core or nil
+	if core ~= nil then
+		SplitDisplayBar(core.displayBar)
+		if type(core.visibilityPresets) == "table" then
+			for _, preset in pairs(core.visibilityPresets) do
+				if type(preset) == "table" and preset.profileKey ~= "skyriding" then
+					SplitEntry(preset)
+				end
+			end
+		end
+	end
+	for _, classEntry in ipairs(TRB.Data.classRegistryOrder) do
+		local classPiece = settings[classEntry.className]
+		if type(classPiece) == "table" then
+			for _, specEntry in ipairs(classEntry.specs) do
+				local piece = classPiece[specEntry.specName]
+				if type(piece) == "table" then
+					SplitDisplayBar(piece.displayBar)
+				end
+			end
+		end
+	end
+end
+
+---Splits the Steady Flight ticks in a settings-shaped table and in every profile it stores.
+---@param settings table # The saved variables or an import
+function TRB.Functions.Settings:SplitSteadyFlightTicksWithProfiles(settings)
+	self:SplitSteadyFlightTicks(settings)
+	local list = type(settings.profiles) == "table" and settings.profiles.list or nil
+	if type(list) == "table" then
+		for _, profile in pairs(list) do
+			if type(profile) == "table" then
+				self:SplitSteadyFlightTicks(profile)
 			end
 		end
 	end

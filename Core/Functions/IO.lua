@@ -96,7 +96,7 @@ end
 
 local function GetAllowedCustomBarKeys(classId, specId)
 	local allowedBars = {}
-	local registry = TRB.Classes and TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 
 	if registry ~= nil then
 		local registryBars = registry:GetBarTypesForSpec(classId, specId)
@@ -130,7 +130,7 @@ local function CopySecondaryBarConfiguration(configuration, settings)
 end
 
 local function CopyCustomBarConfiguration(configuration, settings, barKey)
-	local registry = TRB.Classes and TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 	local barTypeDef = registry and registry:Get(barKey)
 	local barSettings = settings.bars and settings.bars[barKey]
 
@@ -421,6 +421,19 @@ function TRB.Functions.IO:GetLastRejectedFlavorName()
 	return name or lastRejectedFlavor
 end
 
+-- 1: Steady Flight ticks no longer mean mounted and flying, so an export without it has its ticks split on import.
+local VISIBILITY_REVISION = 1
+
+---Strips the visibility revision an export carries, and brings the visibility ticks of an export older than it up to date.
+---@param configuration table
+local function ConsumeVisibilityRevision(configuration)
+	local revision = configuration.visibilityRevision
+	configuration.visibilityRevision = nil
+	if type(revision) ~= "number" or revision < 1 then
+		TRB.Functions.Settings:SplitSteadyFlightTicksWithProfiles(configuration)
+	end
+end
+
 ---Serializes a configuration table to JSON, compresses it with Deflate, Base64-encodes it, and prepends the v2 export string prefix.
 ---@param configuration table # The configuration table to serialize and encode for export
 ---@return string # The prefixed Base64-encoded compressed export string
@@ -428,6 +441,7 @@ local function Export(configuration)
 	-- Stamp the flavor so a string exported from one game lineage is refused by another; the class and
 	-- spec keys overlap between lineages while their meanings (resources, bars, spells) do not.
 	configuration.flavor = TRB.Flavor.id
+	configuration.visibilityRevision = VISIBILITY_REVISION
 	local encoded = C_EncodingUtil.SerializeJSON(MarshalTableKeys(configuration))
 	local compressed = C_EncodingUtil.CompressString(encoded, Enum.CompressionMethod.Deflate)
 	local base64 = C_EncodingUtil.EncodeBase64(compressed)
@@ -479,6 +493,7 @@ local function HandleImport(input)
 	if not ConsumeFlavorStamp(configuration) then
 		return -8
 	end
+	ConsumeVisibilityRevision(configuration)
 
 	if configuration.core == nil and not HasAnyClassSpecSection(configuration) then
 		return -4
@@ -724,6 +739,7 @@ function TRB.Functions.IO:DecodeExportString(input)
 	if not ConsumeFlavorStamp(configuration) then
 		return false, nil, -8
 	end
+	ConsumeVisibilityRevision(configuration)
 
 	return true, configuration, nil
 end
@@ -836,7 +852,6 @@ local function ResolveLiveOrStoredSpecPiece(profileName, className, specName)
 	local useLive = character ~= nil
 		and character.classId == classId
 		and character.specId == specId
-		and TRB.Functions.Profiles ~= nil
 		and (TRB.Functions.Profiles:ResolveSpecProfileName(className, specName) == profileName)
 
 	if useLive then
@@ -863,8 +878,7 @@ end
 ---@param profileName string
 ---@return table?
 local function ResolveLiveOrStoredCorePiece(profileName)
-	local useLive = TRB.Functions.Profiles ~= nil
-		and (TRB.Functions.Profiles:ResolveCoreProfileName() == profileName)
+	local useLive = TRB.Functions.Profiles:ResolveCoreProfileName() == profileName
 
 	if useLive then
 		local live = TRB.Data.settings and TRB.Data.settings.core
@@ -1011,7 +1025,7 @@ function TRB.Functions.IO:ExportFullProfile(profileName)
 	-- if the named profile has no core stored. When missing, fall back to the
 	-- currently-active core profile so the recipient gets a complete bundle.
 	local corePiece = ResolveLiveOrStoredCorePiece(profileName)
-	if corePiece == nil and TRB.Functions.Profiles ~= nil then
+	if corePiece == nil then
 		local activeCoreName = TRB.Functions.Profiles:ResolveCoreProfileName()
 		if activeCoreName ~= nil then
 			local liveCore = TRB.Data.settings and TRB.Data.settings.core

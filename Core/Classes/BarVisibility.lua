@@ -20,12 +20,12 @@ local FORM_CONDITIONS = TRB.Classes.SpecDescriptor:GetFormConditions()
 ---@field targetIsEnemy boolean # Whether the current target is unfriendly
 ---@field isMountedAny boolean # Whether the player is currently mounted (any mount)
 ---@field isMountedGround boolean # Whether the player is mounted and on the ground (not flying, any mount type)
----@field isMountedFlying boolean # Whether the player is mounted and in real (non-gliding) flight (Hide-list alias of isSteadyFlight)
+---@field isMountedFlying boolean # The Hide list's Steady Flight: the same as isSteadyFlight
 ---@field isSkyriding boolean # Whether the player is mounted on a skyriding-capable mount in a skyriding-enabled area
 ---@field isSkyridingFlying boolean # Whether the player is actively skyriding (mounted, canGlide, and flying)
 ---@field isNotSkyriding boolean # Whether isSkyriding is false; the Skyriding bars read their own, from canGlide alone
----@field isSteadyFlight boolean # Whether the player is mounted and in real (non-gliding) flight; IsFlying() is false while skyriding-gliding
----@field isSteadyFlightFlying boolean # Whether the player is mounted and in real (non-gliding) flight (same as isSteadyFlight; steady flight only exists while airborne)
+---@field isSteadyFlight boolean # Whether the player is on a flying mount, not skyriding, somewhere flying works, on the ground or in the air
+---@field isSteadyFlightFlying boolean # Whether the player is mounted, flying, and not skyriding
 ---@field inGroup boolean # Whether the player is in a group (party or raid)
 ---@field inRaid boolean # Whether the player is in a raid group
 ---@field inInstance boolean # Whether the player is in any instance (dungeon, raid, scenario, arena, battleground)
@@ -110,8 +110,8 @@ function TRB.Classes.BarVisibilityContext:FillFromGameState(target, force)
 	local isMountedGround = isMountedAny and not isFlying and not isGliding
 	local isSkyriding = isMountedAny and canSkyriding
 	local isSkyridingFlying = isMountedAny and canSkyriding and isFlying
-	local isSteadyFlight = isMountedAny and isFlying
-	local isSteadyFlightFlying = isMountedAny and isFlying
+	local isSteadyFlight = isMountedAny and not canSkyriding and TRB.Data.character.isFlyingMount == true and (isFlying or IsFlyableArea())
+	local isSteadyFlightFlying = isMountedAny and isFlying and not canSkyriding
 	local isMountedFlying = isSteadyFlight
 	local onTaxi = TRB.Data.character.onTaxi
 	if onTaxi == nil then
@@ -678,6 +678,8 @@ local function ReadUneventedInputs(into)
 	into.targetIsEnemy = hasTarget and UnitCanAttack("player", "target") == true
 	into.isFlying = IsFlying() == true
 	into.isGliding = TRB.Flavor.skyriding ~= nil and (C_PlayerInfo.GetGlidingInfo()) == true
+	-- Only Steady Flight on a flying mount reads it, and a client that can't fly may lack it.
+	into.isFlyableArea = TRB.Data.character.isFlyingMount == true and IsFlyableArea() == true
 	into.isWarMode = C_PvP.IsWarModeDesired() == true
 end
 

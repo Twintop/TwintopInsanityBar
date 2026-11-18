@@ -8,6 +8,24 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.5.15-release (2026-11-18)
+## General
+### Bar Visibility
+
+- [#1011](#1011) Fix the Steady Flight and Steady Flight (Flying Only) bar visibility conditions matching while skyriding.
+- [#1011](#1011) Steady Flight now matches on a flying mount wherever you can fly, on the ground or in the air.
+- [#1011](#1011) Existing Steady Flight selections, including those in profiles and imports, become Skyriding (Flying Only) and Steady Flight (Flying Only), keeping every bar's behavior unchanged.
+
+### Custom Bars
+
+- [#1008](#1008) Fix the bar text of a custom bar on a Cooldown Manager buff ignoring the Cooldown Manager value when unavailable option.
+
+### Totems
+
+- [#1008](#1008) Fix the Use Global checkbox tooltips in Totems Position and Size and Totems Colors showing a placeholder.
+
+---
+
 # 12.1.5.14-release (2026-11-17)
 ## General
 ### Custom Bars

@@ -36,9 +36,6 @@ end
 ---Returns a fresh baseline core piece.
 ---@return table?
 local function GetBaselineCorePiece()
-	if TRB.Functions.Settings == nil or type(TRB.Functions.Settings.LoadDefaultSettings) ~= "function" then
-		return nil
-	end
 	local settings = TRB.Functions.Settings:LoadDefaultSettings()
 	return settings and settings.core
 end
@@ -555,9 +552,7 @@ local function EnsureProfilePopupsRegistered()
 				TRB.Functions.BarVisibility:SettleImportedPresetLinks(p.list[name][slot.className][slot.specName], presets)
 			end
 
-			if TRB.Functions.Settings and TRB.Functions.Settings.PortForwardProfile then
-				TRB.Functions.Settings:PortForwardProfile(p.list[name])
-			end
+			TRB.Functions.Settings:PortForwardProfile(p.list[name])
 		end
 
 		TRB.Functions.Profiles:InvalidateCache()

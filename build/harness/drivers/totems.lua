@@ -20,11 +20,13 @@ function hooks.afterInstall(ctx)
 		if totem == nil then
 			return nil
 		end
+		-- A check can move a totem's time left with `remaining`.
+		local function Remaining() return totem.remaining or (totem.duration - 0.5) end
 		return {
 			slot = slot,
-			EvaluateRemainingDuration = function() return { GetRGBA = function() return 1, 0, 0, 1 end } end,
-			GetRemainingDuration = function() return totem.duration - 0.5 end,
-			FormatRemainingDuration = function(_, formatter) return formatter:FormatNumber(totem.duration - 0.5) end,
+			EvaluateRemainingDuration = function(_, curve) return curve:Evaluate(Remaining()) end,
+			GetRemainingDuration = function() return Remaining() end,
+			FormatRemainingDuration = function(_, formatter) return formatter:FormatNumber(Remaining()) end,
 		}
 	end
 	-- Brewmaster's and Evoker's ticks read these before they reach the Totems bar.
@@ -375,6 +377,99 @@ function hooks.afterEvents(ctx)
 	Render()
 	local barColors = settings.colors.bars.totems
 	check("the bar's own colors return when it ends", NodeColors("border", barColors.border.color) and NodeColors("backdrop", barColors.background.color))
+
+	-- The fill takes its slot's color entry, gradient included; Ending is a tint over it, clear outside the window.
+	local OverlaySlot = TRB.Classes.OverlaySlot
+	local setTint = OverlaySlot.SetFillTintColorResult
+	OverlaySlot.SetFillTintColorResult = function(slot, colorResult)
+		slot.lastTint = { colorResult:GetRGBA() }
+		return setTint(slot, colorResult)
+	end
+	local colorCache = TRB.Data.cache.colors
+	local function TintOf(nodeIndex)
+		return group.nodes[nodeIndex]:GetOverlaySlot("totemsEnding")
+	end
+	local function TintShown(nodeIndex)
+		local tint = TintOf(nodeIndex)
+		return tint ~= nil and tint.fillTintBoundsFrame:IsShown() == true
+	end
+	local function FlatFill(nodeIndex, colorString)
+		local entry = colorCache.bar[group.nodes[nodeIndex].resourceKey]
+		return entry ~= nil and entry.source == colorString and colorCache.gradient[group.nodes[nodeIndex].gradientKey] == nil
+	end
+	local function GradientFill(nodeIndex, entry)
+		local applied = colorCache.gradient[group.nodes[nodeIndex].gradientKey]
+		return applied ~= nil and applied.color1 == entry.color and applied.color2 == entry.color2 and applied.direction == entry.gradientDirection
+	end
+	local ending = barColors.ending
+	local wasEnding = { enabled = ending.enabled, mode = ending.mode, timeMax = ending.timeMax }
+	ending.enabled, ending.mode, ending.timeMax = true, "time", 3
+	-- The first node shows Earth (slot 2) where slots are elements, else slot 1.
+	local liveSlot = Totems:GetNodeSlot(1, barColors)
+	local liveEntry = elements and barColors.nodeColors.earth or barColors.bar
+	local wasGradient = { color2 = liveEntry.color2, gradientDirection = liveEntry.gradientDirection }
+	liveEntry.color2, liveEntry.gradientDirection = "FF00FF00", "horizontal"
+	Render()
+	check("a gradient fills the node outside the Ending window, under a clear tint", GradientFill(1, liveEntry) and TintShown(1)
+		and TintOf(1).lastTint ~= nil and TintOf(1).lastTint[4] == 0)
+	occupied[liveSlot].remaining = 2
+	Render()
+	local er, eg, eb, ea = TRB.Functions.Color:GetRGBAFromString(ending.color, true)
+	local tint = TintOf(1).lastTint
+	check("inside the window the tint takes the Ending color, and the gradient stays under it", GradientFill(1, liveEntry)
+		and tint[1] == er and tint[2] == eg and tint[3] == eb and tint[4] == ea)
+	check("a node with no totem shows no tint", not TintShown(group.nodeCount))
+	ending.enabled = false
+	Render()
+	local anyShown = false
+	for i = 1, group.nodeCount do
+		anyShown = anyShown or TintShown(i)
+	end
+	check("Ending off hides every tint", not anyShown)
+	ending.enabled = true
+	occupied[liveSlot].remaining = nil
+	liveEntry.color2, liveEntry.gradientDirection = wasGradient.color2, wasGradient.gradientDirection
+	Render()
+	if elements then
+		local elementOfSlot = { "fire", "earth", "water", "air" }
+		local function ElementFills()
+			for i = 1, group.nodeCount do
+				if not FlatFill(i, barColors.nodeColors[elementOfSlot[Totems:GetNodeSlot(i, barColors)]].color) then
+					return false
+				end
+			end
+			return true
+		end
+		check("each node fills with its element's color", ElementFills())
+		-- A save from before the bar color went still holds one, which no node takes.
+		barColors.bar = { color = "FF123456", color2 = "FF123456", gradientDirection = "disabled" }
+		Render()
+		check("an element bar has no bar color, and a saved one fills no node", TRB.Functions.Settings:DefaultTotemBarColors().bar == nil
+			and ElementFills())
+	else
+		check("a bar without elements keeps its bar color", TRB.Functions.Settings:DefaultTotemBarColors().bar ~= nil)
+	end
+	-- The Totems tab offers a bar color only where the nodes aren't elements.
+	local container = TRB.Frames.interfaceSettingsFrameContainer
+	TRB.Frames.interfaceSettingsFrameContainer = { controls = {} }
+	local panelBuilt = pcall(TRB.Functions.OptionsUi.Totems.ConstructPanel, TRB.Functions.OptionsUi.Totems, desktop.CreateFrame("Frame"), character.classId, character.specId)
+	local panelControls = TRB.Frames.interfaceSettingsFrameContainer.controls[character.className .. "_" .. character.specName]
+	local barRow = panelControls and panelControls.colors and panelControls.colors.bars and panelControls.colors.bars.totems
+		and panelControls.colors.bars.totems.bar
+	TRB.Frames.interfaceSettingsFrameContainer = container
+	check("the Totems tab has a bar color row only without elements", panelBuilt and (barRow == nil) == (elements == true))
+	-- The Ending window reaches 120 seconds and 40 GCDs; other windows keep 30 and 10.
+	local endingWindow = panelControls and panelControls.totemsEndingWindow
+	local otherWindow = TRB.Functions.OptionsUi.Primitives:BuildRemainingWindowControls(desktop.CreateFrame("Frame"), "TotemsDriverWindow",
+		{ gcdRadio = "", gcdSlider = "", timeRadio = "", timeSlider = "" })
+	check("the Ending window goes up to 120 seconds and 40 GCDs, and other windows stay at 30 and 10", endingWindow ~= nil
+		and endingWindow.timeSlider.MaxLabel:GetText() == "120" and endingWindow.gcdSlider.MaxLabel:GetText() == "40"
+		and otherWindow.timeSlider.MaxLabel:GetText() == "30" and otherWindow.gcdSlider.MaxLabel:GetText() == "10")
+	if elements then
+		barColors.bar = nil
+	end
+	ending.enabled, ending.mode, ending.timeMax = wasEnding.enabled, wasEnding.mode, wasEnding.timeMax
+	OverlaySlot.SetFillTintColorResult = setTint
 
 	-- Bar text: each slot's variables, their bare checks, and the anchor on the node showing the slot.
 	check("totem slot anchors are offered on a spec with totems", HasAnchor(BarText:GetAnchorCatalog(character.classId, character.specId), "TotemSlot1"))

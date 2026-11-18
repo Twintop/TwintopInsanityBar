@@ -3741,7 +3741,7 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 	classTimersWereActive = classTimersActive
 	if not visibilityRefresh and not selfDrivenBarEnded and not classTimersEnded and not TRB.Data.lookupDirty and not combatNeedsTick and not selfDrivenBarInUse and not classTimersActive then
 		-- Custom threshold lines keep their every-tick cadence in combat.
-		if inCombat and TRB.Functions.Threshold and TRB.Functions.Threshold.UpdateCustomThresholdLines then
+		if inCombat then
 			TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, TRB.Frames.barGroups)
 		end
 		return
@@ -3907,9 +3907,7 @@ function TRB.Functions.BarText:UpdateResourceBarText(settings, refreshText)
 		end
 	end
 
-	if TRB.Functions.Threshold and TRB.Functions.Threshold.UpdateCustomThresholdLines then
-		TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, TRB.Frames.barGroups)
-	end
+	TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, TRB.Frames.barGroups)
 end
 
 ---Runs the shared visibility + bar text pipeline now instead of on the next 20Hz tick, for self-driven

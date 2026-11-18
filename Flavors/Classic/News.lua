@@ -8,6 +8,19 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 1.15.9.6-release (2026-11-18)
+## General
+### Timer Bars
+
+- [#1008](#1008) Fix the Use Global checkbox tooltip in the Position and Size section of Main Hand Swing, Off Hand Swing, Ranged Swing, and Five Second Rule showing a placeholder.
+- [#1008](#1008) Fix Main Hand Swing and Off Hand Swing not running when Blizzard's deprecated API fallbacks are turned off.
+
+### Totems
+
+- [#1008](#1008) Remove the Totems bar color, which each element's own color always replaced.
+
+---
+
 # 1.15.9.5-release (2026-11-17)
 ## General
 ### Core Changes

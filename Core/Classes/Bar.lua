@@ -90,6 +90,7 @@ local barNodeCounter = 0
 ---@field public border number
 ---@field public isVisible boolean
 ---@field public smooth boolean?
+---@field public resourceTexture string? # Stored fill texture path, which a fill tint copies
 ---@field public borderTexture string? # Stored border texture path for toggling edge visibility
 ---@field public backgroundTexture string? # Stored background texture path, reused for the side ability icon's backdrop
 ---@field public gradientActive boolean? # Whether a gradient is currently applied to the fill texture
@@ -580,6 +581,7 @@ end
 ---@param borderTexture string # Path to the border texture
 ---@param backgroundTexture string # Path to the background texture
 function TRB.Classes.BarNode:SetTextures(resourceTexture, borderTexture, backgroundTexture)
+	self.resourceTexture = resourceTexture
 	-- Store border texture for later use in SetDimensions when toggling border
 	self.borderTexture = borderTexture
 	-- Store background texture so the icon's placeholder backdrop can match the bar's
@@ -2214,7 +2216,7 @@ function TRB.Classes.BarGroup:SetDragAndDrop(enabled, settings)
 	end
 
 	-- Don't enable drag-and-drop if Edit Mode is active and layout is enabled
-	if enabled and TRB.Functions.EditMode then
+	if enabled then
 		if TRB.Functions.EditMode:IsInEditMode() then
 			enabled = false
 		elseif TRB.Functions.EditMode:IsLayoutEnabled() then
@@ -2226,7 +2228,7 @@ function TRB.Classes.BarGroup:SetDragAndDrop(enabled, settings)
 
 	-- When using the wrapper frame system, make the wrapper movable instead of the container
 	-- The wrapper is the parent of all bars, so moving it moves everything
-	local wrapperFrame = TRB.Functions.EditMode and TRB.Functions.EditMode:GetWrapperFrame()
+	local wrapperFrame = TRB.Functions.EditMode:GetWrapperFrame()
 	local targetFrame = wrapperFrame or self.containerFrame
 
 	targetFrame:SetMovable(enabled)

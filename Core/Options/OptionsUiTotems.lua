@@ -102,7 +102,7 @@ function TRB.Functions.OptionsUi.Totems:ConstructPanel(parent, classId, specId)
 			gcdSlider = L["TotemsEndingGCDs"],
 			timeRadio = L["TotemsEndingModeTime"],
 			timeSlider = L["TotemsEndingTime"],
-		})
+		}, { gcds = 40, seconds = 120 })
 		controls.totemsEndingWindow:Bind(ending, function() end)
 		colorYCoord = controls.totemsEndingWindow:SetPosition(colorYCoord)
 		controls.totemsEndingWindow:SetShown(true)

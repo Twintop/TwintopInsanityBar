@@ -1915,19 +1915,19 @@ cdmProvider.WriteLookup = function(entry, now)
 		return cdmAbility.WriteLookup(entry, now)
 	end
 	local CDM = TRB.Functions.CooldownManager
-	local unknown = L["CustomBarsCdmUnknownValue"]
+	local BarText = TRB.Functions.BarText
 	local timeText, stacksText, stacksMaxText = "", "", ""
 	if entry.isTimer then
 		local isActive, bySpell = IsCdmAuraActive(entry)
 		if isActive == nil then
-			timeText = unknown
+			timeText = BarText:UnknownTimerValue()
 		elseif isActive then
 			local ok, text = ReadCdmAura(entry, CDM.Signal.REMAINING_TEXT, bySpell)
-			timeText = ok and text or unknown
+			timeText = ok and text or BarText:UnknownTimerValue()
 		end
 	else
 		local count, isActive = ReadCdmCount(entry)
-		stacksText = isActive == nil and unknown or TRB.Functions.Number:RoundTo(count, 0)
+		stacksText = isActive == nil and BarText:UnknownValue("0") or TRB.Functions.Number:RoundTo(count, 0)
 		local max = knownMax[entry.key] or entry.bar.maxCount
 		if max ~= nil then
 			stacksMaxText = tostring(max)

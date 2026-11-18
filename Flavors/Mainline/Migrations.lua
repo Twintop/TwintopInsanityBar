@@ -44,6 +44,10 @@ function TRB.Flavor.DefaultManualUpdateChecks()
 		brewsBarPrompt = {
 			answered = true,
 			hidden = false
+		},
+		-- Fresh installs have no old Steady Flight ticks to split.
+		steadyFlightSplit = {
+			done = true
 		}
 	}
 end
@@ -8906,6 +8910,15 @@ function TRB.Flavor.PortForwardSettings(settings)
 	if TwintopInsanityBarSettings ~= nil then
 		TRB.Functions.Settings:SeedBrewsBarVisibility(TwintopInsanityBarSettings)
 	end
+
+	-- Steady Flight: split every old tick in the save and its stored profiles, once, so ticks made since keep their meaning.
+	if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings == TRB.Flavor.GetSavedVariables() then
+		TwintopInsanityBarSettings.manualUpdateChecks = TwintopInsanityBarSettings.manualUpdateChecks or {}
+		if TwintopInsanityBarSettings.manualUpdateChecks.steadyFlightSplit == nil then
+			TRB.Functions.Settings:SplitSteadyFlightTicksWithProfiles(TwintopInsanityBarSettings)
+			TwintopInsanityBarSettings.manualUpdateChecks.steadyFlightSplit = { done = true }
+		end
+	end
 end
 
 ---Runs the one-shot manual migrations kept behind settings.manualUpdateChecks for one class, right after
@@ -8929,7 +8942,7 @@ function TRB.Flavor.RunManualUpdateChecks(settings, classEntry)
 			end
 		end
 		resets[className] = true
-		TRB.Flavor.ShowMidnightBarTextResetMessage(L[classEntry.classModuleName])
+		TRB.Flavor.ShowMidnightBarTextResetMessage(classEntry.localizedName)
 		checks.barTextReset = true
 	end
 	return checks

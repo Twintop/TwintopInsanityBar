@@ -92,6 +92,17 @@ local talentSpellIds = {
 	[1794] = 33853, [1795] = 33859, [1796] = 33917, [1797] = 34151, [1798] = 34297, [1822] = 35363,
 }
 
+-- Flying mount spells: Mounted (aura 78) with mounted flight speed (aura 207), from the 2.5.6.70577 SpellEffect table, which has no mount tables.
+local FLYING_MOUNT_SPELLS = {
+	[3363] = true, [32235] = true, [32239] = true, [32240] = true, [32242] = true, [32243] = true, [32244] = true, [32245] = true,
+	[32246] = true, [32289] = true, [32290] = true, [32292] = true, [32295] = true, [32296] = true, [32297] = true, [32345] = true,
+	[37015] = true, [39798] = true, [39800] = true, [39801] = true, [39802] = true, [39803] = true, [39949] = true, [40192] = true,
+	[40212] = true, [41513] = true, [41514] = true, [41515] = true, [41516] = true, [41517] = true, [41518] = true, [42667] = true,
+	[42668] = true, [43927] = true, [44151] = true, [44153] = true, [44317] = true, [44655] = true, [44744] = true, [44824] = true,
+	[44825] = true, [44827] = true, [46197] = true, [46199] = true, [48023] = true, [49193] = true, [51617] = true, [1266866] = true,
+	[1291813] = true,
+}
+
 -- Stats.lua adds stats and statEvents.
 ---@class TRB.Flavor
 TRB.Flavor = {
@@ -109,6 +120,20 @@ TRB.Flavor = {
 	unavailableVisibilityConditions = {
 		isSkyriding = true, isSkyridingFlying = true,
 	},
+
+	---Whether the player has a flying mount's aura; the mount journal has no mounts to read on this client.
+	---@return boolean
+	IsFlyingMountActive = function()
+		for i = 1, 255 do
+			local buffData = C_UnitAuras.GetBuffDataByIndex("player", i)
+			if buffData == nil then
+				return false
+			elseif FLYING_MOUNT_SPELLS[buffData.spellId] then
+				return true
+			end
+		end
+		return false
+	end,
 	-- Ranked spells are learned one at a time, so a threshold's spell may not be known yet.
 	thresholdsRequireKnown = true,
 	pvpTalents = false,

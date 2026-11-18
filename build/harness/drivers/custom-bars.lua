@@ -1539,8 +1539,19 @@ function hooks.afterEvents(ctx)
 			check("an aura in Tracked Buffs is filled by the aura engine from its spell, and shows while it is up", attached[iconNode] == 990071
 				and Shows(EntryFor(barGroups[iconTimeKey])))
 			check("a harmful spell's aura is looked for on the target, as the player's own debuff", attachedTo[iconNode] == "target:HARMFUL|PLAYER")
-			check("an entry no viewer shows is never active, has no spell for the engine, and reads as unknown", not Shows(EntryFor(barGroups[trinketKey]))
-				and attached[barGroups[trinketKey].nodes[1]] == nil and lookup["$" .. trinketKey .. "Time"] == TRB.Localization["CustomBarsCdmUnknownValue"])
+			-- Unknown text follows Global Options' Cooldown Manager value when unavailable.
+			local core = TRB.Data.settings.core
+			local savedUnknownDisplay = core.cdmUnknownDisplay
+			local unknownTexts = {}
+			for _, display in ipairs({ "nothing", "questionMarks", "zero" }) do
+				core.cdmUnknownDisplay = display
+				CustomBars:WriteLookup(lookup)
+				unknownTexts[display] = lookup["$" .. trinketKey .. "Time"]
+			end
+			core.cdmUnknownDisplay = savedUnknownDisplay
+			check("an entry no viewer shows is never active, has no spell for the engine, and reads as each unknown choice", not Shows(EntryFor(barGroups[trinketKey]))
+				and attached[barGroups[trinketKey].nodes[1]] == nil and unknownTexts.nothing == "" and unknownTexts.questionMarks == "??"
+				and unknownTexts.zero == TRB.Functions.BarText:ZeroTimerText() and unknownTexts.zero ~= "")
 			local barNote, barOptionsNote = CustomBars:GetSourceNotes(classId, specId, spec.customBars.bars[barTimeGuid].source)
 			local _, iconOptionsNote = CustomBars:GetSourceNotes(classId, specId, spec.customBars.bars[iconTimeGuid].source)
 			local trinketNote, trinketOptionsNote = CustomBars:GetSourceNotes(classId, specId, spec.customBars.bars[trinketGuid].source)
@@ -1843,6 +1854,37 @@ function hooks.afterEvents(ctx)
 			and specExport.customBars.bars["driver-stored"] ~= nil and specExport.bars[storedKey] ~= nil and specExport.colors.bars[storedKey] ~= nil
 			and specExport.displayBar[storedKey] ~= nil and specExport.textures[storedKey .. "Bar"] == "Driver")
 	end
+
+	-- The Visibility tab counts and names a custom bar's threshold, which the visibility pass applies.
+	local timerVisibility = spec.displayBar[timerKey]
+	local savedVisibility = { conditions = timerVisibility.conditions, alwaysShow = timerVisibility.alwaysShow,
+		neverShow = timerVisibility.neverShow, resourceConditionType = timerVisibility.resourceConditionType }
+	timerVisibility.conditions = {}
+	timerVisibility.alwaysShow, timerVisibility.neverShow = false, false
+	timerVisibility.resourceConditionType = "resourcePercent"
+	local visibilityTablesBefore = #drv.tables
+	local visibilityBuilt = try("build the Custom Bars Visibility tab", function()
+		TRB.Functions.OptionsUi.Visibility:ConstructGroupPanel(desktop.CreateFrame("Frame"), classId, specId, "customBars")
+	end)
+	local visibilityRow = nil
+	for index = visibilityTablesBefore + 1, #drv.tables do
+		for _, row in ipairs(drv.tables[index].rows) do
+			if row.cols[1].value == timerKey then
+				visibilityRow = row
+			end
+		end
+	end
+	local visibilityApi = TRB.Functions.OptionsUi.Visibility:GetApi(classId, specId, "customBars")
+	if visibilityApi ~= nil then
+		try("select the timer bar's Visibility row", function() visibilityApi.SelectByDisplayBarKey(timerKey) end)
+	end
+	local visibilityClassName, visibilitySpecName = TRB.Functions.Character:GetClassAndSpecializationNames(classId, specId)
+	local showDropdown = rawget(desktop, "TwintopResourceBar_" .. visibilityClassName .. "_" .. visibilitySpecName .. "_barVisibility_customBars_SelectedBarVisibility")
+	check("a custom bar with only a threshold reads 1 Selected, and its Show dropdown names the threshold", visibilityBuilt and visibilityRow ~= nil
+		and visibilityRow.cols[3].value == string.format(TRB.Localization["ShowBarVisibilitySelectedCount"], 1)
+		and showDropdown ~= nil and showDropdown:GetText() == TRB.Localization["BarVisibilityThresholdResourcePercent"])
+	timerVisibility.conditions, timerVisibility.alwaysShow = savedVisibility.conditions, savedVisibility.alwaysShow
+	timerVisibility.neverShow, timerVisibility.resourceConditionType = savedVisibility.neverShow, savedVisibility.resourceConditionType
 
 	-- The options tab.
 	local tablesBefore = #drv.tables

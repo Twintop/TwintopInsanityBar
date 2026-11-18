@@ -29,9 +29,6 @@ function TwintopsResourceBarAPI:ExportProfile(profileKey)
 	--   * falls back to the stored profile data otherwise, and
 	--   * always includes a `core` piece -- falling back to the currently-active
 	--     Global Options when the named profile has none of its own.
-	if TRB.Functions.IO == nil or TRB.Functions.IO.ExportFullProfile == nil then
-		return nil
-	end
 	local output = TRB.Functions.IO:ExportFullProfile(profileKey)
 	return output
 end
@@ -55,12 +52,6 @@ function TwintopsResourceBarAPI:ImportProfile(profileString, profileKey)
 		return
 	end
 	if type(profileKey) ~= "string" or profileKey == "" then
-		return
-	end
-	if TRB.Functions.IO == nil or TRB.Functions.IO.ParseProfileImport == nil then
-		return
-	end
-	if TRB.Functions.Profiles == nil then
 		return
 	end
 
@@ -90,9 +81,7 @@ function TwintopsResourceBarAPI:ImportProfile(profileString, profileKey)
 	-- cross-version imports land in a shape the rest of the addon expects.
 	local p = TRB.Data.settings and TRB.Data.settings.profiles
 	if p ~= nil and p.list ~= nil and p.list[profileKey] ~= nil then
-		if TRB.Functions.Settings and TRB.Functions.Settings.PortForwardProfile then
-			TRB.Functions.Settings:PortForwardProfile(p.list[profileKey])
-		end
+		TRB.Functions.Settings:PortForwardProfile(p.list[profileKey])
 	end
 
 	TRB.Functions.Profiles:InvalidateCache()
@@ -124,9 +113,6 @@ function TwintopsResourceBarAPI:DecodeProfileString(profileString)
 	if type(profileString) ~= "string" or profileString == "" then
 		return nil
 	end
-	if TRB.Functions.IO == nil or TRB.Functions.IO.DecodeExportString == nil then
-		return nil
-	end
 	local ok, configuration = TRB.Functions.IO:DecodeExportString(profileString)
 	if not ok or type(configuration) ~= "table" then
 		return nil
@@ -144,9 +130,6 @@ function TwintopsResourceBarAPI:SetProfile(profileKey)
 	-- flush from clobbering the newly-selected profile during the upcoming
 	-- WagoUI-batched reload.
 	if type(profileKey) ~= "string" or profileKey == "" then
-		return
-	end
-	if TRB.Functions.Profiles == nil then
 		return
 	end
 	local p = TRB.Data.settings and TRB.Data.settings.profiles
@@ -179,10 +162,6 @@ function TwintopsResourceBarAPI:GetProfileKeys()
 	-- TRB: Always includes the hard-coded "Default" profile (seeded on first
 	-- load) plus every name in TRB.Data.settings.profiles.list.
 	local keys = {}
-	if TRB.Functions.Profiles == nil or TRB.Functions.Profiles.GetProfileNames == nil then
-		keys[(TRB.Functions.Profiles and TRB.Functions.Profiles.DEFAULT_NAME) or "Default"] = true
-		return keys
-	end
 	local names = TRB.Functions.Profiles:GetProfileNames()
 	for _, name in ipairs(names) do
 		keys[name] = true
@@ -215,9 +194,6 @@ function TwintopsResourceBarAPI:GetCurrentProfileKey()
 	-- actually looking at), with a final fallback to the hard-coded
 	-- "Default" profile. Uses TRB.Data.character.{className,specName} which
 	-- the active class module keeps in sync with the player's current spec.
-	if TRB.Functions.Profiles == nil then
-		return "Default"
-	end
 	local character = TRB.Data and TRB.Data.character
 	local className = character and character.className
 	local specName = character and character.specName

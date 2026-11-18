@@ -73,6 +73,7 @@ local addonName, TRB = ...
 ---@field public swingSpells TRB.Flavor.SwingSpells? # Required with swingTimers when blizzardSwingTimer is off
 ---@field public fiveSecondRule { duration: number }? # Mana regen pauses after each mana spend, so the Five Second Rule bar exists for mana specs
 ---@field public skyriding TRB.Flavor.Skyriding? # The client has skyriding, so the Skyriding bars exist
+---@field public IsFlyingMountActive (fun(): boolean)? # Whether the summoned mount can fly in steady flight; a flavor without flying leaves it unset
 ---@field public totemElements boolean? # Totem slots are the four elements (1 Fire, 2 Earth, 3 Water, 4 Air), so the Totems bar shows four fixed element nodes (default false)
 ---@field public specOwnedTotems boolean? # Each spec owns its Totems bar outright, so Global Options has none for specs to follow (default false)
 ---@field public blizzardTotemFrame boolean? # The client draws Blizzard's TotemFrame under the player frame, which the Totems bar can hide (default false)
@@ -206,6 +207,8 @@ TRB.Data = TRB.Data or {}
 ---@field public specNameLower string -- all-lowercase convenience form, e.g. "beastmastery"
 ---@field public specNameUpper string -- uppercase convenience form, e.g. "BEASTMASTERY"
 ---@field public specLocaleKey string -- localization key of the spec name, e.g. "HunterBeastMastery"
+---@field public localizedName string -- client-localized spec name, set by Localization.lua
+---@field public localizedFullName string -- localized spec and class name, e.g. "Shadow Priest", set by Localization.lua
 ---@field public compositeKey string -- "className_specName", e.g. "deathknight_frost"
 ---@field public resources table<string, number> -- per-resource maximums declared by the manifest
 ---@field public descriptor TRB.Classes.SpecDescriptor? -- capabilities declared by the class module
@@ -215,6 +218,7 @@ TRB.Data = TRB.Data or {}
 ---@field public className string   -- all-lowercase settings key, e.g. "deathknight"
 ---@field public classToken string  -- uppercase WoW class file token, e.g. "DEATHKNIGHT"
 ---@field public classModuleName string -- PascalCase addon module/options key, e.g. "DeathKnight"
+---@field public localizedName string -- client-localized class name, set by Localization.lua
 ---@field public specs TRB.Data.SpecRegistryEntry[]
 
 ---@type TRB.Data.ClassRegistryEntry[]

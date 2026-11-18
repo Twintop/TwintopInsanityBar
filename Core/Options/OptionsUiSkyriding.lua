@@ -87,11 +87,6 @@ function TRB.Functions.OptionsUi.Skyriding:ConstructPanel(parent, classId, specI
 	local yCoord = 5
 	local dimensionsKey = barKey .. "Dimensions"
 	yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, classId, specId, yCoord, barDef, barDef.displayName, dimensionsKey)
-	-- The row looks its tooltip up by a built name, which the orphan scan can't see, so it gets a literal one.
-	local dimensionsCheckbox = controls.checkBoxes and controls.checkBoxes["useGlobal" .. dimensionsKey:gsub("^%l", string.upper)]
-	if dimensionsCheckbox ~= nil then
-		dimensionsCheckbox.tooltip = L["CheckboxUseGlobalTooltipSkyridingDimensions"]
-	end
 	yCoord = yCoord - 60
 
 	controls[barKey .. "ColorSection"] = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["OtherBarsColorsHeader"], oUi.xCoord, yCoord)

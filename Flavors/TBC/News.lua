@@ -8,6 +8,25 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 2.5.6.4-release (2026-11-18)
+## General
+### Bar Visibility
+
+- [#1011](#1011) Fix the Steady Flight bar visibility condition matching only in the air.
+- [#1011](#1011) Steady Flight now matches on a flying mount wherever you can fly, on the ground or in the air.
+- [#1011](#1011) Existing Steady Flight selections, including those in profiles and imports, become Steady Flight (Flying Only), keeping every bar's behavior unchanged.
+
+### Timer Bars
+
+- [#1008](#1008) Fix the Use Global checkbox tooltip in the Position and Size section of Main Hand Swing, Off Hand Swing, Ranged Swing, and Five Second Rule showing a placeholder.
+- [#1008](#1008) Fix Main Hand Swing and Off Hand Swing not running when Blizzard's deprecated API fallbacks are turned off.
+
+### Totems
+
+- [#1008](#1008) Remove the Totems bar color, which each element's own color always replaced.
+
+---
+
 # 2.5.6.3-release (2026-11-17)
 ## General
 ### Core Changes

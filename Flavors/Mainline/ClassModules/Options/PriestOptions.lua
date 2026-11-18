@@ -594,7 +594,7 @@ local function HolyLoadLightweaverBarTextSettings()
 	-- Derive the number of Lightweaver nodes from the bar type definition so we
  	-- stay in sync with the runtime bar configuration if the stack cap changes.
  	local maxNodes = 4
- 	local barTypeRegistry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+ 	local barTypeRegistry = TRB.Classes.BarTypeRegistry:GetInstance()
  	if barTypeRegistry ~= nil then
  		-- The Lightweaver bar type is expected to define maxNodes.
  		local lightweaverBarDef = barTypeRegistry:Get("lightweaver")

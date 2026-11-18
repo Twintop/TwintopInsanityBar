@@ -86,12 +86,12 @@ do
 	}))
 
 	for _, form in ipairs({
-		{ key = "rage", nameKey = "ResourceRage", powerType = Enum.PowerType.Rage, colorsFunc = "DefaultDruidRageBarColors" },
-		{ key = "energy", nameKey = "ResourceEnergy", powerType = Enum.PowerType.Energy, colorsFunc = "DefaultDruidEnergyBarColors" },
+		{ key = "rage", displayName = L["ResourceRage"], powerType = Enum.PowerType.Rage, colorsFunc = "DefaultDruidRageBarColors" },
+		{ key = "energy", displayName = L["ResourceEnergy"], powerType = Enum.PowerType.Energy, colorsFunc = "DefaultDruidEnergyBarColors" },
 	}) do
 		registry:Register(TRB.Classes.BarTypeDefinition:New({
 			key = form.key,
-			displayName = L[form.nameKey],
+			displayName = form.displayName,
 			isMultiNode = false,
 			maxNodes = 1,
 			hasSameColor = false,

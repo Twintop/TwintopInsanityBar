@@ -4,11 +4,10 @@ local addonName, TRB = ...
 --
 -- Forever runs on the modern client and addon API (secret values, Cooldown Manager, Edit Mode) but with
 -- the original class design: nine classes, one specialization each, and the original resources.
--- The values below come from the beta probe (build\forever-probe\); anything still marked TO CONFIRM
--- is waiting on a probe run that can answer it.
+-- The values below come from the beta probe (build\forever-probe\).
 --
--- Client facts (1.60.1 beta): the TOC interface number is 16001, WOW_PROJECT_ID is WOW_PROJECT_MAINLINE
--- (intentional, per Blizzard), and the TOC game type is "camelot" ("standard" is retail). The client
+-- Client facts (1.60.1): the TOC interface number is 16001, WOW_PROJECT_ID is WOW_PROJECT_CAMELOT (18), and the
+-- TOC game type is "camelot" ("standard" is retail). The client
 -- registers a different API surface from retail: the global GetSpecialization is absent while
 -- GetSpecializationInfoForClassID and GetSpecializationInfoByID are present, and C_SpecializationInfo
 -- carries only GetSpecialization, GetSpecializationInfo, GetActiveSpecGroup, and the PvP talent calls.
@@ -51,8 +50,8 @@ TRB.Flavor = {
 	cooldownManager = true,
 	secretValues = true,
 
-	---True when the running client is WoW Forever: the mainline project with a 1.x interface number
-	---(the same rule AceDB uses). An unreadable project ID or interface number is not evidence of a mismatch.
+	---True when the running client is WoW Forever: the camelot project with a 1.x interface number.
+	---An unreadable project ID or interface number is not evidence of a mismatch.
 	---@return boolean
 	IsClientMatch = function()
 		if WOW_PROJECT_ID ~= nil and WOW_PROJECT_CAMELOT ~= nil and WOW_PROJECT_ID ~= WOW_PROJECT_CAMELOT then

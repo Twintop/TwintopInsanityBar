@@ -179,12 +179,10 @@ local function RefreshAfterLiveCopy(destScope, destClassName, destSpecName)
 			TRB.Functions.Bar:HideResourceBar()
 		end
 		TRB.Data.lookupDirty = true
-		if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-			C_Timer.After(0, function()
-				TRB.Data.lookupDirty = true
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end)
-		end
+		C_Timer.After(0, function()
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
+		end)
 	end
 end
 

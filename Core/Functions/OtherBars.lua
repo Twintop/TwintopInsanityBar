@@ -889,7 +889,8 @@ end
 
 ---Starts a melee swing from the player's swings in the combat log, and applies parry haste from their parries.
 local function OnCombatLogSwing()
-	local timestamp, subevent, _, sourceGuid, _, _, _, destGuid, _, _, _, arg12, arg13, _, arg15, _, _, _, _, _, arg21 = CombatLogGetCurrentEventInfo()
+	-- The global is a deprecation fallback, defined only while the loadDeprecationFallbacks CVar is on.
+	local timestamp, subevent, _, sourceGuid, _, _, _, destGuid, _, _, _, arg12, arg13, _, arg15, _, _, _, _, _, arg21 = C_CombatLog.GetCurrentEventInfo()
 	if sourceGuid == playerGuid then
 		if subevent == "SWING_DAMAGE" or subevent == "SWING_MISSED" then
 			if extraAttacks > 0 and timestamp - extraAttacksAt < EXTRA_ATTACK_WINDOW then

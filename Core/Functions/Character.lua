@@ -49,6 +49,16 @@ local function UpdateSkyridingState()
 	TRB.Data.character.isSkyriding = canGlide or false
 end
 
+---Re-reads whether the summoned mount can fly, which scans the mount list, so only when the mount may have changed.
+---@param mountChanged boolean
+local function UpdateFlyingMountState(mountChanged)
+	if not TRB.Data.character.isMounted then
+		TRB.Data.character.isFlyingMount = false
+	elseif mountChanged or TRB.Data.character.isFlyingMount == nil then
+		TRB.Data.character.isFlyingMount = TRB.Flavor.IsFlyingMountActive ~= nil and TRB.Flavor.IsFlyingMountActive() == true
+	end
+end
+
 --TODO: Move this somewhere else.
 ---Fallback implementation that hides all bar groups. Class modules override this with spec-specific visibility logic.
 ---@param force boolean|nil If true, force-hide even if normally shown
@@ -457,9 +467,7 @@ local function CharacterChange(self, event, ...)
 	end
 
 	if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED" then
-		if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
-			TRB.Functions.Bar:QueueRenderTransition("characterChange:" .. event, 0.35)
-		end
+		TRB.Functions.Bar:QueueRenderTransition("characterChange:" .. event, 0.35)
 	end
 
 	if event == "UNIT_POWER_UPDATE" or event == "UNIT_POWER_FREQUENT" or event == "UNIT_MAXPOWER" then
@@ -558,6 +566,7 @@ local function CharacterChange(self, event, ...)
 			C_Timer.After(0.05, function()
 				TRB.Data.character.isMounted = IsMounted()
 				UpdateSkyridingState()
+				UpdateFlyingMountState(true)
 				local isMounted = TRB.Data.character.isMounted
 
 				if isMounted then
@@ -829,23 +838,30 @@ function TRB.Functions.Character:DisableCharacterChange()
 	TRB.Functions.Character:StopFlightPolling()
 end
 
--- Flight state polling for mounted flight transitions.
--- IsFlying() changes without any event when transitioning between ground and air,
--- so we poll at a short interval while mounted.
+-- IsFlying() changes between ground and air without an event, so it is polled while mounted.
 local flightPollTicker = nil
 local lastKnownIsFlying = nil
+local lastKnownFlyableArea = nil
 
----Starts polling IsFlying() every 0.25s. Only marks dirty when the value changes.
+-- Only Steady Flight on a flying mount reads it; it changes at a no-fly subzone's edge without a zone event.
+local function ReadFlyableArea()
+	return TRB.Data.character.isFlyingMount == true and IsFlyableArea() == true
+end
+
+---Starts polling IsFlying() and IsFlyableArea() every 0.25s. Only marks dirty when a value changes.
 ---Safe to call multiple times (idempotent).
 function TRB.Functions.Character:StartFlightPolling()
 	if flightPollTicker then
 		return -- already running
 	end
 	lastKnownIsFlying = IsFlying()
+	lastKnownFlyableArea = ReadFlyableArea()
 	flightPollTicker = C_Timer.NewTicker(0.25, function()
 		local flying = IsFlying()
-		if flying ~= lastKnownIsFlying then
+		local flyable = ReadFlyableArea()
+		if flying ~= lastKnownIsFlying or flyable ~= lastKnownFlyableArea then
 			lastKnownIsFlying = flying
+			lastKnownFlyableArea = flyable
 			TRB.Functions.BarVisibility:MarkDirty()
 		end
 	end)
@@ -859,6 +875,7 @@ function TRB.Functions.Character:StopFlightPolling()
 		flightPollTicker = nil
 	end
 	lastKnownIsFlying = nil
+	lastKnownFlyableArea = nil
 end
 
 -- The spells this addon turned range checks on for, so turning them off leaves other callers' alone.
@@ -1344,12 +1361,14 @@ function TRB.Functions.Character:CheckCharacter()
 		TRB.Data.character.isPvp = isPvp
 		TRB.Functions.Character:RefreshThresholdSpellsLearned()
 	end
+	local wasMounted = TRB.Data.character.isMounted
 	TRB.Data.character.isMounted = IsMounted()
 	TRB.Data.character.onTaxi = UnitOnTaxi("player") or false
 	TRB.Data.character.inPetBattle = C_PetBattles.IsInBattle() or false
 
 	-- Phase 2 visibility state
 	UpdateSkyridingState()
+	UpdateFlyingMountState(wasMounted ~= TRB.Data.character.isMounted)
 
 	local _, instanceType = GetInstanceInfo()
 	TRB.Data.character.instanceType = instanceType or "none"
@@ -2356,23 +2375,17 @@ function TRB.Functions.Character:EventRegistration()
 			local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
 			if specSettings and specSettings.settings then
 				-- Initialize Edit Mode if not yet done (required for CDM anchoring/width matching)
-				if TRB.Functions.EditMode and TRB.Functions.EditMode.Initialize then
-					TRB.Functions.EditMode:Initialize()
-				end
+				TRB.Functions.EditMode:Initialize()
 
 				-- Recreate thresholds if they don't exist (happens when spec was disabled on initial load)
 				-- This calls into a class-module-overridable function to handle spec-specific thresholds
-				if TRB.Functions.Class.RecreateThresholds then
-					TRB.Functions.Class:RecreateThresholds(specSettings.settings, barGroups)
-				end
+				TRB.Functions.Class:RecreateThresholds(specSettings.settings, barGroups)
 
 				TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(specSettings.settings, barGroups)
 
 				-- Register all tree roots with Edit Mode (each root gets its own wrapper)
-				if TRB.Functions.EditMode then
-					TRB.Functions.EditMode:RegisterAllTreeRoots()
-				end
+				TRB.Functions.EditMode:RegisterAllTreeRoots()
 
 				TRB.Functions.BarText:CreateBarTextFrames()
 				TRB.Functions.BarText:Hide(specSettings.settings)

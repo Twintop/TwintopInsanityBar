@@ -46,7 +46,7 @@ local function AuraUpdateEvent(self, event, unit, info)
 		TRB.Data.lookupDirty = true
 		-- Generic per-class hook for logic that should run on player aura changes (e.g. tooltip
 		-- polling for procs). Optional; only classes that define it are notified.
-		if TRB.Functions.Class and TRB.Functions.Class.OnPlayerUnitAura then
+		if TRB.Functions.Class.OnPlayerUnitAura then
 			TRB.Functions.Class:OnPlayerUnitAura(info)
 		end
 		if TRB.Flavor.playerAuras then

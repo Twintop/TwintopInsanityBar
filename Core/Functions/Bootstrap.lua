@@ -186,11 +186,7 @@ local function OnEvent(_, event, arg1, ...)
 		end
 
 		if TRB.Details.addonData.optionsPanelFinished and switchSpecEvents[event] then
-			if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
-				TRB.Functions.Bar:QueueRenderTransition("eventPreSwitch", 0.8)
-			elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
-				TRB.Functions.Bar:HideResourceBar(true)
-			end
+			TRB.Functions.Bar:QueueRenderTransition("eventPreSwitch", 0.8)
 			C_Timer.After(0, function()
 				C_Timer.After(0.1, function()
 					module.SwitchSpec()

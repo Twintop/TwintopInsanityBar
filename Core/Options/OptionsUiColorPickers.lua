@@ -121,10 +121,8 @@ function TRB.Functions.OptionsUi.ColorPickers:ColorOnMouseDown(button, colorTabl
 				TRB.Data.cache.colors.backdrop = {}
 				TRB.Data.cache.colors.border = {}
 				TRB.Data.cache.colors.bar = {}
-				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-					TRB.Data.lookupDirty = true
-					TRB.Functions.Class:TriggerResourceBarUpdates()
-				end
+				TRB.Data.lookupDirty = true
+				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end)
 	end
@@ -507,10 +505,8 @@ function TRB.Functions.OptionsUi.ColorPickers:BuildGradientColorPicker(parent, d
 			end
 			TRB.Data.cache.colors.gradient = {}
 			TRB.Data.cache.colors.bar = {}
-			if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-				TRB.Data.lookupDirty = true
-				TRB.Functions.Class:TriggerResourceBarUpdates()
-			end
+			TRB.Data.lookupDirty = true
+			TRB.Functions.Class:TriggerResourceBarUpdates()
 		end
 	end)
 
@@ -571,10 +567,8 @@ function TRB.Functions.OptionsUi.ColorPickers:GradientColor2OnMouseDown(button, 
 				end
 				TRB.Data.cache.colors.gradient = {}
 				TRB.Data.cache.colors.bar = {}
-				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-					TRB.Data.lookupDirty = true
-					TRB.Functions.Class:TriggerResourceBarUpdates()
-				end
+				TRB.Data.lookupDirty = true
+				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end)
 	end

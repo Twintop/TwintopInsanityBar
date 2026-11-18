@@ -24,12 +24,12 @@ do
 		return a.classModuleName < b.classModuleName
 	end)
 	for _, classEntry in ipairs(classEntries) do
-		local line = "|c" .. select(4, GetClassColor(classEntry.classToken)) .. L[classEntry.classModuleName] .. "|r"
+		local line = "|c" .. select(4, GetClassColor(classEntry.classToken)) .. classEntry.localizedName .. "|r"
 		if #classEntry.specs > 1 then
 			hasSpecs = true
 			local specNames = {}
 			for i, specEntry in ipairs(classEntry.specs) do
-				specNames[i] = L[specEntry.specLocaleKey]
+				specNames[i] = specEntry.localizedName
 			end
 			line = line .. " - " .. table.concat(specNames, ", ")
 		end
@@ -413,10 +413,8 @@ TRB.Frames.renderTransitionFrame:SetScript("OnEvent", function(self, event, arg1
 		end
 	end
 
-	if TRB.Functions and TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
-		-- Increase initial transition time to cover the loading sequence delay
-		TRB.Functions.Bar:QueueRenderTransition("init:" .. event, 2.5)
-	end
+	-- Increase initial transition time to cover the loading sequence delay
+	TRB.Functions.Bar:QueueRenderTransition("init:" .. event, 2.5)
 end)
 
 -- Settings placeholders

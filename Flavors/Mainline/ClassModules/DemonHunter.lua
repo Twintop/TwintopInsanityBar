@@ -1677,11 +1677,7 @@ end
 local function SwitchSpec()
 	TRB.Data.prevLookupState = {}
 	TRB.Data.lookupDirty = true
-	if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
-		Bar:QueueRenderTransition("switchSpec", 0.8)
-	elseif TRB.Functions.Bar and TRB.Functions.Bar.HideResourceBar then
-		Bar:HideResourceBar(true)
-	end
+	Bar:QueueRenderTransition("switchSpec", 0.8)
 	Character:DisableSpellRangeCheckUpdate()
 	TRB.Data.character.specId = TRB.Flavor.GetSpecializationIndex()
 	spellEventFrame:UnregisterEvent("SPELL_UPDATE_USES")
@@ -2196,7 +2192,7 @@ function TRB.Functions.Class:HasActiveTimers()
 end
 
 function TRB.Functions.Class:TriggerResourceBarUpdates()
-	if TRB.Functions.Bar and TRB.Functions.Bar.IsRenderTransitionActive and Bar:IsRenderTransitionActive() then
+	if Bar:IsRenderTransitionActive() then
 		Bar:HideResourceBar(true)
 		return
 	end

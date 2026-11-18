@@ -1502,10 +1502,8 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				self.Font:SetText(gradientDirectionAbbrevLabels[gradDir] or L["GradientDirectionDisabledAbbrev"])
 				TRB.Data.cache.colors.gradient = {}
 				TRB.Data.cache.colors.bar = {}
-				if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-					TRB.Data.lookupDirty = true
-					TRB.Functions.Class:TriggerResourceBarUpdates()
-				end
+				TRB.Data.lookupDirty = true
+				TRB.Functions.Class:TriggerResourceBarUpdates()
 			end
 		end)
 		cp.UpdateSwatch2State = function()
@@ -2129,9 +2127,7 @@ function TRB.Functions.OptionsUi.Indicators:RefreshOverlayGeometryPreview(classI
 		end
 	end
 
-	if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-		TRB.Data.lookupDirty = true
-		TRB.Functions.Class:TriggerResourceBarUpdates()
-	end
+	TRB.Data.lookupDirty = true
+	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 

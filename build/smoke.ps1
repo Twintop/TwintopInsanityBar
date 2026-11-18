@@ -60,6 +60,6 @@ foreach ($f in $flavors) {
 }
 
 if ($failed) { exit 1 }
-Write-Host "smoke: every flavor loads and bootstraps for every class."
+Write-Host "smoke: every flavor loads for every class, and every flavor but Forever bootstraps."
 
 exit 0

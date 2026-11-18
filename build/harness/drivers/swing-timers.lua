@@ -66,7 +66,10 @@ function hooks.afterInstall(ctx)
 	G.UnitGUID = function() return PLAYER_GUID end
 	G.UnitAttackSpeed = function() return drv.mainSpeed, drv.offSpeed, drv.rangedAttackSpeed end
 	G.UnitRangedDamage = function() return drv.rangedSpeed end
-	G.CombatLogGetCurrentEventInfo = function() return unpack(drv.payload, 1, 21) end
+	-- Only where the client hands addons the payload, so Forever's run still has none.
+	if rawget(G.C_CombatLog, "GetCurrentEventInfo") ~= nil then
+		G.C_CombatLog.GetCurrentEventInfo = function() return unpack(drv.payload, 1, 21) end
+	end
 	-- A weapon in both hands and the ranged slot.
 	G.GetInventoryItemID = function(_, slot)
 		if slot == G.INVSLOT_MAINHAND or slot == G.INVSLOT_OFFHAND or slot == G.INVSLOT_RANGED then
