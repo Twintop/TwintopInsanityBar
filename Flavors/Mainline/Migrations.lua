@@ -8929,7 +8929,7 @@ function TRB.Flavor.RunManualUpdateChecks(settings, classEntry)
 			end
 		end
 		resets[className] = true
-		TRB.Flavor.ShowMidnightBarTextResetMessage(L[classEntry.classModuleName])
+		TRB.Flavor.ShowMidnightBarTextResetMessage(classEntry.localizedName)
 		checks.barTextReset = true
 	end
 	return checks

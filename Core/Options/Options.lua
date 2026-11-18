@@ -912,8 +912,7 @@ local function ConstructSkyridingOptionsPanel()
 	TRB.Functions.OptionsUi.Tabs:BuildTabGroup(parent, TRB.Functions.OptionsUi.Tabs:GetGroupInnerPrefix("skyriding"), tabDefinitions, -37)
 end
 
--- Class/spec catalog for the profile/nav lists: identity from the registry, labels from the localized
--- class and spec names the registry keys map to (L[classModuleName], L[specLocaleKey]).
+-- Class/spec catalog for the profile/nav lists: identity and localized labels from the registry.
 local function BuildProfileClassCatalog()
 	local catalog = {}
 	for _, classEntry in ipairs(TRB.Functions.Character:GetClassRegistryEntriesOrdered()) do
@@ -921,7 +920,7 @@ local function BuildProfileClassCatalog()
 			classId = classEntry.classId,
 			className = classEntry.className,
 			token = classEntry.classToken,
-			classLabel = L[classEntry.classModuleName],
+			classLabel = classEntry.localizedName,
 			specs = {},
 		}
 		for _, specEntry in ipairs(classEntry.specs) do
@@ -930,8 +929,8 @@ local function BuildProfileClassCatalog()
 				specGlobalId = specEntry.specGlobalId,
 				specName = specEntry.specName,
 				compositeKey = specEntry.compositeKey,
-				specLabel = L[specEntry.specLocaleKey],
-				specFullLabel = L[specEntry.specLocaleKey .. "Full"],
+				specLabel = specEntry.localizedName,
+				specFullLabel = specEntry.localizedFullName,
 			})
 		end
 		table.insert(catalog, classDef)

@@ -155,7 +155,7 @@ local function BuildResetDefaultsPanel(classDef, spec, loadDefaultSettings, load
 	local className = classDef.className
 	local specName = spec.entry.specName
 	local compositeKey = spec.entry.compositeKey
-	local fullLabel = L[spec.entry.specLocaleKey .. "Full"]
+	local fullLabel = spec.entry.localizedFullName
 	local popupPrefix = "TwintopResourceBar_" .. classDef.classModuleName .. "_" .. spec.specPascal .. "_"
 
 	return function(parent)
@@ -321,7 +321,7 @@ function TRB.TBC.Templates.Options:Install(className, specThresholds)
 		local maxResource = spec.entry.resources[archetype.variable] or archetype.defaultMax
 		local secondaryName = spec.secondary ~= nil and spec.secondary.name or nil
 		local hasSecondary = secondaryName ~= nil
-		local fullLabel = L[spec.entry.specLocaleKey .. "Full"]
+		local fullLabel = spec.entry.localizedFullName
 		local namePrefix = moduleName .. "_" .. spec.specPascal
 		local loadThresholdDictionary = specThresholds and specThresholds[specName] or nil
 
@@ -552,7 +552,7 @@ function TRB.TBC.Templates.Options:Install(className, specThresholds)
 	---@param specCache table<string, TRB.Classes.SpecCache>
 	function options.ConstructOptionsPanel(specCache)
 		TRB.Options:ConstructOptionsPanel()
-		TRB.Options.OptionsFrame:RegisterClassHeader(className, L[moduleName])
+		TRB.Options.OptionsFrame:RegisterClassHeader(className, TRB.Data.classRegistry[className].localizedName)
 		for i, spec in ipairs(classDef.specOrder) do
 			specConstructors[i](specCache[spec.entry.compositeKey])
 		end

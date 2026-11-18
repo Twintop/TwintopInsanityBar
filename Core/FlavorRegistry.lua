@@ -206,6 +206,8 @@ TRB.Data = TRB.Data or {}
 ---@field public specNameLower string -- all-lowercase convenience form, e.g. "beastmastery"
 ---@field public specNameUpper string -- uppercase convenience form, e.g. "BEASTMASTERY"
 ---@field public specLocaleKey string -- localization key of the spec name, e.g. "HunterBeastMastery"
+---@field public localizedName string -- client-localized spec name, set by Localization.lua
+---@field public localizedFullName string -- localized spec and class name, e.g. "Shadow Priest", set by Localization.lua
 ---@field public compositeKey string -- "className_specName", e.g. "deathknight_frost"
 ---@field public resources table<string, number> -- per-resource maximums declared by the manifest
 ---@field public descriptor TRB.Classes.SpecDescriptor? -- capabilities declared by the class module
@@ -215,6 +217,7 @@ TRB.Data = TRB.Data or {}
 ---@field public className string   -- all-lowercase settings key, e.g. "deathknight"
 ---@field public classToken string  -- uppercase WoW class file token, e.g. "DEATHKNIGHT"
 ---@field public classModuleName string -- PascalCase addon module/options key, e.g. "DeathKnight"
+---@field public localizedName string -- client-localized class name, set by Localization.lua
 ---@field public specs TRB.Data.SpecRegistryEntry[]
 
 ---@type TRB.Data.ClassRegistryEntry[]
