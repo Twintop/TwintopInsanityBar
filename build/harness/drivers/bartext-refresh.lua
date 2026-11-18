@@ -1,10 +1,10 @@
--- Checks that the shared bar text refreshers, which skip what no enabled entry shows, write a value the moment an
--- entry starts showing it (settings in harness/README.md).
+-- Checks that the shared bar text refreshers and the stat, health, and pet reads, which skip what no enabled entry
+-- shows, write a value the moment an entry starts showing it (settings in harness/README.md).
 local desktop = _G --[[@as table<string, any>]]
 local parity = desktop.require("drivers.parity")
 
 -- What the stubbed APIs answer from.
-local world = { now = 1000, playerCast = nil }
+local world = { now = 1000, playerCast = nil, pet = false, health = 100000 }
 
 local hooks = {}
 
@@ -21,6 +21,13 @@ function hooks.afterInstall(ctx)
 		end
 		return cast.name, cast.name, cast.icon, cast.startTime * 1000, cast.endTime * 1000, false, cast.castId, false, cast.spellId
 	end
+	G.UnitExists = function(unit) return unit == "player" or (unit == "pet" and world.pet) end
+	G.UnitIsDead = function() return false end
+	G.UnitHealth = function(unit) return unit == "pet" and 4000 or world.health end
+	G.UnitHealthMax = function(unit) return unit == "pet" and 5000 or 200000 end
+	G.UnitGetTotalAbsorbs = function() return 1500 end
+	G.UnitGetIncomingHeals = function() return 2500 end
+	G.UnitGetTotalHealAbsorbs = function() return 3500 end
 	-- Brewmaster's and Evoker's ticks read these.
 	G.UnitStagger = function() return 0 end
 	G.UnitPartialPower = function() return 0 end
@@ -172,6 +179,51 @@ function hooks.afterEvents(ctx)
 	else
 		check("the specialization has Fatigue and Breath bars", false)
 	end
+
+	-- Health: each piece is read on its event, and abbreviated only while an enabled entry shows it.
+	local function HealthEvent()
+		stubs.fireEvents("UNIT_HEALTH:player", ctx.addonName)
+		TRB.Functions.Character:FlushHealthValues()
+	end
+	HealthEvent()
+	Pass()
+	check("health no entry shows is read", attributes.health == 100000 and attributes.absorb == 1500 and attributes.incomingHeal == 2500
+		and attributes.healAbsorb == 3500, attributes.health)
+	check("health no entry shows is not formatted", formatted.health == nil and formatted.healthMax == nil and formatted.absorb == nil
+		and formatted.incomingHeal == nil and formatted.healAbsorb == nil, formatted.health)
+	local healthIndex = Add(Entry("h", "$health"))
+	Pass()
+	local firstHealth = formatted.health
+	check("an entry that starts showing health formats it, with no health event", type(firstHealth) == "string" and firstHealth ~= "", firstHealth)
+	check("and draws it on that pass", firstHealth ~= nil and Reads(healthIndex, "h=" .. tostring(firstHealth)), Text(healthIndex))
+	check("the pieces still not shown stay unformatted", formatted.healthMax == nil and formatted.absorb == nil and formatted.incomingHeal == nil
+		and formatted.healAbsorb == nil, formatted.healthMax)
+	world.health = 54321
+	HealthEvent()
+	Pass()
+	check("a health event redraws the shown piece alone", formatted.health ~= firstHealth and Reads(healthIndex, "h=" .. tostring(formatted.health))
+		and formatted.healthMax == nil and formatted.absorb == nil, Text(healthIndex))
+	local absorbIndex = Add(Entry("a", "$absorb"))
+	Pass()
+	check("an entry that starts showing the absorb draws it", formatted.absorb ~= nil and Reads(absorbIndex, "a=" .. tostring(formatted.absorb)), Text(absorbIndex))
+
+	-- Pet: the same, for the values the pet refresher abbreviates. Any specialization stands in for one with a pet.
+	TRB.Classes.BarTypeRegistry.SpecHasPet = function() return true end
+	world.pet = true
+	-- A specialization without a pet never registered the pet events, so the read is called as they would call it.
+	TRB.Functions.Character:UpdatePetValues()
+	BarText:ClearBarTextCacheHash()
+	local petNameIndex = Add(Entry("n", "$petHealthPercent"))
+	Pass()
+	check("pet text draws with a pet out", Reads(petNameIndex, "n=80"), Text(petNameIndex))
+	check("a pet value no entry shows stays empty", TRB.Data.lookup["$petHealth"] == "" and TRB.Data.lookup["$petHealthMax"] == "",
+		TRB.Data.lookup["$petHealth"])
+	local petHealthIndex = Add(Entry("p", "$petHealth"))
+	Pass()
+	local petHealth = TRB.Data.lookup["$petHealth"]
+	check("an entry that starts showing the pet's health draws it, with no pet event", type(petHealth) == "string" and petHealth ~= ""
+		and Reads(petHealthIndex, "p=" .. tostring(petHealth)), Text(petHealthIndex))
+	check("the pet value still not shown stays empty", TRB.Data.lookup["$petHealthMax"] == "", TRB.Data.lookup["$petHealthMax"])
 
 	-- Cast bar: the values a cast holds are written when they change, not on every pass.
 	local castIndex = Add(Entry("t", "$castTime"))

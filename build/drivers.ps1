@@ -38,9 +38,9 @@
 	bartext-display-list checks that a bar text pass draws exactly the enabled entries on showing bars through enable
 	toggles, moves, added, reordered, and replaced entries, a reset frame cache, and bars hiding, showing, and fading; it
 	runs once per flavor.
-	bartext-refresh checks that the shared bar text refreshers, which skip what no enabled entry shows, write a stat, an
-	idle timer bar's zero, and a cast's values the moment an entry shows them or the lookup tables are replaced; it runs
-	once per flavor.
+	bartext-refresh checks that the shared bar text refreshers, which skip what no enabled entry shows, write a stat, a
+	health or pet value, an idle timer bar's zero, and a cast's values the moment an entry shows them or the lookup tables
+	are replaced; it runs once per flavor.
 	mounted-conditions checks the Mounted visibility conditions in the Live probe's states and TBC's, and that the Steady Flight
 	split evaluates exactly as before, runs once per save, splits old imports, and keeps presets linked; it runs once per flavor.
 	See build\harness\README.md.
