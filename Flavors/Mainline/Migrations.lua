@@ -44,6 +44,10 @@ function TRB.Flavor.DefaultManualUpdateChecks()
 		brewsBarPrompt = {
 			answered = true,
 			hidden = false
+		},
+		-- Fresh installs have no old Steady Flight ticks to split.
+		steadyFlightSplit = {
+			done = true
 		}
 	}
 end
@@ -8905,6 +8909,15 @@ function TRB.Flavor.PortForwardSettings(settings)
 	-- Brewmaster Monk: the Brews bar starts with the Stagger bar's visibility, hidden until the prompt says otherwise.
 	if TwintopInsanityBarSettings ~= nil then
 		TRB.Functions.Settings:SeedBrewsBarVisibility(TwintopInsanityBarSettings)
+	end
+
+	-- Steady Flight: split every old tick in the save and its stored profiles, once, so ticks made since keep their meaning.
+	if TwintopInsanityBarSettings ~= nil and TwintopInsanityBarSettings == TRB.Flavor.GetSavedVariables() then
+		TwintopInsanityBarSettings.manualUpdateChecks = TwintopInsanityBarSettings.manualUpdateChecks or {}
+		if TwintopInsanityBarSettings.manualUpdateChecks.steadyFlightSplit == nil then
+			TRB.Functions.Settings:SplitSteadyFlightTicksWithProfiles(TwintopInsanityBarSettings)
+			TwintopInsanityBarSettings.manualUpdateChecks.steadyFlightSplit = { done = true }
+		end
 	end
 end
 
