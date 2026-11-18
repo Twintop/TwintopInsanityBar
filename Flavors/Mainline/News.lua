@@ -12,9 +12,9 @@ TRB.Flavor.newsContent = [====[
 ## General
 ### Bar Visibility
 
-- Fix the Steady Flight and Steady Flight (Flying Only) bar visibility conditions matching while skyriding.
-- Steady Flight now matches on a flying mount wherever you can fly, on the ground or in the air.
-- Existing Steady Flight selections, including those in profiles and imports, become Skyriding (Flying Only) and Steady Flight (Flying Only), so every bar shows and hides as before.
+- [#1011](#1011) Fix the Steady Flight and Steady Flight (Flying Only) bar visibility conditions matching while skyriding.
+- [#1011](#1011) Steady Flight now matches on a flying mount wherever you can fly, on the ground or in the air.
+- [#1011](#1011) Existing Steady Flight selections, including those in profiles and imports, become Skyriding (Flying Only) and Steady Flight (Flying Only), keeping every bar's behavior unchanged.
 
 ### Custom Bars
 
