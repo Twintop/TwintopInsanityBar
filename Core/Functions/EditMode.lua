@@ -554,7 +554,7 @@ function TRB.Functions.EditMode:CalculateWrapperLayout(settings, includeHidden, 
 			isMultiNode = true
 			maxNodes = TRB.Data.character.maxResource2 or 5
 		else
-			local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+			local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 			if registry then
 				local barTypeDef = registry:Get(node.barKey)
 				if barTypeDef and barTypeDef.isMultiNode and (barTypeDef.maxNodes or 1) > 1 then
@@ -2225,9 +2225,7 @@ local function ReapplyAnchorFrameLayout(layoutName, forceUpdate)
 	if TRB.Frames.barGroups and TRB.Frames.barGroups.primary and TRB.Data.specCache and TRB.Data.character.specName then
 		-- Class-resolved settings so form-aware classes (Druid) get their form-spec settings.
 		local displaySettings
-		if TRB.Functions.Class and TRB.Functions.Class.GetActiveDisplaySettings then
-			displaySettings = TRB.Functions.Class:GetActiveDisplaySettings()
-		end
+		displaySettings = TRB.Functions.Class:GetActiveDisplaySettings()
 		if not displaySettings then
 			local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
 			displaySettings = specSettings and specSettings.settings or nil

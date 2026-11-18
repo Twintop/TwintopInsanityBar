@@ -49,10 +49,6 @@ end
 
 ---@return table?
 local function GetDefaultCoreSettings()
-	if TRB.Functions.Settings == nil or type(TRB.Functions.Settings.LoadDefaultSettings) ~= "function" then
-		return nil
-	end
-
 	local defaults = TRB.Functions.Settings:LoadDefaultSettings()
 	if type(defaults) ~= "table" or type(defaults.core) ~= "table" then
 		return nil
@@ -489,9 +485,6 @@ end
 function TRB.Functions.Profiles:PortForwardAll()
 	self:EnsureStructure()
 	local Settings = TRB.Functions.Settings
-	if Settings == nil or Settings.PortForwardProfile == nil then
-		return
-	end
 	self:IterateAll(function(_, profile)
 		Settings:PortForwardProfile(profile)
 	end)
@@ -559,10 +552,7 @@ function TRB.Functions.Profiles:ApplyToRuntime()
 	for _, className in ipairs(GetSupportedClassNames()) do
 		TRB.Data.settings[className] = TRB.Data.settings[className] or {}
 
-		local Character = TRB.Functions.Character
-		if Character ~= nil and type(Character.EnsureSpecSettings) == "function" then
-			Character:EnsureSpecSettings(className)
-		end
+		TRB.Functions.Character:EnsureSpecSettings(className)
 
 		local classPiece = TRB.Data.settings[className]
 		if type(classPiece) == "table" then
@@ -1387,16 +1377,10 @@ profilesFrame:SetScript("OnEvent", function(_, event)
 		-- Seeding repeats here as well because a first-ever launch never reaches CleanupSettings:
 		-- with no saved variables the class modules assign the defaults table straight across.
 		local Settings = TRB.Functions.Settings
-		if Settings ~= nil and Settings.SeedAllAudioCues ~= nil then
-			Settings:SeedAllAudioCues(TRB.Data.settings)
-		end
-		if Settings ~= nil and Settings.NormalizeAllAudioCues ~= nil then
-			Settings:NormalizeAllAudioCues(TRB.Data.settings)
-		end
+		Settings:SeedAllAudioCues(TRB.Data.settings)
+		Settings:NormalizeAllAudioCues(TRB.Data.settings)
 		-- The overlay also merges the indicator order lists by index, so reconcile them once more too.
-		if Settings ~= nil and Settings.ReconcileAllSharedIndicators ~= nil then
-			Settings:ReconcileAllSharedIndicators(TRB.Data.settings)
-		end
+		Settings:ReconcileAllSharedIndicators(TRB.Data.settings)
 		-- It merges each multi-node bar's node order by index the same way.
 		Settings:SanitizeAllNodeOrders(TRB.Data.settings)
 	elseif event == "PLAYER_LOGOUT" then

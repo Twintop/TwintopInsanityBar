@@ -92,7 +92,7 @@ local function HideAllBarGroupsAndBarText()
 		TRB.Data.snapshotData.attributes.isTracking = false
 	end
 
-	if TRB.Data.specCache and TRB.Data.character and TRB.Data.character.compositeKey and TRB.Functions.BarText and TRB.Functions.BarText.Hide then
+	if TRB.Data.specCache and TRB.Data.character and TRB.Data.character.compositeKey then
 		local specCacheEntry = TRB.Data.specCache[TRB.Data.character.compositeKey]
 		if specCacheEntry and specCacheEntry.settings then
 			TRB.Functions.BarText:Hide(specCacheEntry.settings)
@@ -251,7 +251,7 @@ function TRB.Functions.Bar:GetMultiNodeBarTotalWidth(barKey, barSettings, barGro
 		maxNodes = TRB.Data.character.maxResource2 or 5
 	else
 		-- Check the BarTypeRegistry for custom multi-node bars (e.g., defensives)
-		local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+		local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 		if registry then
 			local barTypeDef = registry:Get(barKey)
 			if barTypeDef and barTypeDef.isMultiNode and (barTypeDef.maxNodes or 1) > 1 then
@@ -302,7 +302,7 @@ function TRB.Functions.Bar:GetMultiNodeBarTotalHeight(barKey, barSettings, barGr
 		isMultiNode = true
 		maxNodes = TRB.Data.character.maxResource2 or 5
 	else
-		local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+		local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 		if registry then
 			local barTypeDef = registry:Get(barKey)
 			if barTypeDef and barTypeDef.isMultiNode and (barTypeDef.maxNodes or 1) > 1 then
@@ -483,9 +483,7 @@ function TRB.Functions.Bar:EndRenderTransition(reason)
 	SetBarGroupsAlpha(1)
 	TRB.Functions.BarVisibility:MarkDirty()
 	TRB.Functions.Bar:HideResourceBar()
-	if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-		TRB.Functions.Class:TriggerResourceBarUpdates()
-	end
+	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
 ---Evaluates bar visibility and shows or hides the resource bar based on combat state, configured hide conditions, Edit Mode, and spec support
@@ -531,9 +529,7 @@ function TRB.Functions.Bar:HideResourceBar(force)
 				(specSettings and specSettings.settings) or nil
 			)
 			self:ApplyEditModeIconPreviews((specSettings and specSettings.settings) or nil, barGroups)
-			if TRB.Functions.Bar.RefreshWrapperPositioning then
-				TRB.Functions.Bar:RefreshWrapperPositioning()
-			end
+			TRB.Functions.Bar:RefreshWrapperPositioning()
 		end
 		return
 	end
@@ -677,7 +673,7 @@ function TRB.Functions.Bar:GetPosition(settings)
 	local containerFrame
 	
 	-- Try to get the wrapper frame first (it's the parent of all bars and what moves)
-	local wrapperFrame = TRB.Functions.EditMode and TRB.Functions.EditMode:GetWrapperFrame()
+	local wrapperFrame = TRB.Functions.EditMode:GetWrapperFrame()
 	if wrapperFrame then
 		containerFrame = wrapperFrame
 	elseif TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
@@ -731,7 +727,7 @@ function TRB.Functions.Bar:SetPosition(settings, containerFrame)
 	-- In the new BarGroups architecture, position is applied to the WRAPPER frame.
 	-- The primary container is a CHILD of the wrapper at CENTER/0,0.
 	-- Setting position on the container would cause a multiplicative offset bug.
-	local wrapperFrame = TRB.Functions.EditMode and TRB.Functions.EditMode:GetWrapperFrame()
+	local wrapperFrame = TRB.Functions.EditMode:GetWrapperFrame()
 	local targetFrame = wrapperFrame or containerFrame
 	
 	-- Check if Edit Mode layout is enabled
@@ -894,9 +890,7 @@ end
 ---Call this when switching specs to prevent orphaned frames
 function TRB.Functions.Bar:DestroyBarGroups()
 	-- Clear the Edit Mode registered frame reference since the frame is being destroyed
-	if TRB.Functions.EditMode and TRB.Functions.EditMode.ClearRegisteredFrame then
-		TRB.Functions.EditMode:ClearRegisteredFrame()
-	end
+	TRB.Functions.EditMode:ClearRegisteredFrame()
 
 	if TRB.Frames.barGroups then
 		for key, group in pairs(TRB.Frames.barGroups) do
@@ -943,9 +937,7 @@ function TRB.Functions.Bar:ConstructBarGroups(settings, barGroups)
 	wipe(TRB.Data.cache.colors.backdrop)
 
 	-- Initialize Edit Mode if not yet done (safe to call multiple times)
-	if TRB.Functions.EditMode and TRB.Functions.EditMode.Initialize then
-		TRB.Functions.EditMode:Initialize()
-	end
+	TRB.Functions.EditMode:Initialize()
 
 	self:ApplyBarGroupsLayout(settings, barGroups)
 	self:ApplyBarGroupsAppearance(settings, barGroups)
@@ -1381,9 +1373,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	-- This must happen before CDM anchoring/UpdateWrapperSize because RegisterTreeRoot
 	-- calls UpdateWrapperSize internally, and we want the explicit sizing below to
 	-- be the final authority on wrapper dimensions.
-	if TRB.Functions.EditMode and TRB.Functions.EditMode.RegisterAllTreeRoots then
-		TRB.Functions.EditMode:RegisterAllTreeRoots()
-	end
+	TRB.Functions.EditMode:RegisterAllTreeRoots()
 
 	-- Re-show wrappers for ALL current layout roots (including bars promoted to roots
 	-- because their parent was hidden). RegisterAllTreeRoots uses includeHidden=true
@@ -1404,9 +1394,7 @@ function TRB.Functions.Bar:ApplyBarGroupsLayout(settings, barGroups)
 	end
 
 	-- There may be class-specific updates needed after layout changes. Only run this if we're not looping.
-	if TRB.Functions.Class and TRB.Functions.Class.CheckCharacter then
-		TRB.Functions.Class:CheckCharacter()
-	end
+	TRB.Functions.Class:CheckCharacter()
 
 	-- Construction re-shows every settings-visible group, so runtime-hidden bars (form, combat) need a
 	-- fresh ProcessBars pass or they stay revealed until the next unrelated dirty mark.
@@ -1514,9 +1502,7 @@ function TRB.Functions.Bar:RefreshWrapperPositioning()
 	-- classes (Druid) use the form-spec settings here. Falls back to the active
 	-- compositeKey for all other classes.
 	local settings
-	if TRB.Functions.Class and TRB.Functions.Class.GetActiveDisplaySettings then
-		settings = TRB.Functions.Class:GetActiveDisplaySettings()
-	end
+	settings = TRB.Functions.Class:GetActiveDisplaySettings()
 	if not settings and TRB.Data.specCache and TRB.Data.character.compositeKey then
 		local specCache = TRB.Data.specCache[TRB.Data.character.compositeKey]
 		if specCache then
@@ -2699,18 +2685,14 @@ function TRB.Functions.Bar:GetEffectiveWidthForBarGroup(barGroups, settings, bar
 	if barGroups and barGroups.rootEffectiveWidths and barGroups.rootEffectiveWidths[barKey] then
 		effectiveWidth = barGroups.rootEffectiveWidths[barKey]
 		-- Check if CDM width matching is active for this root
-		if editMode and editMode.IsWidthMatchingEnabled then
-			cdmForced = editMode:IsWidthMatchingEnabled(nil, barKey)
-		end
-	elseif editMode and editMode.IsWidthMatchingEnabled and editMode:IsWidthMatchingEnabled(nil, barKey) then
+		cdmForced = editMode:IsWidthMatchingEnabled(nil, barKey)
+	elseif editMode:IsWidthMatchingEnabled(nil, barKey) then
 		cdmForced = true
-		if editMode.GetAnchorFrameWidth then
-			local anchorFrameKey = editMode:GetAnchorFrameKey(nil, barKey)
-			local customFrameName = editMode:GetCustomFrameName(nil, barKey)
-			local anchorFrameWidth = editMode:GetAnchorFrameWidth(anchorFrameKey, customFrameName)
-			if anchorFrameWidth and anchorFrameWidth > 0 then
-				effectiveWidth = anchorFrameWidth
-			end
+		local anchorFrameKey = editMode:GetAnchorFrameKey(nil, barKey)
+		local customFrameName = editMode:GetCustomFrameName(nil, barKey)
+		local anchorFrameWidth = editMode:GetAnchorFrameWidth(anchorFrameKey, customFrameName)
+		if anchorFrameWidth and anchorFrameWidth > 0 then
+			effectiveWidth = anchorFrameWidth
 		end
 	end
 
@@ -2731,18 +2713,14 @@ function TRB.Functions.Bar:GetEffectiveHeightForBarGroup(barGroups, settings, ba
 
 	if barGroups and barGroups.rootEffectiveHeights and barGroups.rootEffectiveHeights[barKey] then
 		effectiveHeight = barGroups.rootEffectiveHeights[barKey]
-		if editMode and editMode.IsHeightMatchingEnabled then
-			cdmForced = editMode:IsHeightMatchingEnabled(nil, barKey)
-		end
-	elseif editMode and editMode.IsHeightMatchingEnabled and editMode:IsHeightMatchingEnabled(nil, barKey) then
+		cdmForced = editMode:IsHeightMatchingEnabled(nil, barKey)
+	elseif editMode:IsHeightMatchingEnabled(nil, barKey) then
 		cdmForced = true
-		if editMode.GetAnchorFrameHeight then
-			local anchorFrameKey = editMode:GetAnchorFrameKey(nil, barKey)
-			local customFrameName = editMode:GetCustomFrameName(nil, barKey)
-			local anchorFrameHeight = editMode:GetAnchorFrameHeight(anchorFrameKey, customFrameName)
-			if anchorFrameHeight and anchorFrameHeight > 0 then
-				effectiveHeight = anchorFrameHeight
-			end
+		local anchorFrameKey = editMode:GetAnchorFrameKey(nil, barKey)
+		local customFrameName = editMode:GetCustomFrameName(nil, barKey)
+		local anchorFrameHeight = editMode:GetAnchorFrameHeight(anchorFrameKey, customFrameName)
+		if anchorFrameHeight and anchorFrameHeight > 0 then
+			effectiveHeight = anchorFrameHeight
 		end
 	end
 
@@ -3075,7 +3053,7 @@ function TRB.Functions.Bar:GetVisibilityKey(barKey)
 		return "health"
 	else
 		-- Custom bars use their BarTypeRegistry visibilityKey, which defaults to barKey
-		local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+		local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 		if registry then
 			local barTypeDef = registry:Get(barKey)
 			if barTypeDef then
@@ -3384,7 +3362,7 @@ function TRB.Functions.Bar:GetAllBarKeys(barGroups)
 	if barGroups.health then table.insert(keys, "health") end
 
 	-- Custom bars from BarTypeRegistry
-	local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 	if registry then
 		local allBarTypes = registry:GetAll()
 		for barKey, _ in pairs(allBarTypes) do
@@ -3419,7 +3397,7 @@ function TRB.Functions.Bar:GetAllBarKeysFromSettings(settings, classId, specId)
 
 	-- Custom bars from BarTypeRegistry that have settings
 	if settings.bars then
-		local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+		local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 		if registry then
 			local allBarTypes = registry:GetAll()
 			for barKey, _ in pairs(allBarTypes) do
@@ -3525,7 +3503,7 @@ function TRB.Functions.Bar:GetBarDisplayName(barKey, classId, specId)
 	elseif barKey == "health" then
 		return L["AnchorBarHealth"]
 	else
-		local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+		local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 		if registry then
 			local barTypeDef = registry:Get(barKey)
 			if barTypeDef and barTypeDef.displayName then

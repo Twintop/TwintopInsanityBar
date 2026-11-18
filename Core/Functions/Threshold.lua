@@ -1606,7 +1606,7 @@ end
 ---@param barKey string
 ---@return TRB.Classes.BarTypeDefinition?
 local function GetBarTypeDefinition(barKey)
-	local registry = TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 	return registry and registry:Get(barKey) or nil
 end
 
@@ -1881,10 +1881,7 @@ local function GetCustomThresholdBarTargetName(classId, specId, barKey)
 		return name
 	end
 
-	if TRB.Functions.Bar and TRB.Functions.Bar.GetBarDisplayName then
-		return TRB.Functions.Bar:GetBarDisplayName(barKey)
-	end
-	return barKey
+	return TRB.Functions.Bar:GetBarDisplayName(barKey)
 end
 
 ---Returns whether a bar target's threshold value is a percentage (0-100%-style fill) rather than
@@ -1931,12 +1928,7 @@ function TRB.Functions.Threshold:GetCustomThresholdBarTargets(settings, classId,
 		specId = TRB.Data.character.specId
 	end
 
-	local keys = {}
-	if TRB.Functions.Bar and TRB.Functions.Bar.GetAllBarKeysFromSettings then
-		keys = TRB.Functions.Bar:GetAllBarKeysFromSettings(settings, classId, specId)
-	else
-		keys = { "primary", "secondary", "health" }
-	end
+	local keys = TRB.Functions.Bar:GetAllBarKeysFromSettings(settings, classId, specId)
 
 	-- Bars folded into another bar's context sub-target (via altBarKey) are not listed on their
 	-- own. Example: Balance's dedicated mana bar is subsumed by the unified primary "Mana" target,
@@ -3256,9 +3248,7 @@ function TRB.Functions.Threshold:RedrawThresholdLines()
 	TRB.Functions.Threshold:RefreshThresholdIconPriorities()
 	TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 
-	if TRB.Functions.Class and TRB.Functions.Class.TriggerResourceBarUpdates then
-		TRB.Functions.Class:TriggerResourceBarUpdates()
-	end
+	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase

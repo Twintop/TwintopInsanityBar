@@ -413,10 +413,8 @@ TRB.Frames.renderTransitionFrame:SetScript("OnEvent", function(self, event, arg1
 		end
 	end
 
-	if TRB.Functions and TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
-		-- Increase initial transition time to cover the loading sequence delay
-		TRB.Functions.Bar:QueueRenderTransition("init:" .. event, 2.5)
-	end
+	-- Increase initial transition time to cover the loading sequence delay
+	TRB.Functions.Bar:QueueRenderTransition("init:" .. event, 2.5)
 end)
 
 -- Settings placeholders

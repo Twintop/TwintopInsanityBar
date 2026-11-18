@@ -2216,7 +2216,7 @@ function TRB.Classes.BarGroup:SetDragAndDrop(enabled, settings)
 	end
 
 	-- Don't enable drag-and-drop if Edit Mode is active and layout is enabled
-	if enabled and TRB.Functions.EditMode then
+	if enabled then
 		if TRB.Functions.EditMode:IsInEditMode() then
 			enabled = false
 		elseif TRB.Functions.EditMode:IsLayoutEnabled() then
@@ -2228,7 +2228,7 @@ function TRB.Classes.BarGroup:SetDragAndDrop(enabled, settings)
 
 	-- When using the wrapper frame system, make the wrapper movable instead of the container
 	-- The wrapper is the parent of all bars, so moving it moves everything
-	local wrapperFrame = TRB.Functions.EditMode and TRB.Functions.EditMode:GetWrapperFrame()
+	local wrapperFrame = TRB.Functions.EditMode:GetWrapperFrame()
 	local targetFrame = wrapperFrame or self.containerFrame
 
 	targetFrame:SetMovable(enabled)

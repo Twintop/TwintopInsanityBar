@@ -96,7 +96,7 @@ end
 
 local function GetAllowedCustomBarKeys(classId, specId)
 	local allowedBars = {}
-	local registry = TRB.Classes and TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 
 	if registry ~= nil then
 		local registryBars = registry:GetBarTypesForSpec(classId, specId)
@@ -130,7 +130,7 @@ local function CopySecondaryBarConfiguration(configuration, settings)
 end
 
 local function CopyCustomBarConfiguration(configuration, settings, barKey)
-	local registry = TRB.Classes and TRB.Classes.BarTypeRegistry and TRB.Classes.BarTypeRegistry:GetInstance()
+	local registry = TRB.Classes.BarTypeRegistry:GetInstance()
 	local barTypeDef = registry and registry:Get(barKey)
 	local barSettings = settings.bars and settings.bars[barKey]
 
@@ -836,7 +836,6 @@ local function ResolveLiveOrStoredSpecPiece(profileName, className, specName)
 	local useLive = character ~= nil
 		and character.classId == classId
 		and character.specId == specId
-		and TRB.Functions.Profiles ~= nil
 		and (TRB.Functions.Profiles:ResolveSpecProfileName(className, specName) == profileName)
 
 	if useLive then
@@ -863,8 +862,7 @@ end
 ---@param profileName string
 ---@return table?
 local function ResolveLiveOrStoredCorePiece(profileName)
-	local useLive = TRB.Functions.Profiles ~= nil
-		and (TRB.Functions.Profiles:ResolveCoreProfileName() == profileName)
+	local useLive = TRB.Functions.Profiles:ResolveCoreProfileName() == profileName
 
 	if useLive then
 		local live = TRB.Data.settings and TRB.Data.settings.core
@@ -1011,7 +1009,7 @@ function TRB.Functions.IO:ExportFullProfile(profileName)
 	-- if the named profile has no core stored. When missing, fall back to the
 	-- currently-active core profile so the recipient gets a complete bundle.
 	local corePiece = ResolveLiveOrStoredCorePiece(profileName)
-	if corePiece == nil and TRB.Functions.Profiles ~= nil then
+	if corePiece == nil then
 		local activeCoreName = TRB.Functions.Profiles:ResolveCoreProfileName()
 		if activeCoreName ~= nil then
 			local liveCore = TRB.Data.settings and TRB.Data.settings.core

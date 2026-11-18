@@ -457,9 +457,7 @@ local function CharacterChange(self, event, ...)
 	end
 
 	if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" or event == "TRAIT_CONFIG_UPDATED" then
-		if TRB.Functions.Bar and TRB.Functions.Bar.QueueRenderTransition then
-			TRB.Functions.Bar:QueueRenderTransition("characterChange:" .. event, 0.35)
-		end
+		TRB.Functions.Bar:QueueRenderTransition("characterChange:" .. event, 0.35)
 	end
 
 	if event == "UNIT_POWER_UPDATE" or event == "UNIT_POWER_FREQUENT" or event == "UNIT_MAXPOWER" then
@@ -2356,23 +2354,17 @@ function TRB.Functions.Character:EventRegistration()
 			local specSettings = TRB.Data.specCache[TRB.Data.character.compositeKey]
 			if specSettings and specSettings.settings then
 				-- Initialize Edit Mode if not yet done (required for CDM anchoring/width matching)
-				if TRB.Functions.EditMode and TRB.Functions.EditMode.Initialize then
-					TRB.Functions.EditMode:Initialize()
-				end
+				TRB.Functions.EditMode:Initialize()
 
 				-- Recreate thresholds if they don't exist (happens when spec was disabled on initial load)
 				-- This calls into a class-module-overridable function to handle spec-specific thresholds
-				if TRB.Functions.Class.RecreateThresholds then
-					TRB.Functions.Class:RecreateThresholds(specSettings.settings, barGroups)
-				end
+				TRB.Functions.Class:RecreateThresholds(specSettings.settings, barGroups)
 
 				TRB.Functions.Bar:ApplyBarGroupsLayout(specSettings.settings, barGroups)
 				TRB.Functions.Bar:ApplyBarGroupsAppearance(specSettings.settings, barGroups)
 
 				-- Register all tree roots with Edit Mode (each root gets its own wrapper)
-				if TRB.Functions.EditMode then
-					TRB.Functions.EditMode:RegisterAllTreeRoots()
-				end
+				TRB.Functions.EditMode:RegisterAllTreeRoots()
 
 				TRB.Functions.BarText:CreateBarTextFrames()
 				TRB.Functions.BarText:Hide(specSettings.settings)
