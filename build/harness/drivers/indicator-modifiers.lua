@@ -298,6 +298,94 @@ function hooks.afterEvents(ctx)
 		try("clear gradients", function() Color:ApplyIndicatorColors({ nodeOrder = {}, gradientOrder = {}, indicatorColors = {} }, {}, { testBar = {} }) end)
 	end
 
+	-- Gradient glows: every met row's glows run on their own host, shown at or above the row's step, beside flat glows.
+	do
+		local Glow = TRB.Functions.Glow
+		local character = TRB.Data.character
+		local wasInCombat = character.inCombat
+		local core = TRB.Data.settings.core
+		local savedGlows = core.glows
+		local libs = TRB.Details.addonData.libs
+		local savedLib = libs.CustomGlow
+		local savedResource = TRB.Data.resource
+		local unitPower, unitPowerMax = desktop.UnitPower, desktop.UnitPowerMax
+		local power = 40
+		local noop = function() end
+		libs.CustomGlow = { PixelGlow_Start = noop, PixelGlow_Stop = noop, AutoCastGlow_Start = noop, AutoCastGlow_Stop = noop,
+			ButtonGlow_Start = noop, ButtonGlow_Stop = noop, ProcGlow_Start = noop, ProcGlow_Stop = noop }
+		core.glows = { glowA = Glow:DefaultGlow("glowA", "A"), glowB = Glow:DefaultGlow("glowB", "B"), glowC = Glow:DefaultGlow("glowC", "C") }
+		core.glows.glowA.useCustomColor = false
+		TRB.Data.resource = savedResource or 0
+		desktop.UnitPower, desktop.UnitPowerMax = function() return power end, function() return 100 end
+		Color:SetGradientStep("overcap", 0.5)
+
+		local ROW, COPY, FLAT = "FF0D0D0B", "FF0D0D0C", "FF0D0D0D"
+		local glowShared = { nodeOrder = { "flat" }, gradientOrder = { "overcap", "copy_1" }, indicatorColors = {
+			flat = { enabled = true, color = FLAT, targets = { healthBar = { glows = { glowC = true } } } },
+			overcap = { enabled = true, isGradient = true, color = ROW, targets = { healthBar = { glows = { glowA = true } } } },
+			copy_1 = { copyOf = "overcap", enabled = true, isGradient = true, color = COPY, targets = { healthBar = { border = true, glows = { glowB = true } } },
+				modifiers = { onlyInCombat = true } },
+		} }
+		local frame = desktop.CreateFrame("StatusBar")
+		local node = { frame = frame, GetFrame = function(self) return self.frame end }
+		local function Render(conditionMap)
+			conditionMap.flat = true
+			try("resolve gradient glows", function() Color:ApplyIndicatorColors(glowShared, conditionMap, { testBar = {} }) end)
+			try("apply gradient glows", function() Glow:ApplyIndicatorGlow(node, "healthBar") end)
+		end
+		---The running glow and alpha on a row's host, or nil when nothing runs there.
+		local function Host(rowKey)
+			local host = frame.trbGradientGlowHosts and frame.trbGradientGlowHosts[rowKey]
+			if host == nil or host.trbGlows == nil or next(host.trbGlows) == nil or host.trbAlphaResult == nil then
+				return nil
+			end
+			local _, _, _, alpha = host.trbAlphaResult:GetRGBA()
+			return host.trbGlows, alpha
+		end
+
+		character.inCombat = true
+		Render({ overcap = true })
+		local list = Color:GetResolvedGradientGlows("healthBar")
+		check("every met gradient row's glows resolve on the bar, in list order", list ~= nil and list.count == 2
+			and list[1].key == "overcap" and list[2].key == "copy_1")
+		local gradients = Color:GetResolvedGradients("healthBar")
+		check("and a glow is no element to color", gradients ~= nil and gradients.glows == nil and gradients.border == glowShared.indicatorColors.copy_1)
+		local rowGlows, rowAlpha = Host("overcap")
+		local copyGlows, copyAlpha = Host("copy_1")
+		check("each row's glows run on its own host, hidden below the step", rowGlows ~= nil and rowGlows.glowA ~= nil and rowAlpha == 0
+			and copyGlows ~= nil and copyGlows.glowB ~= nil and copyAlpha == 0)
+		check("a glow that takes the row's color takes the gradient row's", rowGlows ~= nil and rowGlows.glowA.color == ROW)
+		check("and the flat row's glow runs on the bar beside them", frame.trbGlows ~= nil and frame.trbGlows.glowC ~= nil)
+
+		power = 60
+		Render({ overcap = true })
+		rowGlows, rowAlpha = Host("overcap")
+		copyGlows, copyAlpha = Host("copy_1")
+		check("at or above the step both hosts show", rowAlpha == 1 and copyAlpha == 1)
+
+		character.inCombat = false
+		Render({ overcap = true })
+		rowGlows = Host("overcap")
+		copyGlows = Host("copy_1")
+		check("a row that stops applying stops its glows, and the others keep running", rowGlows ~= nil and copyGlows == nil)
+
+		Render({ overcap = false })
+		check("with no row met no gradient glow runs", Host("overcap") == nil and Host("copy_1") == nil)
+
+		character.inCombat = true
+		Render({ overcap = true })
+		try("release node", function() Glow:ReleaseNode(node) end)
+		check("releasing the node stops its gradient glows", Host("overcap") == nil and Host("copy_1") == nil and frame.trbGlows == nil)
+
+		character.inCombat = wasInCombat
+		Color:SetGradientStep("overcap", nil)
+		desktop.UnitPower, desktop.UnitPowerMax = unitPower, unitPowerMax
+		TRB.Data.resource = savedResource
+		core.glows = savedGlows
+		libs.CustomGlow = savedLib
+		try("clear gradient glows", function() Color:ApplyIndicatorColors({ nodeOrder = {}, gradientOrder = {}, indicatorColors = {} }, {}, { testBar = {} }) end)
+	end
+
 	-- Copies take their built-in's default modifiers they leave unset, as the login's merge does for the built-in.
 	do
 		local defaultShared = { nodeOrder = { "builtIn" }, gradientOrder = {}, indicatorColors = {
