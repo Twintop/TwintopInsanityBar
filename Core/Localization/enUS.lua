@@ -994,7 +994,6 @@ L["PriestShadowBarTextVariable_mfiTime"] = "Time remaining on Mind Flay: Insanit
 L["PriestShadowBarTextVariable_mfiStacks"] = "Number of stacks of Mind Flay: Insanity buff"
 L["PriestShadowBarTextVariable_spTime"] = "Time remaining on Shattered Psyche buff"
 L["PriestShadowBarTextVariable_spStacks"] = "Number of stacks of Shattered Psyche buff"
-L["PriestShadowBarTextVariable_voidVolleyTime"] = "Time remaining on Void Volley buff"
 L["PriestShadowBarTextVariable_spCrit"] = "Mind Blast's increased critical strike chance from Shattered Psyche buff"
 
 L["MaxResourceHeader"] = "Maximum Bar Value"
