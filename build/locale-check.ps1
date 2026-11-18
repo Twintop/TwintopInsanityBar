@@ -3,11 +3,12 @@
 	Fails when a locale file gains a string anywhere but its end.
 
 .DESCRIPTION
-	Translators work from the tail of each locale file, so a new string goes after every existing one, and a
-	changed string is removed where it was and added again at the end. This compares each locale file
+	Translators work from the tail of enUS, so a new string goes after every existing one, and a changed English
+	string is removed where it was and added again at the end. This compares each locale file
 	(Core\Localization\xxXX.lua) with where the branch left its base, and fails when an added line has an
-	original string line still after it: an addition in the middle, or a string edited in place. Removals are
-	fine anywhere. Lines after the last string, such as a locale block's closing "end", don't count.
+	original string line still after it: an addition in the middle, or an enUS string edited in place. Outside
+	enUS, a string edited in place (its key removed and added in one hunk) is a refinement and passes.
+	Removals are fine anywhere. Lines after the last string, such as a locale block's closing "end", don't count.
 
 .PARAMETER Base
 	The ref the change is measured from, compared at its merge base with HEAD. Defaults to origin/<the pull
@@ -36,6 +37,7 @@ try {
 	$mergeBase = $mergeBase.Trim()
 
 	$stringLine = '^\s*L\['
+	$keyPattern = '^\s*L\["([^"]+)"\]'
 	$problems = @()
 	$checked = 0
 	$files = Get-ChildItem -Path (Join-Path $Root "Core/Localization") -Filter *.lua | Where-Object { $_.Name -cmatch '^[a-z]{2}[A-Z]{2}\.lua$' }
@@ -53,11 +55,13 @@ try {
 			if ($line -match '^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@') {
 				$current = [pscustomobject]@{
 					OldStart = [int]$Matches[1]; OldCount = if ($Matches[2] -ne $null) { [int]$Matches[2] } else { 1 }
-					NewStart = [int]$Matches[3]; Added = @()
+					NewStart = [int]$Matches[3]; Added = @(); RemovedKeys = @{}
 				}
 				$hunks += $current
 			} elseif ($current -ne $null -and $line.StartsWith("+") -and -not $line.StartsWith("+++")) {
 				$current.Added += $line.Substring(1)
+			} elseif ($current -ne $null -and $line.StartsWith("-") -and -not $line.StartsWith("---")) {
+				if ($line.Substring(1) -match $keyPattern) { $current.RemovedKeys[$Matches[1]] = $true }
 			}
 		}
 
@@ -76,6 +80,8 @@ try {
 			if ($survivor -eq $null) { continue }
 			for ($i = 0; $i -lt $hunk.Added.Count; $i++) {
 				if ($hunk.Added[$i] -match $stringLine) {
+					# A translation refined in place keeps its key and position; only enUS must move a changed string.
+					if ($file.Name -cne "enUS.lua" -and $hunk.Added[$i] -match $keyPattern -and $hunk.RemovedKeys[$Matches[1]]) { continue }
 					$text = $hunk.Added[$i].Trim()
 					if ($text.Length -gt 90) { $text = $text.Substring(0, 90) + "..." }
 					$problems += "${rel}:$($hunk.NewStart + $i): added before existing strings (first is old line ${survivor}): $text"

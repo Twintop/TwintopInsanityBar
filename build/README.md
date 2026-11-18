@@ -169,7 +169,8 @@ it before staging a tag. Each check is its own job:
 
 - **Lint Core:** `lint-core.ps1`.
 - **Locale order:** `locale-check.ps1`, measured from the pull request's base branch, or for a push to `main` from the commit before it. A locale file may only gain
-  strings at its end; a changed string is removed and added again there. Removals are fine anywhere.
+  strings at its end, and a changed enUS string is removed and added again there. Outside enUS, a translation refined
+  in place passes. Removals are fine anywhere.
 - **Lua syntax:** `luac5.1 -p` on every tracked Lua file outside `Libs\`.
 - **Smoke load:** `smoke.ps1`, every flavor, every class. A run with no `Loaded` line fails.
 - **Harness drivers:** `drivers.ps1`, every driver.
