@@ -61,6 +61,31 @@ jobs:
           done < <(git ls-files '*.lua' | grep -v '^Libs/')
           exit $status
 
+  tickcost-patch:
+    name: Tick cost patch
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Lua 5.1
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lua5.1 > /dev/null
+
+      # The probe is never merged, so only this check notices when a Core change stops it applying.
+      - name: Apply the tick cost probe patch
+        shell: bash
+        run: |
+          git apply --check build/patches/tickcost-probe.patch
+          git apply build/patches/tickcost-probe.patch
+
+      - name: Syntax-check the patched files
+        shell: bash
+        run: |
+          status=0
+          for f in Core/Init.lua Core/Classes/BarVisibility.lua Core/Functions/CurveMemo.lua; do
+            luac5.1 -p "$f" || status=1
+          done
+          exit $status
+
   smoke:
     name: Smoke load
     runs-on: ubuntu-latest

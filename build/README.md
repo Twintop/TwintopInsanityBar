@@ -123,6 +123,7 @@ saved-variables replay and golden-snapshot options used to verify refactors.
 | Link / unlink a client | `.\build\dev-link.ps1 -Flavor <f> -AddOnsPath <path> [-Remove]` |
 | Record a client's facts (Forever, Classic, TBC, or Live) | junction or copy `build\forever-probe\TRBForeverProbe` into the client's AddOns folder, `/trbprobe` in game, Ctrl+A and Ctrl+C in the window that opens |
 | Answer a tracking question in game, on any client | the same probe addon: `/trbprobe swing` (swing and attack speed events with `UnitAttackSpeed`), `/trbprobe hits` (charge buffs against hits taken), `/trbprobe swings` (swings against the target's results), `/trbprobe auras` (which stack auras are secret), `/trbprobe crits` (each cast paired with its result on the target), `/trbprobe mana` (what a resource gain looks like), `/trbprobe casttime <spell id>` (every cast time and cost a spell reports); `/trbprobe help` lists them |
+| Add / remove the `/trb tickcost` probe, which times the tick in game (local only, never merge it) | `git apply build/patches/tickcost-probe.patch` / `git apply -R build/patches/tickcost-probe.patch` |
 
 ## 4. Releasing
 
@@ -172,6 +173,8 @@ it before staging a tag. Each check is its own job:
   strings at its end, and a changed enUS string is removed and added again there. Outside enUS, a translation refined
   in place passes. Removals are fine anywhere.
 - **Lua syntax:** `luac5.1 -p` on every tracked Lua file outside `Libs\`.
+- **Tick cost patch:** `git apply --check` and `git apply` of `build\patches\tickcost-probe.patch`, then `luac5.1 -p`
+  on the three files it patches. A change that stops it applying refreshes it, following the steps in its header.
 - **Smoke load:** `smoke.ps1`, every flavor, every class. A run with no `Loaded` line fails.
 - **Harness drivers:** `drivers.ps1`, every driver.
 - **LuaLS:** `luals-check.ps1` with lua-language-server and Ketho's WoW API annotations, pinned in the
