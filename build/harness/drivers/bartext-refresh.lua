@@ -122,11 +122,12 @@ function hooks.afterEvents(ctx)
 	stat.read = function() return statValue end
 	local attributes = TRB.Data.snapshotData.attributes
 	local formatted = TRB.Data.snapshotData.formatted
-	local function StatEvent()
-		stubs.fireEvents(statEvent .. (string.sub(statEvent, 1, 5) == "UNIT_" and ":player" or ""), ctx.addonName)
-	end
 	check("the stat has an event", statEvent ~= nil)
 	if statEvent ~= nil then
+		local statEventSpec = statEvent .. (string.sub(statEvent, 1, 5) == "UNIT_" and ":player" or "")
+		local function StatEvent()
+			stubs.fireEvents(statEventSpec, ctx.addonName)
+		end
 		StatEvent()
 		Pass()
 		check("a stat no entry shows is read", attributes[stat.key] == 12.5 and TRB.Data.lookupLogic[statVariable] == 12.5, attributes[stat.key])
