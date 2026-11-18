@@ -17,6 +17,11 @@ TRB.Details.coreNewsContent = [====[
 
 - [#1008](#1008) Fix a custom bar's Visibility row and Show dropdown leaving out its resource or health threshold.
 
+## Localization
+
+- [#1006 - @MOSS099](#1006) Updated translations for Simplified Chinese (zhCN).
+- [#1007 - @MOSS099](#1007) Updated translations for Simplified Chinese (zhCN).
+
 ## Totems
 
 - [#1008](#1008) Fix the Totems bar ignoring its gradient colors.
