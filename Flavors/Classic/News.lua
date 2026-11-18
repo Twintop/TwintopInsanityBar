@@ -8,7 +8,7 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
-# 1.15.9.6-release (2026-11-18)
+# 1.15.9.6-release (2026-11-19)
 ## General
 ### Timer Bars
 

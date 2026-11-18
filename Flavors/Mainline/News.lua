@@ -8,7 +8,7 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
-# 12.1.5.15-release (2026-11-18)
+# 12.1.5.15-release (2026-11-19)
 ## General
 ### Bar Visibility
 
