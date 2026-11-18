@@ -3230,7 +3230,6 @@ if locale == "zhCN" then
 	L["CdmBadgeHeader"] = "依赖冷却管理器"
 	L["CdmBadgeRequiredTooltip"] = "该选项读取自暴雪冷却管理器。请将所追踪的技能添加至冷却管理器的监控列表，否则将无法读取数值，内容会保持空白。"
 	L["BarTextVariablesColumnCdm"] = "C"
-	L["BarTextVariablesColumnCdmTooltip"] = "依赖冷却管理器：数值取自暴雪冷却管理器，若对应技能未加入监控列表，会显示为??。"
 	L["BarTextVariablesBadgeCdm"] = "C"
 	L["BarTextVariablesDescriptionCdm"] = "依赖冷却管理器"
 	L["BarTextVariablesCdmRequired"] = "是"
@@ -3250,7 +3249,6 @@ if locale == "zhCN" then
 	L["ResourceCoagulatingBlood"] = "凝血"
 	L["TabCoagulatingBlood"] = "凝血"
 	L["CoagulatingBloodBar"] = "凝血条"
-	L["DeathKnightBarTextVariable_coagulatingBloodStacks"] = "凝血当前层数，每层等效1%。读取自暴雪冷却管理器；未将凝血加入监控列表时显示为??。"
 	L["DeathKnightBarTextVariable_coagulatingBloodStacksMax"] = "凝血最大层数。"
 	
 	-- Audio Cues tab (generic cue table, detail editor, and add/delete flow)
@@ -4454,7 +4452,6 @@ if locale == "zhCN" then
 	L["CustomBarsCdmSectionAbilities"] = "技能"
 	L["CustomBarsCdmSectionAbilitiesNotDisplayed"] = "技能（未显示）"
 	L["CustomBarsCdmSectionAbilitiesNotLearned"] = "技能（未学习）"
-	L["CustomBarsCdmUnknownValue"] = "??"
 	L["CustomBarsCdmNotTracked"] = "未监控"
 	L["CustomBarsSourceNoteFormat"] = "%s - %s"
 	L["CustomBarsCdmNotDisplayedNote"] = "该增益不在冷却管理器内显示，这条无法读取它的持续时间文本，但填充进度仍然跟随增益状态。可以把条设置为始终显示，或将该增益添加到【已监控条】。"

@@ -8,6 +8,14 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.5.15-release (2026-11-18)
+## General
+### Custom Bars
+
+- Fix the bar text of a custom bar on a Cooldown Manager buff ignoring the 'Cooldown Manager value when unavailable' option.
+
+---
+
 # 12.1.5.14-release (2026-11-17)
 ## General
 ### Custom Bars

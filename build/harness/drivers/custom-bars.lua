@@ -1539,8 +1539,19 @@ function hooks.afterEvents(ctx)
 			check("an aura in Tracked Buffs is filled by the aura engine from its spell, and shows while it is up", attached[iconNode] == 990071
 				and Shows(EntryFor(barGroups[iconTimeKey])))
 			check("a harmful spell's aura is looked for on the target, as the player's own debuff", attachedTo[iconNode] == "target:HARMFUL|PLAYER")
-			check("an entry no viewer shows is never active, has no spell for the engine, and reads as unknown", not Shows(EntryFor(barGroups[trinketKey]))
-				and attached[barGroups[trinketKey].nodes[1]] == nil and lookup["$" .. trinketKey .. "Time"] == TRB.Localization["CustomBarsCdmUnknownValue"])
+			-- Unknown text follows Global Options' Cooldown Manager value when unavailable.
+			local core = TRB.Data.settings.core
+			local savedUnknownDisplay = core.cdmUnknownDisplay
+			local unknownTexts = {}
+			for _, display in ipairs({ "nothing", "questionMarks", "zero" }) do
+				core.cdmUnknownDisplay = display
+				CustomBars:WriteLookup(lookup)
+				unknownTexts[display] = lookup["$" .. trinketKey .. "Time"]
+			end
+			core.cdmUnknownDisplay = savedUnknownDisplay
+			check("an entry no viewer shows is never active, has no spell for the engine, and reads as each unknown choice", not Shows(EntryFor(barGroups[trinketKey]))
+				and attached[barGroups[trinketKey].nodes[1]] == nil and unknownTexts.nothing == "" and unknownTexts.questionMarks == "??"
+				and unknownTexts.zero == TRB.Functions.BarText:ZeroTimerText() and unknownTexts.zero ~= "")
 			local barNote, barOptionsNote = CustomBars:GetSourceNotes(classId, specId, spec.customBars.bars[barTimeGuid].source)
 			local _, iconOptionsNote = CustomBars:GetSourceNotes(classId, specId, spec.customBars.bars[iconTimeGuid].source)
 			local trinketNote, trinketOptionsNote = CustomBars:GetSourceNotes(classId, specId, spec.customBars.bars[trinketGuid].source)

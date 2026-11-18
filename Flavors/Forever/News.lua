@@ -10,6 +10,10 @@ TRB.Flavor.newsContent = [====[
 
 # 1.60.1.21-release (2026-11-18)
 ## General
+### Custom Bars
+
+- Fix the bar text of a custom bar on a Cooldown Manager buff ignoring the 'Cooldown Manager value when unavailable' option.
+
 ### Totems
 
 - Add a 'Use for every element' option to the Totems bar color, off by default, which fills every element's node with that color instead of its own.
