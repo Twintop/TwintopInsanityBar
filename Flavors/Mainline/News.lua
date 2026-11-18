@@ -12,11 +12,11 @@ TRB.Flavor.newsContent = [====[
 ## General
 ### Custom Bars
 
-- Fix the bar text of a custom bar on a Cooldown Manager buff ignoring the Cooldown Manager value when unavailable option.
+- [#1008](#1008) Fix the bar text of a custom bar on a Cooldown Manager buff ignoring the Cooldown Manager value when unavailable option.
 
 ### Totems
 
-- Fix the Use Global checkbox tooltips in Totems Position and Size and Totems Colors showing a placeholder.
+- [#1008](#1008) Fix the Use Global checkbox tooltips in Totems Position and Size and Totems Colors showing a placeholder.
 
 ---
 

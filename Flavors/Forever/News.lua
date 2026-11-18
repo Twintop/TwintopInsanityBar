@@ -12,15 +12,15 @@ TRB.Flavor.newsContent = [====[
 ## General
 ### Custom Bars
 
-- Fix the bar text of a custom bar on a Cooldown Manager buff ignoring the Cooldown Manager value when unavailable option.
+- [#1008](#1008) Fix the bar text of a custom bar on a Cooldown Manager buff ignoring the Cooldown Manager value when unavailable option.
 
 ### Timer Bars
 
-- Fix the Use Global checkbox tooltip in the Position and Size section of Main Hand Swing, Off Hand Swing, Ranged Swing, and Five Second Rule showing a placeholder.
+- [#1008](#1008) Fix the Use Global checkbox tooltip in the Position and Size section of Main Hand Swing, Off Hand Swing, Ranged Swing, and Five Second Rule showing a placeholder.
 
 ### Totems
 
-- Remove the Totems bar color, which each element's own color always replaced.
+- [#1008](#1008) Remove the Totems bar color, which each element's own color always replaced.
 
 ---
 

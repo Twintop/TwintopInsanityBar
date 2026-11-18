@@ -7,12 +7,12 @@ TRB.Details.coreNewsContent = [====[
 # Live 12.1.5.15-release / Forever 1.60.1.21-release / Classic 1.15.9.6-release / TBC 2.5.6.4-release (2026-11-18)
 ## Custom Bars
 
-- Fix a custom bar's Visibility row and Show dropdown leaving out its resource or health threshold.
+- [#1008](#1008) Fix a custom bar's Visibility row and Show dropdown leaving out its resource or health threshold.
 
 ## Totems
 
-- Fix the Totems bar ignoring its gradient colors.
-- The Totems bar's Ending color can now start up to 120 seconds or 40 GCDs before a totem ends.
+- [#1008](#1008) Fix the Totems bar ignoring its gradient colors.
+- [#1008](#1008) The Totems bar's Ending color can now start up to 120 seconds or 40 GCDs before a totem ends.
 
 ---
 
