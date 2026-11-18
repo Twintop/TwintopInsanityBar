@@ -16,6 +16,10 @@ TRB.Flavor.newsContent = [====[
 - [#1011](#1011) Steady Flight now matches on a flying mount wherever you can fly, on the ground or in the air.
 - [#1011](#1011) Existing Steady Flight selections, including those in profiles and imports, become Skyriding (Flying Only) and Steady Flight (Flying Only), keeping every bar's behavior unchanged.
 
+### Color Indicators
+
+- [#1018](#1018) Gradient Colors (Secrets) rows can now turn on Border Glows, shown while your resource is at or above the row's threshold.
+
 ### Custom Bars
 
 - [#1008](#1008) Fix the bar text of a custom bar on a Cooldown Manager buff ignoring the Cooldown Manager value when unavailable option.

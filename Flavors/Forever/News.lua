@@ -10,6 +10,10 @@ TRB.Flavor.newsContent = [====[
 
 # 1.60.1.21-release (2026-11-18)
 ## General
+### Color Indicators
+
+- [#1018](#1018) Gradient Colors (Secrets) rows can now turn on Border Glows, shown while your resource is at or above the row's threshold.
+
 ### Custom Bars
 
 - [#1008](#1008) Fix the bar text of a custom bar on a Cooldown Manager buff ignoring the Cooldown Manager value when unavailable option.
