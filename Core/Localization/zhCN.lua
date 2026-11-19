@@ -4517,4 +4517,8 @@ if locale == "zhCN" then
 	L["ForeverShamanElementalShieldCheckboxUseHighestForAllTooltip"] = "勾选后，所有护盾宝珠统一使用最高层数宝珠的颜色。例如：护盾上限为 %d，当前剩余 %d 个宝珠，则全部宝珠都会使用倒数第二个宝珠颜色，而不只是倒数第二个。"
 	L["TimerShowMinutes"] = "时长≥1分钟时显示为 m:ss"
 	L["TimerShowMinutesTooltip"] = "资源条文本中超过1分钟的时间将以分:秒格式展示，例如 4:54。秒数保留【计时精度】设置的小数位数。"
+	L["BarTextVariablesColumnCdmTooltip"] = "需要冷却管理器：该数值取自暴雪冷却管理器。在其监控的技能添加至监控视图前，将使用全局选项中「冷却管理器数值不可用时」设定的兜底值。"
+	L["DeathKnightBarTextVariable_coagulatingBloodStacks"] = "当前凝血层数，每层对应1%。取自暴雪冷却管理器；在凝血添加至监控视图前，将使用全局选项中「冷却管理器数值不可用时」设定的兜底值。"
+	L["CheckboxUseGlobalTooltip_TotemsDimensions"] = "勾选后，此条的位置与尺寸将沿用全局图腾面板设置，而非当前专精独立配置。"
+	L["CheckboxUseGlobalTooltip_TotemsColors"] = "勾选后，此条的颜色将沿用全局图腾面板设置，而非当前专精独立配置。"
 end
