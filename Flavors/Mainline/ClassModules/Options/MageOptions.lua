@@ -1833,6 +1833,7 @@ local function FrostConstructShatterBarPanel(parent)
 				function() return shatterSettings.chargeView end,
 				function(checked)
 					shatterSettings.chargeView = checked
+					TRB.Functions.OptionsUi.Layout:RefreshCustomBarSizeTitles(controls, shatterBarDef, shatterSettings)
 					-- The node count changes, so this rebuilds like a custom bar's node change.
 					if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(8, 3) and TRB.Frames.barGroups ~= nil then
 						local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings

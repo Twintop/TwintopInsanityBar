@@ -345,6 +345,15 @@ function hooks.afterEvents(ctx)
 		end
 		return buildGradient(self, parent, description, colorTable, textWidth, frameSize, x, y, ...)
 	end
+	local createFrame = desktop.CreateFrame
+	local growthMenu = nil
+	desktop.CreateFrame = function(frameType, name, ...)
+		local frame = createFrame(frameType, name, ...)
+		if type(name) == "string" and name:find("_shatter_GrowthDirection$") then
+			rawset(frame, "SetupMenu", function(_, generator) growthMenu = generator end)
+		end
+		return frame
+	end
 	local built = 0
 	for _, parent in ipairs(drv.groups) do
 		if parent.tabConstructors ~= nil and parent.tabConstructors.shatterBar ~= nil then
@@ -353,21 +362,53 @@ function hooks.afterEvents(ctx)
 		end
 	end
 	Primitives.BuildCheckboxRow, ColorPickers.BuildGradientColorPicker = buildCheckboxRow, buildGradient
+	desktop.CreateFrame = createFrame
+	local L = TRB.Localization
 	local controls = TRB.Frames.interfaceSettingsFrameContainer.controls.mage_frost
 	local checkbox = controls ~= nil and controls.checkBoxes ~= nil and controls.checkBoxes.shatterChargeView or nil
 	check("the Shatter tab has the Show Ice Lance charges checkbox", built > 0 and checkbox ~= nil
-		and checkbox.tooltip == TRB.Localization["MageFrostCheckboxShatterChargeViewTooltip"])
+		and checkbox.tooltip == L["MageFrostCheckboxShatterChargeViewTooltip"])
 	check("it shares the Shatter bar color's row", checkboxY ~= nil and checkboxY == barColorY)
+	local shatterDef = TRB.Classes.BarTypeRegistry:GetInstance():Get("shatter")
+	local stackWidth = string.format(L["SecondaryWidth"], shatterDef.displayName)
+	local stackHeight = string.format(L["SecondaryHeight"], shatterDef.displayName)
+	local function Titles(width, height)
+		local widthSlider, heightSlider = controls and controls.shatterWidth, controls and controls.shatterHeight
+		return widthSlider ~= nil and heightSlider ~= nil
+			and widthSlider.Title:GetText() == width and heightSlider.Title:GetText() == height
+	end
+	-- Picks a growth direction from the tab's dropdown, which applies it a frame later.
+	local function Grow(value)
+		local generator = growthMenu
+		if generator == nil then
+			return
+		end
+		local menu = { picks = {} }
+		function menu:CreateRadio(_, _, setSelected, data) self.picks[data] = setSelected end
+		generator(nil, menu)
+		menu.picks[value](value)
+		stubs.fireEvents("TRB_DRAIN_GROWTH", ctx.addonName)
+	end
+	check("the stack view keeps the Shatter size slider titles", Titles(stackWidth, stackHeight))
 	if checkbox ~= nil then
 		local checked = true
 		checkbox.GetChecked = function() return checked end
 		try("checking it", function() checkbox.__scripts.OnClick(checkbox) end)
 		check("checking it turns on Ice Lance charges on the live bar", TRB.Data.settings.mage.frost.bars.shatter.chargeView == true
 			and group.nodeCount == 4 and Bounds(0, 6, 12, 18, 20))
+		check("and retitles the width slider, which sizes one charge", Titles(L["MageFrostShatterChargeWidth"], stackHeight))
+		check("the Shatter tab has a growth direction dropdown", growthMenu ~= nil)
+		if growthMenu ~= nil then
+			try("growing bottom to top", function() Grow("bottomTop") end)
+			check("growing vertically moves that title to the height slider", Titles(stackWidth, L["MageFrostShatterChargeHeight"]))
+			try("growing left to right", function() Grow("leftRight") end)
+			check("growing left to right gives it back to the width slider", Titles(L["MageFrostShatterChargeWidth"], stackHeight))
+		end
 		checked = false
 		try("unchecking it", function() checkbox.__scripts.OnClick(checkbox) end)
 		check("unchecking it brings the stacks back", TRB.Data.settings.mage.frost.bars.shatter.chargeView == false
 			and group.nodeCount == 20)
+		check("and the Shatter size slider titles", Titles(stackWidth, stackHeight))
 	end
 
 	return errors

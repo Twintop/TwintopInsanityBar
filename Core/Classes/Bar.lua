@@ -2395,6 +2395,7 @@ end
 ---@field public liveNodeCountFunc (fun(): integer?)? # Self-driven multi-node bar whose node count follows live game data; nil from it keeps maxNodes
 ---@field public onLayout (fun(group: TRB.Classes.BarGroup, groupSettings: table, colors: table?))? # Runs after each layout pass of the bar, for a bar that positions its own nodes
 ---@field public nodeBoundsFunc (fun(groupSettings: table): number[]?)? # A "stepped" bar whose nodes can span uneven ranges: the value at each node edge, so it sets the node count, ranges, and sizes. nil from it keeps one step per node
+---@field public sizeTitlesFunc (fun(barSettings: table): string?, string?)? # Width and height slider titles for the bar's current settings, when a setting changes what they size; nil keeps the default title
 ---@field public isUserBar boolean # A bar the user added on a specialization's Custom Bars tab
 ---@field public ownerClassId integer? # The class of the specialization a custom bar belongs to
 ---@field public ownerSpecId integer? # The specialization a custom bar belongs to
@@ -2477,6 +2478,7 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.liveNodeCountFunc = config.liveNodeCountFunc
 	self.onLayout = config.onLayout
 	self.nodeBoundsFunc = config.nodeBoundsFunc
+	self.sizeTitlesFunc = config.sizeTitlesFunc
 	self.isUserBar = config.isUserBar or false
 	self.ownerClassId = config.ownerClassId
 	self.ownerSpecId = config.ownerSpecId

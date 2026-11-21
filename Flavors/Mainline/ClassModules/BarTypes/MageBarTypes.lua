@@ -224,6 +224,16 @@ do
 			end
 			return bounds
 		end,
+		-- The slider along the growth axis sizes one full charge while charges are shown.
+		sizeTitlesFunc = function(barSettings)
+			if not barSettings.chargeView then
+				return nil, nil
+			end
+			if barSettings.growthDirection == "topBottom" or barSettings.growthDirection == "bottomTop" then
+				return nil, L["MageFrostShatterChargeHeight"]
+			end
+			return L["MageFrostShatterChargeWidth"], nil
+		end,
 		defaultDimensionsFunc = function(classic)
 			return TRB.Functions.Settings:DefaultShatterBarDimensions(classic)
 		end,
