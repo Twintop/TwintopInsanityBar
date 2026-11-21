@@ -1319,6 +1319,7 @@ end
 ---@field public endCapMode string? # Multi-node end cap policy: "highest" (default; only the highest progressed node), "segments" (the highest per run of endCapSegmentEnds), or "all" (independent nodes, e.g. DK runes)
 ---@field public endCapSegmentEnds integer[]? # "segments" mode: the last node index of each run, in order
 ---@field public iconReserved boolean? # Whether a side ability icon currently reserves space, so GetAnchorFrame returns the container
+---@field public nodeBounds number[]? # Uneven node ranges: node i spans nodeBounds[i] to nodeBounds[i + 1] and is sized by that span. nil for one step per node
 TRB.Classes.BarGroup = {}
 TRB.Classes.BarGroup.__index = TRB.Classes.BarGroup
 
@@ -1380,6 +1381,37 @@ end
 ---@param count integer
 function TRB.Classes.BarGroup:SetNodeCount(count)
 	self.nodeCount = math.min(count, self.maxNodes)
+end
+
+---The value range a "stepped" node spans: its nodeBounds edges, or one step per node without them.
+---@param index integer
+---@return number min
+---@return number max
+function TRB.Classes.BarGroup:GetSteppedNodeRange(index)
+	local bounds = self.nodeBounds
+	if bounds ~= nil and bounds[index + 1] ~= nil then
+		return bounds[index], bounds[index + 1]
+	end
+	return index - 1, index
+end
+
+---How many widest-node lengths the shown nodes span: the node count, or less when nodeBounds narrows some.
+---@return number units
+---@return number? maxSpan # The widest node's span, set only when nodeBounds sizes the nodes
+function TRB.Classes.BarGroup:GetExtentUnits()
+	local bounds = self.nodeBounds
+	local count = self.nodeCount
+	if bounds == nil or bounds[count + 1] == nil then
+		return count, nil
+	end
+	local maxSpan = 0
+	for i = 1, count do
+		maxSpan = math.max(maxSpan, bounds[i + 1] - bounds[i])
+	end
+	if maxSpan <= 0 then
+		return count, nil
+	end
+	return (bounds[count + 1] - bounds[1]) / maxSpan, maxSpan
 end
 
 ---Dynamically adjusts the maximum number of nodes in the group.
@@ -1781,12 +1813,16 @@ function TRB.Classes.BarGroup:ApplyLayout(totalWidth, nodeWidth, nodeHeight, bor
 	local actualNodeExtent = nodeExtent
 	local nodeSpacing = self.spacing
 
+	-- Uneven ranges size each node by its span, so the widest node gets the full per-node extent.
+	local extentUnits, maxSpan = self:GetExtentUnits()
+	local bounds = self.nodeBounds
+
 	if self.fullWidth then
-		actualNodeExtent = (totalExtent - ((self.nodeCount - 1) * nodeSpacing)) / self.nodeCount
+		actualNodeExtent = (totalExtent - ((self.nodeCount - 1) * nodeSpacing)) / extentUnits
 	end
 
 	-- Set container dimensions
-	local groupExtent = self.fullWidth and totalExtent or (self.nodeCount * actualNodeExtent + (self.nodeCount - 1) * nodeSpacing)
+	local groupExtent = self.fullWidth and totalExtent or (extentUnits * actualNodeExtent + (self.nodeCount - 1) * nodeSpacing)
 
 	if isVerticalGrowth then
 		self.containerFrame:SetWidth(nodeCross)
@@ -1830,10 +1866,14 @@ function TRB.Classes.BarGroup:ApplyLayout(totalWidth, nodeWidth, nodeHeight, bor
 		local node = self.nodes[i]
 		if node then
 			if i <= self.nodeCount then
+				local extent = actualNodeExtent
+				if maxSpan ~= nil and bounds ~= nil then
+					extent = actualNodeExtent * (bounds[i + 1] - bounds[i]) / maxSpan
+				end
 				if isVerticalGrowth then
-					node:SetDimensions(nodeCross, actualNodeExtent, border)
+					node:SetDimensions(nodeCross, extent, border)
 				else
-					node:SetDimensions(actualNodeExtent, nodeCross, border)
+					node:SetDimensions(extent, nodeCross, border)
 				end
 
 				node.frame:ClearAllPoints()
@@ -2354,6 +2394,8 @@ end
 ---@field public globalScope boolean # A class-scoped Other Bar that still has Global Options for its specs to follow
 ---@field public liveNodeCountFunc (fun(): integer?)? # Self-driven multi-node bar whose node count follows live game data; nil from it keeps maxNodes
 ---@field public onLayout (fun(group: TRB.Classes.BarGroup, groupSettings: table, colors: table?))? # Runs after each layout pass of the bar, for a bar that positions its own nodes
+---@field public nodeBoundsFunc (fun(groupSettings: table): number[]?)? # A "stepped" bar whose nodes can span uneven ranges: the value at each node edge, so it sets the node count, ranges, and sizes. nil from it keeps one step per node
+---@field public sizeTitlesFunc (fun(barSettings: table): string?, string?)? # Width and height slider titles for the bar's current settings, when a setting changes what they size; nil keeps the default title
 ---@field public isUserBar boolean # A bar the user added on a specialization's Custom Bars tab
 ---@field public ownerClassId integer? # The class of the specialization a custom bar belongs to
 ---@field public ownerSpecId integer? # The specialization a custom bar belongs to
@@ -2435,6 +2477,8 @@ function TRB.Classes.BarTypeDefinition:New(config)
 	self.environmentShowConditions = config.environmentShowConditions or false
 	self.liveNodeCountFunc = config.liveNodeCountFunc
 	self.onLayout = config.onLayout
+	self.nodeBoundsFunc = config.nodeBoundsFunc
+	self.sizeTitlesFunc = config.sizeTitlesFunc
 	self.isUserBar = config.isUserBar or false
 	self.ownerClassId = config.ownerClassId
 	self.ownerSpecId = config.ownerSpecId

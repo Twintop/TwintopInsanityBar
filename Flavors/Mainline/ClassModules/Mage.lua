@@ -481,7 +481,6 @@ local function ConstructResourceBar(settings)
 				)
 			end
 		elseif TRB.Data.character.specId == 3 then
-			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FrostSpells]]
 			local maxIcicles = TRB.Data.character.maxResource2 or 0
 
 			if maxIcicles == 0 then
@@ -495,10 +494,6 @@ local function ConstructResourceBar(settings)
 					Bar:ApplySecondaryBarGroupLayout(settings, barGroups, maxIcicles)
 					barGroups.secondary:Show()
 				end
-			end
-
-			if barGroups.shatter then
-				barGroups.shatter:SetNodeCount(spells.shatter.maxStacks)
 			end
 		end
 	end
@@ -1269,6 +1264,94 @@ end
 -- Wiped and refilled every pass: stack index -> the custom indicator color that owns that node.
 local shatterCustomIndicatorByStack = {}
 
+local SHATTER_CHARGE_SLOT = "shatterCharge"
+-- Set while Ice Lance charges may have gated colors up, so the stack view knows to take them down.
+local shatterChargeOverlaysShown = false
+-- Per-charge scratch: the stack each gated color starts at, and its color, in ascending stack order.
+local shatterChargeRangeValues = {}
+local shatterChargeRangeColors = {}
+
+---Takes down the Ice Lance charge colors, giving each node its own fill back.
+---@param group TRB.Classes.BarGroup
+local function HideShatterChargeOverlays(group)
+	if not shatterChargeOverlaysShown then
+		return
+	end
+	shatterChargeOverlaysShown = false
+	for x = 1, group.maxNodes do
+		local node = group:GetNode(x)
+		local slot = node and node:GetOverlaySlot(SHATTER_CHARGE_SLOT)
+		if slot ~= nil then
+			slot:HideRangeOverlays()
+			slot:SetParentFillHidden(false)
+		end
+	end
+end
+
+---Paints one Ice Lance charge. Gates recolor its fill once the count reaches a custom indicator's
+---stack inside it or, without one, a full Ice Lance's worth.
+---@param node TRB.Classes.BarNode
+---@param chargeMin number # The stack count where this charge starts
+---@param chargeMax number # The stack count that fills it
+---@param shatterStacks number # Possibly secret
+---@param barColors table
+---@param shatterColors table
+---@param stackThreshold number
+---@param thresholdEnabled boolean
+---@param fillIndicated boolean?
+---@param rangeTexture string?
+local function UpdateShatterChargeColors(node, chargeMin, chargeMax, shatterStacks, barColors, shatterColors, stackThreshold, thresholdEnabled, fillIndicated, rangeTexture)
+	local values = shatterChargeRangeValues
+	local colors = shatterChargeRangeColors
+	wipe(values)
+	wipe(colors)
+	if not fillIndicated then
+		for stack = chargeMin + 1, chargeMax do
+			local indicator = shatterCustomIndicatorByStack[stack]
+			if indicator ~= nil then
+				table.insert(values, stack)
+				table.insert(colors, indicator)
+			end
+		end
+		-- Only charges ending on a multiple are a full Ice Lance; 18-20 with Polished Focus is not.
+		if #values == 0 and thresholdEnabled and stackThreshold > 0 and chargeMax % stackThreshold == 0 then
+			table.insert(values, chargeMax)
+			table.insert(colors, shatterColors.threshold)
+		end
+	end
+
+	local slot = node:GetOverlaySlot(SHATTER_CHARGE_SLOT)
+	if #values == 0 then
+		if slot ~= nil then
+			slot:HideRangeOverlays()
+			slot:SetParentFillHidden(false)
+		end
+		return
+	end
+
+	shatterChargeOverlaysShown = true
+	slot = node:GetOrCreateOverlaySlot(SHATTER_CHARGE_SLOT)
+	slot:CreateRangeOverlays(#values)
+
+	-- The baseline gate takes over painting the bar color so the node's own fill can go transparent.
+	local baseline = slot:GetRangeBaselineIndex()
+	slot:SetParentFillHidden(true)
+	slot:SetRangeOverlayTexture(baseline, rangeTexture)
+	Color:ApplyRangeOverlayFillColor(slot, baseline, barColors.bar)
+	slot:ShowRangeOverlay(baseline)
+
+	for index = 1, #values do
+		slot:SetRangeOverlayThreshold(index, values[index])
+		slot:SetRangeOverlayTexture(index, rangeTexture)
+		Color:ApplyRangeOverlayFillColor(slot, index, colors[index])
+		slot:SetRangeOverlayValue(index, shatterStacks)
+		slot:ShowRangeOverlay(index)
+	end
+	for index = #values + 1, #slot.rangeOverlayFrames do
+		slot:HideRangeOverlay(index)
+	end
+end
+
 ---Updates the Shatter bar nodes (Frost only).
 ---The count is secret, so every node takes the raw value and stepped min/max does the filling.
 ---@param specSettings table
@@ -1308,8 +1391,31 @@ local function UpdateShatter(specSettings, specCacheSettings, barColors, fillInd
 		end
 	end
 
+	local group = barGroups.shatter
+	local bounds = group.nodeBounds
+	if bounds ~= nil then
+		-- The charge colors replace the bar's fill, so they take its texture, which Lock Bar swaps for the main bar's.
+		local textures = specCacheSettings.textures
+		local rangeTexture = textures and ((not textures.lockBar and textures.shatterBar) or textures.resourceBar)
+		for x = 1, group.nodeCount do
+			local shatterNode = group:GetNode(x)
+			local chargeMin, chargeMax = bounds[x], bounds[x + 1]
+			if shatterNode and chargeMax ~= nil then
+				-- At the node's own scale, a plain count fills the same way a secret one does.
+				Bar:SetBarNodeValue(specCacheSettings, nodeKeys.shatter[x], shatterNode, shatterStacks, chargeMax)
+				Color:ApplyFillColor(shatterNode, barColors.bar)
+				Bar:ApplyNodeIndicators(shatterNode, "shatterBar")
+				shatterNode:SetBorderColor(barColors.border)
+				shatterNode:SetBackgroundColor(backgroundRed, backgroundGreen, backgroundBlue, backgroundAlpha)
+				UpdateShatterChargeColors(shatterNode, chargeMin, chargeMax, shatterStacks, barColors, shatterColors, stackThreshold or 0, thresholdEnabled, fillIndicated, rangeTexture)
+			end
+		end
+		return
+	end
+	HideShatterChargeOverlays(group)
+
 	for x = 1, maxShatter do
-		local shatterNode = barGroups.shatter:GetNode(x)
+		local shatterNode = group:GetNode(x)
 		if shatterNode then
 			Bar:SetBarNodeValue(specCacheSettings, nodeKeys.shatter[x], shatterNode, shatterStacks)
 
@@ -2471,6 +2577,7 @@ function TRB.Functions.Class:CheckCharacter()
 		if frostTalents and frostTalents:IsTalentActive(spells.polishedFocus) then
 			shatterStackThreshold = shatterStackThreshold + spells.polishedFocus.attributes.stackThresholdMod
 		end
+		local shatterStackThresholdChanged = shatterStackThreshold ~= TRB.Data.character.shatterStackThreshold
 		TRB.Data.character.shatterStackThreshold = shatterStackThreshold
 
 		TRB.Data.character.spellslingerTalented = frostTalents ~= nil and frostTalents:IsTalentActive(spells.splinteringSorcery) == true
@@ -2482,6 +2589,14 @@ function TRB.Functions.Class:CheckCharacter()
 				if TRB.Frames.barGroups and TRB.Frames.barGroups.primary then
 					Bar:SetPosition(sharedSettings, TRB.Frames.barGroups.primary:GetContainerFrame())
 				end
+			end
+
+			-- Ice Lance charges are sized and ranged by the stacks each one takes.
+			local barGroups = TRB.Frames.barGroups --[[@as { [string]: TRB.Classes.BarGroup }]]
+			if shatterStackThresholdChanged and barGroups and barGroups.shatter
+				and sharedSettings.bars.shatter ~= nil and sharedSettings.bars.shatter.chargeView then
+				Bar:ApplyBarGroupsLayout(sharedSettings, barGroups)
+				Bar:ApplyBarGroupsAppearance(sharedSettings, barGroups)
 			end
 		end
 	end

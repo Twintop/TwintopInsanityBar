@@ -2153,6 +2153,23 @@ local function FillNodeList(barTarget, group, fromIndex, count)
 	return nodes
 end
 
+---Converts a value to node-run units (0 to count) across nodes spanning uneven ranges.
+---@param bounds number[] # The value at each node edge (BarGroup.nodeBounds)
+---@param count integer
+---@param value number
+---@return number
+local function MapValueToNodeBounds(bounds, count, value)
+	if value <= bounds[1] then
+		return 0
+	end
+	for i = 1, count do
+		if value <= bounds[i + 1] then
+			return (i - 1) + (value - bounds[i]) / (bounds[i + 1] - bounds[i])
+		end
+	end
+	return count
+end
+
 ---@param group TRB.Classes.BarGroup?
 ---@return Frame?
 local function GetGroupContainer(group)
@@ -2221,6 +2238,8 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 	local nodes = nil
 	local nodeCount = 0
 	local nodeStartIndex = 1
+	-- The group's node edges, when its nodes span uneven ranges.
+	local nodeBounds = nil
 	-- The live maximum, which a max override can put above maxValue: offsets resolve from it and the curve measures against it.
 	local resourceMaxValue = nil
 	-- True only for bars whose live value is a non-secret Lua number summed from node fills
@@ -2483,10 +2502,19 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 			elseif barTypeDef.isMultiNode then
 				nodeCount = GetGroupNodeCount(group)
 				maxValue = GetPositivePlainNumber(nodeCount, GetPositivePlainNumber(barTypeDef.maxNodes, maxValue))
+				-- Uneven nodes all hold the same raw value, so lines use its units and no node sum counts it.
+				local bounds = group.nodeBounds
+				if bounds ~= nil and bounds[nodeCount + 1] ~= nil then
+					maxValue = bounds[nodeCount + 1]
+					nodeBounds = bounds
+				end
 				-- These bars track charge/stack counts as non-secret node fill values (e.g.
 				-- Angelic Feather charges). Sum them so the over/under comparison has the live
 				-- count in node-count units. (Power-type bars never reach here.)
-				local nodeSum, sawSecret, sawPlain = SumNodeValues(group, 1, nodeCount)
+				local nodeSum, sawSecret, sawPlain = 0, true, false
+				if nodeBounds == nil then
+					nodeSum, sawSecret, sawPlain = SumNodeValues(group, 1, nodeCount)
+				end
 				-- No power-type curve here, so a timer-driven (secret) recharging node must not disable
 				-- the comparison: it is always < 1, so the plain completed count decides over/under.
 				if not sawSecret or sawPlain then
@@ -2607,6 +2635,7 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 	info.nodes = nodes
 	info.nodeCount = nodeCount
 	info.nodeStartIndex = nodeStartIndex
+	info.nodeBounds = nodeBounds
 	info.supportsValueComparison = supportsValueComparison
 	info.usesSecretValue = TRB.Functions.Threshold:BarTargetUsesSecretValue(barTarget, classId, specId)
 	info.contextActive = contextActive
@@ -3052,6 +3081,8 @@ function TRB.Functions.Threshold:UpdateCustomThresholdLines(settings, barGroups)
 						-- strip (split == n nodes), so value 6 -> node 1 ... value 10 -> node 5.
 						mappedValue = thresholdValue > targetInfo.compressedSplit
 							and (thresholdValue - targetInfo.compressedSplit) or thresholdValue
+					elseif targetInfo.nodeBounds ~= nil then
+						mappedValue = MapValueToNodeBounds(targetInfo.nodeBounds, n, thresholdValue)
 					elseif maxValue > 0 then
 						mappedValue = (thresholdValue / maxValue) * n
 					end

@@ -453,7 +453,6 @@ if locale == "enGB" then
 	-- Frost Mage Shatter custom indicators
 	L["MageFrostCheckboxShatterThresholdMultiplesTooltip"] = "Changes the Shatter fill colour at every multiple of the stacks Ice Lance consumes: 5, 10, 15, and 20; or 6, 12, and 18 with Polished Focus."
 	L["MageFrostShatterCustomIndicatorColor"] = "Custom Indicator %d Colour"
-	L["MageFrostShatterCustomIndicatorNote"] = "Each custom indicator recolours the single Shatter stack set below, overriding the Ice Lance stack colour on it. Spellslinger Only and Frostfire Only apply only while that hero talent tree is active."
 	L["BarTextVariableArmorPenetration"] = "Current Armour Penetration"
 	L["BarTextVariableDefense"] = "Current Defence skill"
 	L["BarTextVariableArmor"] = "Current Armour"
@@ -583,4 +582,5 @@ if locale == "enGB" then
 	L["ForeverShamanElementalShieldCheckboxUseHighestForAllTooltip"] = "When checked, the highest shield orb's colour will be used for all shield orbs. E.g., if you have maximum %d shield orbs and currently have %d, the Penultimate colour will be used for all shield orbs instead of just the second to last."
 	L["CheckboxUseGlobalTooltip_TotemsDimensions"] = "When checked, this bar's position and size come from the global Totems screen instead of this specialisation's own settings."
 	L["CheckboxUseGlobalTooltip_TotemsColors"] = "When checked, this bar's colours come from the global Totems screen instead of this specialisation's own settings."
+	L["MageFrostShatterCustomIndicatorNote"] = "Each custom indicator recolours the single Shatter stack set below, overriding the Ice Lance stack colour on it. With Ice Lance charges shown, it instead recolours the charge holding that stack once it is reached. Spellslinger Only and Frostfire Only apply only while that hero talent tree is active."
 end

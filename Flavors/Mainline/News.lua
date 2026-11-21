@@ -8,6 +8,15 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 12.1.5.16-release (2026-11-21)
+## Mage
+### Frost
+
+- [#1024](#1024) Add a Show Ice Lance charges option to the Shatter bar, showing one node per Ice Lance instead of one per stack: 5 stacks each, or 6 with Polished Focus.
+- [#1024](#1024) With Ice Lance charges shown, a full charge takes the Shatter thresholds color, and a Shatter custom indicator recolors the charge holding its stack once reached.
+
+---
+
 # 12.1.5.15-release (2026-11-19)
 ## General
 ### Bar Visibility

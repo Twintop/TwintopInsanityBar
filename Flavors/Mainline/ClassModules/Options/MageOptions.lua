@@ -1826,6 +1826,29 @@ local function FrostConstructShatterBarPanel(parent)
 		yCoord = TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(parent, controls, spec, 8, 3, yCoord, shatterBarDef, L["ResourceMana"])
 
 		yCoord = yCoord - 90
+		-- Beside the Shatter bar color, which the colors section puts one row under its header.
+		local shatterSettings = shatterBarDef:GetSettings(spec)
+		if shatterSettings ~= nil then
+			controls.checkBoxes.shatterChargeView = TRB.Functions.OptionsUi.Primitives:BuildCheckboxRow(parent, "TwintopResourceBar_Mage_Frost_shatterChargeView", L["MageFrostCheckboxShatterChargeView"], L["MageFrostCheckboxShatterChargeViewTooltip"], yCoord - 30,
+				function() return shatterSettings.chargeView end,
+				function(checked)
+					shatterSettings.chargeView = checked
+					TRB.Functions.OptionsUi.Layout:RefreshCustomBarSizeTitles(controls, shatterBarDef, shatterSettings)
+					-- The node count changes, so this rebuilds like a custom bar's node change.
+					if TRB.Functions.OptionsUi.GlobalSettings:IsEditingActiveSpec(8, 3) and TRB.Frames.barGroups ~= nil then
+						local settings = TRB.Data.specCache[TRB.Data.character.compositeKey].settings
+						TRB.Functions.Bar:ApplyBarGroupsLayout(settings, TRB.Frames.barGroups)
+						TRB.Functions.Bar:ApplyBarGroupsAppearance(settings, TRB.Frames.barGroups)
+						TRB.Functions.BarVisibility:MarkDirty()
+						TRB.Functions.Bar:HideResourceBar()
+						TRB.Functions.Class:TriggerResourceBarUpdates()
+						TRB.Functions.BarText:CreateBarTextFrames()
+						TRB.Data.lookupDirty = true
+						TRB.Functions.BarText:UpdateResourceBarText(settings, true)
+					end
+				end)
+		end
+
 		yCoord = TRB.Functions.OptionsUi.CustomBarColors:GenerateCustomBarColorOptions(parent, controls, spec, 8, 3, yCoord, shatterBarDef,
 			function(callbackParent, callbackYCoord)
 				local f = nil
@@ -1904,8 +1927,8 @@ local function FrostConstructShatterBarPanel(parent)
 			controls.shatterCustomIndicatorSection = TRB.Functions.OptionsUi.Primitives:BuildSectionHeader(parent, L["MageFrostHeaderShatterCustomIndicators"], oUi.xCoord, yCoord)
 			yCoord = yCoord - 30
 
-			controls.shatterCustomIndicatorNote = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["MageFrostShatterCustomIndicatorNote"], oUi.xCoord, yCoord, oUi.dropdownWidth * 2, 28)
-			yCoord = yCoord - 40
+			controls.shatterCustomIndicatorNote = TRB.Functions.OptionsUi.Primitives:BuildLabel(parent, L["MageFrostShatterCustomIndicatorNote"], oUi.xCoord, yCoord, oUi.dropdownWidth * 2, 42)
+			yCoord = yCoord - 50
 
 			-- Two per row, matching the Arcane Salvo range values.
 			local column = 0
