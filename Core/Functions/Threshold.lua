@@ -2511,10 +2511,13 @@ function TRB.Functions.Threshold:GetCustomThresholdTargetInfo(settings, barGroup
 				-- These bars track charge/stack counts as non-secret node fill values (e.g.
 				-- Angelic Feather charges). Sum them so the over/under comparison has the live
 				-- count in node-count units. (Power-type bars never reach here.)
-				local nodeSum, sawSecret, sawPlain = SumNodeValues(group, 1, nodeCount)
+				local nodeSum, sawSecret, sawPlain = 0, true, false
+				if nodeBounds == nil then
+					nodeSum, sawSecret, sawPlain = SumNodeValues(group, 1, nodeCount)
+				end
 				-- No power-type curve here, so a timer-driven (secret) recharging node must not disable
 				-- the comparison: it is always < 1, so the plain completed count decides over/under.
-				if nodeBounds == nil and (not sawSecret or sawPlain) then
+				if not sawSecret or sawPlain then
 					currentValue = nodeSum
 					supportsValueComparison = true
 				end

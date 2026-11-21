@@ -209,6 +209,19 @@ function hooks.afterEvents(ctx)
 		and group.nodeCount == 4 and Bounds(0, 6, 12, 18, 20) and Range(3, 12, 18) and Range(4, 18, 20))
 	check("the last charge is a third as wide", Near(Node(1).width, Node(3).width) and Near(Node(4).width * 3, Node(1).width))
 
+	-- With a fixed node width, the size the anchor tree and Edit Mode read is what the bar draws.
+	local savedMatchWidth = shatterSettings.anchor.matchWidth
+	shatterSettings.anchor.matchWidth = false
+	Layout()
+	local drawnWidth = Bar:GetEffectiveSpacing(shatterSettings) * (group.nodeCount - 1)
+	for i = 1, group.nodeCount do
+		drawnWidth = drawnWidth + Node(i).width
+	end
+	check("a fixed node width sizes a full charge, and the bar reports the width it draws", Near(Node(1).width, shatterSettings.width)
+		and Near(Bar:GetMultiNodeBarTotalWidth("shatter", shatterSettings, group), drawnWidth))
+	shatterSettings.anchor.matchWidth = savedMatchWidth
+	Layout()
+
 	drv.stacks = 15
 	Draw()
 	check("each charge takes the count at its own scale", values[Node(1)] == 15 and valueMaxes[Node(1)] == 6
@@ -219,6 +232,27 @@ function hooks.afterEvents(ctx)
 		and List(Gates(2)) == "12" and List(Gates(3)) == "18")
 	check("the 18-20 charge is no full Ice Lance, so it gets no full charge color", #gates4 == 0)
 	check("the gates read the count", slot1 ~= nil and gateValues[slot1] ~= nil and gateValues[slot1][1] == 15)
+
+	-- Nothing changed, so a second draw writes only the count to each gate.
+	local gateWrites = { range = 0, show = 0, value = 0 }
+	local wrappedGates = {}
+	for index = 1, 3 do
+		local slot = Node(index):GetOverlaySlot("shatterCharge")
+		for i = slot:GetRangeBaselineIndex(), #slot.rangeOverlayFrames do
+			local gate = slot.rangeOverlayFrames[i]
+			local setRange, show, setGateFill = gate.SetMinMaxValues, gate.Show, gate.SetValue
+			gate.SetMinMaxValues = function(self, ...) gateWrites.range = gateWrites.range + 1 return setRange(self, ...) end
+			gate.Show = function(self, ...) gateWrites.show = gateWrites.show + 1 return show(self, ...) end
+			gate.SetValue = function(self, ...) gateWrites.value = gateWrites.value + 1 return setGateFill(self, ...) end
+			wrappedGates[#wrappedGates + 1] = gate
+		end
+	end
+	Draw()
+	check("an unchanged draw skips the gates' ranges and shows, writing only the count", gateWrites.range == 0 and gateWrites.show == 0
+		and gateWrites.value == 3)
+	for _, gate in ipairs(wrappedGates) do
+		gate.SetMinMaxValues, gate.Show, gate.SetValue = nil, nil, nil
+	end
 
 	local indicator1, indicator2 = shatterColors.customIndicators[1], shatterColors.customIndicators[2]
 	local savedModes = { indicator1.mode, indicator2.mode, indicator1.value, indicator2.value }

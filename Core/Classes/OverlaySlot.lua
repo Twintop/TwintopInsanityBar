@@ -55,6 +55,10 @@ TRB.Classes = TRB.Classes or {}
 ---@field private _rangeTexturePaths table<integer, string> # Last texture per range gate
 ---@field private _rangeColorRecords table<integer, TRB.Classes.OverlaySlot.ColorRecord> # Last fill per range gate
 ---@field private _rangeGradientActive table<integer, boolean>
+---@field private _rangeThresholds table<integer, number> # Threshold last written per range gate
+---@field private _rangeShown table<integer, boolean> # Shown state last written per range gate
+---@field private _parentFillHidden boolean? # Parent fill state last written by SetParentFillHidden
+---@field private _parentFillVersion integer? # The parent's appearanceVersion at that write
 ---@field public endCapClipFrame Frame? # Clip container for the end cap band
 ---@field public endCapFrame TRB.Classes.OverlaySlot.EndCapBand? # Fixed-width band anchored to the fill's leading edge
 ---@field public endCapPinnedClipFrame Frame? # Clip ending where endCapFrame starts, inside endCapClipFrame
@@ -145,6 +149,8 @@ function TRB.Classes.OverlaySlot:New(parentNode, slotName)
 	self._rangeTexturePaths = {}
 	self._rangeColorRecords = {}
 	self._rangeGradientActive = {}
+	self._rangeThresholds = {}
+	self._rangeShown = {}
 	self.endCapClipFrame = nil
 	self.endCapFrame = nil
 	self.endCapPinnedClipFrame = nil
@@ -1147,6 +1153,8 @@ function TRB.Classes.OverlaySlot:_CreateRangeGate(index, fillDirection)
 	self._rangeTexturePaths[index] = nil
 	self:GetRangeColorRecord(index).set = false
 	self._rangeGradientActive[index] = false
+	self._rangeThresholds[index] = nil
+	self._rangeShown[index] = false
 end
 
 ---Creates the range overlay system: one clip container, the baseline gate, plus `count` gate
@@ -1218,7 +1226,8 @@ end
 ---@param threshold number # The plain range start value, on the parent bar's own scale. Assumed to be a whole step.
 function TRB.Classes.OverlaySlot:SetRangeOverlayThreshold(index, threshold)
 	local gate = self.rangeOverlayFrames and self.rangeOverlayFrames[index]
-	if not gate then return end
+	if not gate or self._rangeThresholds[index] == threshold then return end
+	self._rangeThresholds[index] = threshold
 	gate:SetMinMaxValues(threshold - RANGE_GATE_EPSILON, threshold)
 	local probe = self.rangeProbeFrames and self.rangeProbeFrames[index]
 	if probe then
@@ -1310,7 +1319,8 @@ end
 ---@param index integer
 function TRB.Classes.OverlaySlot:ShowRangeOverlay(index)
 	local gate = self.rangeOverlayFrames and self.rangeOverlayFrames[index]
-	if not gate then return end
+	if not gate or self._rangeShown[index] then return end
+	self._rangeShown[index] = true
 	gate:Show()
 end
 
@@ -1318,7 +1328,8 @@ end
 ---@param index integer
 function TRB.Classes.OverlaySlot:HideRangeOverlay(index)
 	local gate = self.rangeOverlayFrames and self.rangeOverlayFrames[index]
-	if not gate then return end
+	if not gate or not self._rangeShown[index] then return end
+	self._rangeShown[index] = false
 	gate:Hide()
 end
 
@@ -1326,7 +1337,7 @@ end
 function TRB.Classes.OverlaySlot:HideRangeOverlays()
 	if not self.rangeOverlayFrames then return end
 	for index = RANGE_BASELINE_INDEX, #self.rangeOverlayFrames do
-		self.rangeOverlayFrames[index]:Hide()
+		self:HideRangeOverlay(index)
 	end
 end
 
@@ -1347,10 +1358,15 @@ end
 ---visible would show it through any range color that has alpha.
 ---@param hidden boolean
 function TRB.Classes.OverlaySlot:SetParentFillHidden(hidden)
-	local frame = self.parentNode and self.parentNode.frame
+	local parent = self.parentNode
+	-- Written again after any fill change on the parent, since a texture swap could reset the alpha.
+	if parent == nil or (self._parentFillHidden == hidden and self._parentFillVersion == parent.appearanceVersion) then return end
+	local frame = parent.frame
 	local fillTexture = frame and frame.GetStatusBarTexture and frame:GetStatusBarTexture()
 	if fillTexture == nil then return end
 	fillTexture:SetAlpha(hidden and 0 or 1)
+	self._parentFillHidden = hidden
+	self._parentFillVersion = parent.appearanceVersion
 end
 
 -- ============================================================================

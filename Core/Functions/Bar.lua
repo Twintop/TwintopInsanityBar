@@ -280,7 +280,8 @@ function TRB.Functions.Bar:GetMultiNodeBarTotalWidth(barKey, barSettings, barGro
 	end
 	local nodeWidth = barSettings.width or 10
 	local nodeSpacing = self:GetEffectiveSpacing(barSettings)
-	return (nodeWidth * nodeCount) + (nodeSpacing * (nodeCount - 1))
+	local extentUnits = barGroup ~= nil and barGroup.nodeCount == nodeCount and barGroup:GetExtentUnits() or nodeCount
+	return (nodeWidth * extentUnits) + (nodeSpacing * (nodeCount - 1))
 end
 
 ---Calculates the total rendered height of a multi-node bar group.
@@ -331,7 +332,8 @@ function TRB.Functions.Bar:GetMultiNodeBarTotalHeight(barKey, barSettings, barGr
 	end
 	local nodeHeight = barSettings.height or 10
 	local nodeSpacing = self:GetEffectiveSpacing(barSettings)
-	return (nodeHeight * nodeCount) + (nodeSpacing * (nodeCount - 1))
+	local extentUnits = barGroup ~= nil and barGroup.nodeCount == nodeCount and barGroup:GetExtentUnits() or nodeCount
+	return (nodeHeight * extentUnits) + (nodeSpacing * (nodeCount - 1))
 end
 
 ---Computes the absolute min/max values for the bar

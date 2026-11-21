@@ -1395,6 +1395,25 @@ function TRB.Classes.BarGroup:GetSteppedNodeRange(index)
 	return index - 1, index
 end
 
+---How many widest-node lengths the shown nodes span: the node count, or less when nodeBounds narrows some.
+---@return number units
+---@return number? maxSpan # The widest node's span, set only when nodeBounds sizes the nodes
+function TRB.Classes.BarGroup:GetExtentUnits()
+	local bounds = self.nodeBounds
+	local count = self.nodeCount
+	if bounds == nil or bounds[count + 1] == nil then
+		return count, nil
+	end
+	local maxSpan = 0
+	for i = 1, count do
+		maxSpan = math.max(maxSpan, bounds[i + 1] - bounds[i])
+	end
+	if maxSpan <= 0 then
+		return count, nil
+	end
+	return (bounds[count + 1] - bounds[1]) / maxSpan, maxSpan
+end
+
 ---Dynamically adjusts the maximum number of nodes in the group.
 ---Creates new nodes if needed, hides extras if shrinking.
 ---@param newMaxNodes integer # The new maximum number of nodes
@@ -1795,22 +1814,8 @@ function TRB.Classes.BarGroup:ApplyLayout(totalWidth, nodeWidth, nodeHeight, bor
 	local nodeSpacing = self.spacing
 
 	-- Uneven ranges size each node by its span, so the widest node gets the full per-node extent.
+	local extentUnits, maxSpan = self:GetExtentUnits()
 	local bounds = self.nodeBounds
-	if bounds ~= nil and bounds[self.nodeCount + 1] == nil then
-		bounds = nil
-	end
-	local maxSpan = 0
-	local extentUnits = self.nodeCount
-	if bounds ~= nil then
-		for i = 1, self.nodeCount do
-			maxSpan = math.max(maxSpan, bounds[i + 1] - bounds[i])
-		end
-		if maxSpan > 0 then
-			extentUnits = (bounds[self.nodeCount + 1] - bounds[1]) / maxSpan
-		else
-			bounds = nil
-		end
-	end
 
 	if self.fullWidth then
 		actualNodeExtent = (totalExtent - ((self.nodeCount - 1) * nodeSpacing)) / extentUnits
@@ -1862,7 +1867,7 @@ function TRB.Classes.BarGroup:ApplyLayout(totalWidth, nodeWidth, nodeHeight, bor
 		if node then
 			if i <= self.nodeCount then
 				local extent = actualNodeExtent
-				if bounds ~= nil then
+				if maxSpan ~= nil and bounds ~= nil then
 					extent = actualNodeExtent * (bounds[i + 1] - bounds[i]) / maxSpan
 				end
 				if isVerticalGrowth then
