@@ -47,13 +47,15 @@
 	when a rule asks, and that neither loses the one-second floor or the bar text repaint; it runs once per flavor.
 	finisher-lines checks that a combo point finisher's threshold line is Under with combo points but too little power,
 	and Unusable only with none, on every specialization that has one; it runs once per class.
+	shatter-charges checks the Live Frost Mage Shatter bar's Ice Lance charges: nodes by Polished Focus, the full charge and
+	custom indicator colors, custom threshold lines, and the options checkbox; it runs once per class.
 	See build\harness\README.md.
 
 .PARAMETER Lua
 	Lua 5.1 interpreter to use. Defaults to "lua5.1" on the PATH.
 
 .PARAMETER Driver
-	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, five-second-rule, combat-conditions, classic-overcap, totems, preview-mode, indicator-copies, indicator-modifiers, bartext-conformance, inner-fire, slice-and-dice, brews, arcane-blast, spell-data, custom-bars, eclipse, elemental-shield, timer-precision, mounted-conditions, bartext-display-list, bartext-refresh, spell-usable, finisher-lines). Default: all.
+	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, five-second-rule, combat-conditions, classic-overcap, totems, preview-mode, indicator-copies, indicator-modifiers, bartext-conformance, inner-fire, slice-and-dice, brews, arcane-blast, spell-data, custom-bars, eclipse, elemental-shield, timer-precision, mounted-conditions, bartext-display-list, bartext-refresh, spell-usable, finisher-lines, shatter-charges). Default: all.
 
 .PARAMETER Flavor
 	Restrict to one flavor (mainline, forever, classic, tbc). Default: all.
@@ -108,7 +110,8 @@ $drivers = @(
 	[pscustomobject]@{ Name = "bartext-display-list"; EveryClass = $false },
 	[pscustomobject]@{ Name = "bartext-refresh"; EveryClass = $false },
 	[pscustomobject]@{ Name = "spell-usable"; EveryClass = $false },
-	[pscustomobject]@{ Name = "finisher-lines"; EveryClass = $true }
+	[pscustomobject]@{ Name = "finisher-lines"; EveryClass = $true },
+	[pscustomobject]@{ Name = "shatter-charges"; EveryClass = $true }
 )
 $known = $drivers | ForEach-Object { $_.Name }
 if ($Driver -ne "" -and $known -notcontains $Driver) {
