@@ -3555,7 +3555,6 @@ if locale == "zhCN" then
     L["MageFrostShatterCustomIndicatorStacks"] = "自定义指示器%d 层数"
     L["MageFrostShatterCustomIndicatorModeSpellslinger"] = "仅疾咒师"
     L["MageFrostShatterCustomIndicatorModeFrostfire"] = "仅霜火"
-    L["MageFrostShatterCustomIndicatorNote"] = "每个自定义指示器会对下方设置的单个碎冰层数重新着色，覆盖该层数上冰枪术的颜色。仅疾咒师、仅霜火选项只在对应英雄天赋树激活时生效。"
 
 	L["ShamanElementalColorPickerTextSpending"] = "直接施放元素冲击损失的漩涡值"
 

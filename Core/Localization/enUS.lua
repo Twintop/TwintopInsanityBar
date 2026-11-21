@@ -3567,7 +3567,6 @@ L["MageFrostShatterCustomIndicatorColor"] = "Custom Indicator %d Color"
 L["MageFrostShatterCustomIndicatorStacks"] = "Custom Indicator %d Stacks"
 L["MageFrostShatterCustomIndicatorModeSpellslinger"] = "Spellslinger Only"
 L["MageFrostShatterCustomIndicatorModeFrostfire"] = "Frostfire Only"
-L["MageFrostShatterCustomIndicatorNote"] = "Each custom indicator recolors the single Shatter stack set below, overriding the Ice Lance stack color on it. Spellslinger Only and Frostfire Only apply only while that hero talent tree is active."
 
 L["ShamanElementalColorPickerTextSpending"] = "Maelstrom loss from hardcasting Elemental Blast"
 
@@ -4545,3 +4544,6 @@ L["BarTextVariablesColumnCdmTooltip"] = "Needs the Cooldown Manager: the value i
 L["DeathKnightBarTextVariable_coagulatingBloodStacks"] = "Current number of Coagulating Blood stacks, where each stack is 1%. Read from Blizzard's Cooldown Manager; until Coagulating Blood is added to one of its viewers, it shows what Cooldown Manager value when unavailable in Global Options picks."
 L["CheckboxUseGlobalTooltip_TotemsDimensions"] = "When checked, this bar's position and size come from the global Totems screen instead of this specialization's own settings."
 L["CheckboxUseGlobalTooltip_TotemsColors"] = "When checked, this bar's colors come from the global Totems screen instead of this specialization's own settings."
+L["MageFrostCheckboxShatterChargeView"] = "Show Ice Lance charges"
+L["MageFrostCheckboxShatterChargeViewTooltip"] = "Shows one node per Ice Lance instead of one per Shatter stack: 5 stacks each, or 6 with Polished Focus, where the last node holds the 2 left over."
+L["MageFrostShatterCustomIndicatorNote"] = "Each custom indicator recolors the single Shatter stack set below, overriding the Ice Lance stack color on it. With Ice Lance charges shown, it instead recolors the charge holding that stack once it is reached. Spellslinger Only and Frostfire Only apply only while that hero talent tree is active."

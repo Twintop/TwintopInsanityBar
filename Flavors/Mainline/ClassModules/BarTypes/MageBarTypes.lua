@@ -66,6 +66,7 @@ function TRB.Functions.Settings:DefaultShatterBarDimensions(classic)
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
+			chargeView = false,
 			anchor = {
 				barKey = "secondary",
 				anchorPoint = "TOP",
@@ -91,6 +92,7 @@ function TRB.Functions.Settings:DefaultShatterBarDimensions(classic)
 		relativeTo = "TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
+		chargeView = false,
 		anchor = {
 			barKey = "secondary",
 			anchorPoint = "TOP",
@@ -204,6 +206,24 @@ do
 		usesSecretValue = true,
 		-- Fed entirely by the Cooldown Manager's item for Shatter.
 		cdm = TRB.Data.constants.cdmDependency.REQUIRED,
+		-- Ice Lance charges: one node per Ice Lance's worth of stacks, the last holding whatever is left over.
+		nodeBoundsFunc = function(groupSettings)
+			local frost = TRB.Data.specCache.mage_frost
+			local spells = frost and frost.spellsData.spells --[[@as TRB.Classes.Mainline.Mage.FrostSpells?]]
+			if not groupSettings.chargeView or spells == nil or spells.shatter == nil then
+				return nil
+			end
+			local maxStacks = spells.shatter.maxStacks
+			local perCharge = TRB.Data.character.shatterStackThreshold or spells.shatter.attributes.stackThreshold
+			if perCharge == nil or perCharge <= 0 then
+				return nil
+			end
+			local bounds = { 0 }
+			while bounds[#bounds] < maxStacks do
+				table.insert(bounds, math.min(bounds[#bounds] + perCharge, maxStacks))
+			end
+			return bounds
+		end,
 		defaultDimensionsFunc = function(classic)
 			return TRB.Functions.Settings:DefaultShatterBarDimensions(classic)
 		end,
