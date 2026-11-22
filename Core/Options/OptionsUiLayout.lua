@@ -1514,6 +1514,21 @@ end
 	and settings.textures.bars.<key> using the BarTypeDefinition system.
 ]]
 
+---Retitles a custom bar's width and height sliders from its definition's sizeTitlesFunc, for bars that have one.
+---@param controls table # The panel's control references
+---@param barTypeDef TRB.Classes.BarTypeDefinition # Bar type definition
+---@param barSettings table # The bar's settings
+function TRB.Functions.OptionsUi.Layout:RefreshCustomBarSizeTitles(controls, barTypeDef, barSettings)
+	local widthSlider = controls[barTypeDef.key .. "Width"]
+	local heightSlider = controls[barTypeDef.key .. "Height"]
+	if barTypeDef.sizeTitlesFunc == nil or widthSlider == nil or heightSlider == nil then
+		return
+	end
+	local widthTitle, heightTitle = barTypeDef.sizeTitlesFunc(barSettings)
+	widthSlider.Title:SetText(widthTitle or string.format(L["SecondaryWidth"], barTypeDef.displayName))
+	heightSlider.Title:SetText(heightTitle or string.format(L["SecondaryHeight"], barTypeDef.displayName))
+end
+
 ---Generates dimension options for a custom bar
 ---@param parent Frame # Parent frame for the controls
 ---@param controls table # Table to store control references
@@ -1608,6 +1623,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 			TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 		end
 	end)
+	TRB.Functions.OptionsUi.Layout:RefreshCustomBarSizeTitles(controls, barTypeDef, barSettings)
 
 	-- X/Y Offset sliders (read/write anchor block, dual-write to legacy)
 	yCoord = yCoord - 60
@@ -1963,6 +1979,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 						break
 					end
 				end
+				TRB.Functions.OptionsUi.Layout:RefreshCustomBarSizeTitles(controls, barTypeDef, barSettings)
 				if TRB.Frames.barGroups ~= nil then
 					TRB.Functions.Bar:ApplyBarGroupsLayout(TRB.Data.specCache[TRB.Data.character.compositeKey].settings, TRB.Frames.barGroups)
 				end

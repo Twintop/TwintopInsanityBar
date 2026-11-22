@@ -280,7 +280,8 @@ function TRB.Functions.Bar:GetMultiNodeBarTotalWidth(barKey, barSettings, barGro
 	end
 	local nodeWidth = barSettings.width or 10
 	local nodeSpacing = self:GetEffectiveSpacing(barSettings)
-	return (nodeWidth * nodeCount) + (nodeSpacing * (nodeCount - 1))
+	local extentUnits = barGroup ~= nil and barGroup.nodeCount == nodeCount and barGroup:GetExtentUnits() or nodeCount
+	return (nodeWidth * extentUnits) + (nodeSpacing * (nodeCount - 1))
 end
 
 ---Calculates the total rendered height of a multi-node bar group.
@@ -331,7 +332,8 @@ function TRB.Functions.Bar:GetMultiNodeBarTotalHeight(barKey, barSettings, barGr
 	end
 	local nodeHeight = barSettings.height or 10
 	local nodeSpacing = self:GetEffectiveSpacing(barSettings)
-	return (nodeHeight * nodeCount) + (nodeSpacing * (nodeCount - 1))
+	local extentUnits = barGroup ~= nil and barGroup.nodeCount == nodeCount and barGroup:GetExtentUnits() or nodeCount
+	return (nodeHeight * extentUnits) + (nodeSpacing * (nodeCount - 1))
 end
 
 ---Computes the absolute min/max values for the bar
@@ -3890,6 +3892,7 @@ end
 ---@field public textures { bar: string, border: string, background: string } # Texture setting keys
 ---@field public colors { border: string, background: string, bar: string } # Color setting keys within the colorsKey table
 ---@field public minMaxMode string # "discrete" (0-1), "stepped" (i-1,i), "health" (0-maxHealth), or "custom"
+---@field public nodeBounds number[]? # "stepped" only: the value at each node edge, for nodes spanning uneven ranges
 ---@field public rootEffectiveWidth number? # Effective width of the bar's root, from the layout pass
 ---@field public rootEffectiveHeight number? # Effective height of the bar's root, from the layout pass
 ---@field public cdmWidthMatched boolean? # If true, CDM width matching is active and multi-node bars should force fullWidth
@@ -3943,6 +3946,7 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 
 	-- Set node count
 	targetGroup:SetNodeCount(nodes)
+	targetGroup.nodeBounds = config.minMaxMode == "stepped" and config.nodeBounds or nil
 
 	-- Set layout parameters
 	-- fullWidth stretches nodes to fill the growth axis. After dimension swap,
@@ -4161,7 +4165,7 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 			for i = 1, nodes do
 				local multiNode = targetGroup:GetNode(i)
 				if multiNode then
-					multiNode:SetMinMax(i - 1, i)
+					multiNode:SetMinMax(targetGroup:GetSteppedNodeRange(i))
 				end
 			end
 		end
@@ -4296,7 +4300,7 @@ function TRB.Functions.Bar:ConstructAnchoredBarGroup(settings, anchorGroup, targ
 					-- Set min/max for multi-node layouts
 					if config.useApplyLayout then
 						if config.minMaxMode == "stepped" then
-							node:SetMinMax(i - 1, i)
+							node:SetMinMax(targetGroup:GetSteppedNodeRange(i))
 						elseif config.settingsKey == "comboPoints" and self:GetSecondaryMinMaxMode() == "resource" then
 							self:ApplySecondaryNodeMinMax(node, i, "resource")
 						else
@@ -4517,6 +4521,15 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 			effectiveNodeCount = math.min(liveCount, effectiveNodeCount)
 		end
 	end
+	local nodeBounds = nil
+	if barTypeDef.nodeBoundsFunc ~= nil then
+		nodeBounds = barTypeDef.nodeBoundsFunc(effectiveSettings)
+		if nodeBounds ~= nil and #nodeBounds > 1 then
+			effectiveNodeCount = math.min(#nodeBounds - 1, effectiveNodeCount)
+		else
+			nodeBounds = nil
+		end
+	end
 
 	---@type TRB.Classes.AnchoredBarGroupConfig
 	local config = {
@@ -4537,6 +4550,7 @@ function TRB.Functions.Bar:ApplyAnchoredBarGroupLayout(settings, barGroups, barK
 			bar = "bar"
 		},
 		minMaxMode = barTypeDef.minMaxMode or "custom",
+		nodeBounds = nodeBounds,
 		rootEffectiveWidth = rootEffWidth,
 		rootEffectiveHeight = rootEffHeight,
 		cdmWidthMatched = widthMatched,
