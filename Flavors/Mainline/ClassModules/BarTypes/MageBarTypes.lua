@@ -66,7 +66,7 @@ function TRB.Functions.Settings:DefaultShatterBarDimensions(classic)
 			relativeTo = "TOP",
 			relativeToName = L["PositionAboveMiddle"],
 			fullWidth = true,
-			chargeView = false,
+			chargeView = true,
 			anchor = {
 				barKey = "secondary",
 				anchorPoint = "TOP",
@@ -92,7 +92,7 @@ function TRB.Functions.Settings:DefaultShatterBarDimensions(classic)
 		relativeTo = "TOP",
 		relativeToName = L["PositionAboveMiddle"],
 		fullWidth = true,
-		chargeView = false,
+		chargeView = true,
 		anchor = {
 			barKey = "secondary",
 			anchorPoint = "TOP",

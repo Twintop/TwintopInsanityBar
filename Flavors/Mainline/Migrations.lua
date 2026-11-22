@@ -8919,6 +8919,16 @@ function TRB.Flavor.PortForwardSettings(settings)
 			TwintopInsanityBarSettings.manualUpdateChecks.steadyFlightSplit = { done = true }
 		end
 	end
+
+	-- Frost Mage: Ice Lance charges are the Shatter bar's default now; settings saved before it keep one node per stack.
+	do
+		local frost = TwintopInsanityBarSettings ~= nil and type(TwintopInsanityBarSettings.mage) == "table"
+			and TwintopInsanityBarSettings.mage.frost or nil
+		local shatter = type(frost) == "table" and type(frost.bars) == "table" and frost.bars.shatter or nil
+		if type(shatter) == "table" and shatter.chargeView == nil then
+			shatter.chargeView = false
+		end
+	end
 end
 
 ---Runs the one-shot manual migrations kept behind settings.manualUpdateChecks for one class, right after

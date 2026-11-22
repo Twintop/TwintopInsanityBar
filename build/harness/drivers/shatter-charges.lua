@@ -84,11 +84,25 @@ function hooks.afterEvents(ctx)
 	local group = barGroups.shatter
 	local shatterSettings = settings.bars.shatter
 	local shatterColors = settings.colors.bars.shatter
-	check("the Shatter bar is built, with Ice Lance charges off by default", group ~= nil and shatterSettings ~= nil
-		and shatterSettings.chargeView == false and shatterColors ~= nil)
+	check("the Shatter bar is built, with Ice Lance charges on for a new install", group ~= nil and shatterSettings ~= nil
+		and shatterSettings.chargeView == true and shatterColors ~= nil)
 	if group == nil or shatterSettings == nil or shatterColors == nil then
 		return errors
 	end
+
+	-- Settings saved before charges were the default keep one node per stack.
+	local function Migrated(frost)
+		local saved = { mage = { frost = frost } }
+		try("the migrations", function() TRB.Flavor.PortForwardSettings(saved) end)
+		return saved.mage.frost
+	end
+	check("saved Shatter settings without the option keep the stack view", Migrated({ bars = { shatter = { width = 30 } } }).bars.shatter.chargeView == false)
+	check("a saved choice stays", Migrated({ bars = { shatter = { chargeView = true } } }).bars.shatter.chargeView == true
+		and Migrated({ bars = { shatter = { chargeView = false } } }).bars.shatter.chargeView == false)
+	-- The 12.1.0 step that added the Shatter bar copies the current defaults.
+	check("settings from before the Shatter bar get it with charges on", Migrated({ bars = {} }).bars.shatter.chargeView == true
+		and Migrated({}).bars.shatter.chargeView == true)
+	shatterSettings.chargeView = false
 
 	-- Node ranges, sizes, values, and the gates each charge's overlay slot opens.
 	local ranges, values, valueMaxes, gateThresholds, gateValues = {}, {}, {}, {}, {}
