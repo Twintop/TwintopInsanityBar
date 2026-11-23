@@ -3798,6 +3798,15 @@ function TRB.Functions.Settings:ReconcileSharedIndicators(spec, defaultShared)
 	local result = { nodeOrder = {}, gradientOrder = {} } ---@type table<string, string[]>
 	shared.indicatorColors = shared.indicatorColors or {}
 	local indicatorColors = shared.indicatorColors
+	-- A built-in that starts deleted stays deleted until it is added back, which saves false.
+	if type(defaultShared.removed) == "table" then
+		for key, isRemoved in pairs(defaultShared.removed) do
+			if isRemoved == true and (type(shared.removed) ~= "table" or shared.removed[key] == nil) then
+				shared.removed = type(shared.removed) == "table" and shared.removed or {}
+				shared.removed[key] = true
+			end
+		end
+	end
 	local removed = type(shared.removed) == "table" and shared.removed or {}
 
 	---Copies a saved list's not-yet-seen keys into the list the defaults assign them (or a copy's built-in)

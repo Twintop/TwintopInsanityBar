@@ -446,7 +446,12 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 		end
 		local removed = sharedSettings.removed
 		if removed ~= nil and removed[builtInKey] then
-			removed[builtInKey] = nil
+			-- A built-in that starts deleted saves false, or the login's merge over the defaults deletes it again.
+			if defaultShared ~= nil and defaultShared.removed ~= nil and defaultShared.removed[builtInKey] == true then
+				removed[builtInKey] = false
+			else
+				removed[builtInKey] = nil
+			end
 			return builtInKey, entry
 		end
 		entry.copyOf = builtInKey

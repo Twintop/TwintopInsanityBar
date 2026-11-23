@@ -109,8 +109,13 @@ local function LoadDefaultSpecSettings(classDef, spec, loadDefaultBarText, loadT
 		shared.indicatorColors.borderStealth = { color = "FF000000", enabled = true, targets = { resourceBar = { bar = false, border = true, background = false } } }
 	end
 	for _, indicator in ipairs(spec.indicators or {}) do
-		shared.nodeOrder[#shared.nodeOrder + 1] = indicator.key
-		shared.indicatorColors[indicator.key] = { color = indicator.color, enabled = true, targets = TRB.Functions.Table:DeepCopy(indicator.targets or {}),
+		if indicator.startsRemoved then
+			shared.removed = shared.removed or {}
+			shared.removed[indicator.key] = true
+		else
+			shared.nodeOrder[#shared.nodeOrder + 1] = indicator.key
+		end
+		shared.indicatorColors[indicator.key] = { color = indicator.color, enabled = not indicator.startsRemoved, targets = TRB.Functions.Table:DeepCopy(indicator.targets or {}),
 			modifiers = TRB.Functions.Table:DeepCopy(indicator.modifiers) }
 		local endOf = indicator.endOf
 		if endOf ~= nil then

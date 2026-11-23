@@ -264,6 +264,14 @@ function hooks.afterEvents(ctx)
 		Settings:ClearUserIndicatorsForMerge(specSettings, { colors = { shared = { indicatorColors = {} } } })
 		check(label .. ": a merging profile piece clears copies and deletions", shared.indicatorColors.copy_1 == nil and shared.indicatorColors.copy_2 == nil
 			and shared.removed == nil and IndexOf(shared.nodeOrder, "copy_1") == nil and IndexOf(shared.gradientOrder, "copy_2") == nil)
+		try("reconcile", function() Settings:ReconcileAllSharedIndicators(TRB.Data.settings) end)
+		local rerecorded = true
+		for k, isRemoved in pairs(defaults.removed or {}) do
+			if isRemoved == true and (shared.removed == nil or shared.removed[k] ~= true or IndexOf(shared.nodeOrder, k) ~= nil) then
+				rerecorded = false
+			end
+		end
+		check(label .. ": and the reconcile records the built-ins that start deleted again", rerecorded)
 		Restore(shared, backup)
 	else
 		check("no specialization has built-in Color Indicators to delete", true)
@@ -410,8 +418,13 @@ function hooks.afterEvents(ctx)
 			local menu = OpenMenu(addBuiltIn)
 			check(loginEntry.compositeKey .. ": the Add Built-in menu lists every built-in, sorted by label", MenuInOrder(menu, sorted))
 
-			local key = sorted[1].key
-			try("pick " .. key, function() menu.children[1].fn() end)
+			-- Only a listed built-in gets a copy; one that starts deleted is checked below.
+			local pick = 1
+			while sorted[pick + 1] ~= nil and shared.removed ~= nil and shared.removed[sorted[pick].key] do
+				pick = pick + 1
+			end
+			local key = sorted[pick].key
+			try("pick " .. key, function() menu.children[pick].fn() end)
 			local copyKey = shared.nodeOrder[#shared.nodeOrder]
 			local copy = shared.indicatorColors[copyKey]
 			check(loginEntry.compositeKey .. ": picking a listed built-in adds a copy at the bottom", copyKey:match("^copy_%d+$") ~= nil and copy ~= nil and copy.copyOf == key)
@@ -426,7 +439,7 @@ function hooks.afterEvents(ctx)
 			check(loginEntry.compositeKey .. ": a deleted built-in stays untargeted through a login", TargetsAfterLogin(key) == "")
 
 			menu = OpenMenu(addBuiltIn)
-			try("re-add " .. key, function() menu.children[1].fn() end)
+			try("re-add " .. key, function() menu.children[pick].fn() end)
 			check(loginEntry.compositeKey .. ": adding a deleted built-in restores its own key at the bottom", shared.nodeOrder[#shared.nodeOrder] == key
 				and (shared.removed == nil or shared.removed[key] == nil) and shared.indicatorColors[key].copyOf == nil)
 			check(loginEntry.compositeKey .. ": a restored built-in stays untargeted through a login", TargetsAfterLogin(key) == "")
@@ -435,6 +448,31 @@ function hooks.afterEvents(ctx)
 
 			check(loginEntry.compositeKey .. ": deleting a copy asks first", Delete(copyKey))
 			check(loginEntry.compositeKey .. ": a deleted copy is gone", shared.indicatorColors[copyKey] == nil and IndexOf(shared.nodeOrder, copyKey) == nil)
+
+			-- A built-in that starts deleted is unlisted until added, which saves false so the login's merge can't delete it again.
+			---Whether a key is listed after the next login's merge of the save over the defaults and its reconcile.
+			local function ListedAfterLogin(listedKey)
+				local merged = Table:Merge({ colors = { shared = Table:DeepCopy(defaults or {}) } }, { colors = { shared = Table:DeepCopy(shared) } })
+				Settings:ReconcileSharedIndicators(merged, defaults)
+				return IndexOf(merged.colors.shared.nodeOrder, listedKey) ~= nil
+			end
+			for i, def in ipairs(sorted) do
+				local startKey = def.key
+				if defaults ~= nil and defaults.removed ~= nil and defaults.removed[startKey] == true then
+					local entry = shared.indicatorColors[startKey]
+					check(loginEntry.compositeKey .. ": " .. startKey .. " starts deleted, off and recorded", IndexOf(shared.nodeOrder, startKey) == nil
+						and shared.removed ~= nil and shared.removed[startKey] == true and entry ~= nil and entry.enabled == false)
+					check(loginEntry.compositeKey .. ": and stays out through a login", not ListedAfterLogin(startKey))
+					menu = OpenMenu(addBuiltIn)
+					try("add " .. startKey, function() menu.children[i].fn() end)
+					check(loginEntry.compositeKey .. ": adding " .. startKey .. " lists its own key at the bottom, recorded as false",
+						shared.nodeOrder[#shared.nodeOrder] == startKey and shared.removed[startKey] == false and shared.indicatorColors[startKey].copyOf == nil)
+					check(loginEntry.compositeKey .. ": it stays listed through a login", ListedAfterLogin(startKey))
+					check(loginEntry.compositeKey .. ": deleting " .. startKey .. " asks first", Delete(startKey))
+					check(loginEntry.compositeKey .. ": and records it deleted again", shared.removed[startKey] == true and IndexOf(shared.nodeOrder, startKey) == nil
+						and not ListedAfterLogin(startKey))
+				end
+			end
 		end
 
 		local gradientDefs = panel.config.gradientDefs or {}

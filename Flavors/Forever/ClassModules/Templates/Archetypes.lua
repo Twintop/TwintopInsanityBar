@@ -207,6 +207,7 @@ TRB.Forever.Archetypes = {
 ---@field public tooltip string
 ---@field public colorLabel string # the row's localized label
 ---@field public endOf TRB.Forever.SpecIndicatorEndOf? # makes the row an ending one, with its own configuration section
+---@field public startsRemoved boolean? # left out of the list until added from the Add Built-in menu
 
 ---How an ending indicator's window is set: within some GCDs or seconds of the buff ending.
 ---@class TRB.Forever.SpecIndicatorEndOf
