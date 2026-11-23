@@ -263,15 +263,120 @@ hitFrame:SetScript("OnEvent", function(_, _, _, action, flagText, amount, school
 	end
 end)
 
+---The active spell set's Dark Inspiration snapshot and the spell set, or nil before the spec cache loads.
+---@return TRB.Classes.Snapshot?, TRB.Classes.Forever.Priest.GeneralSpells?
+local function GetDarkInspiration()
+	local spells = TRB.Data.spellsData and TRB.Data.spellsData.spells --[[@as TRB.Classes.Forever.Priest.GeneralSpells?]]
+	local snapshotData = TRB.Data.snapshotData
+	if spells == nil or spells.darkInspiration == nil or snapshotData == nil then
+		return nil, nil
+	end
+	return snapshotData.snapshots[spells.darkInspiration.id], spells
+end
+
+---Starts or refreshes Dark Inspiration, if the talent is learned.
+local function StartDarkInspiration()
+	local darkInspiration, spells = GetDarkInspiration()
+	if darkInspiration == nil or spells == nil or runtime.talents == nil or not runtime.talents:IsTalentActive(spells.darkInspiration) then
+		return
+	end
+	darkInspiration.buff:InitializeCustom(spells.darkInspiration.duration)
+	TRB.Functions.BarText:MarkLookupDirty()
+end
+
+---Corrects Dark Inspiration's time from its aura, which reads only out of combat; nil before the spell set loads.
+---@param endWhenMissing boolean
+---@return string?
+local function SyncDarkInspirationFromAura(endWhenMissing)
+	local darkInspiration, spells = GetDarkInspiration()
+	if darkInspiration == nil or spells == nil then
+		return nil
+	end
+	local result = darkInspiration.buff:SyncCustomFromPlayerAura({ spells.darkInspiration.attributes.auraId }, endWhenMissing)
+	if result == "copied" or result == "ended" then
+		TRB.Functions.BarText:MarkLookupDirty()
+	end
+	return result
+end
+
+local darkInspirationSync = TRB.Classes.AuraSync:New(SyncDarkInspirationFromAura)
+
+-- Latency lands a finished channel's STOP a beat before its end time; the cast bar allows the same margin.
+local fullChannelMargin = 0.2
+-- When the Mind Flay being channeled ends; nil while none is, or when its timing can't be read.
+local mindFlayChannelEnd = nil
+
+---When the player's channel ends, or nil when its timing is secret.
+---@return number?
+local function ReadChannelEnd()
+	local _, _, _, _, endMS = UnitChannelInfo("player")
+	if endMS == nil or issecretvalue(endMS) then
+		return nil
+	end
+	return endMS / 1000
+end
+
+---Whether a channel's spell ID is a Mind Flay rank, falling back to the channel info when the event's is secret.
+---@param spellId any
+---@return boolean
+local function IsMindFlayChannel(spellId)
+	local _, spells = GetDarkInspiration()
+	if spells == nil then
+		return false
+	end
+	if spellId == nil or issecretvalue(spellId) then
+		spellId = select(8, UnitChannelInfo("player"))
+		if spellId == nil or issecretvalue(spellId) then
+			return false
+		end
+	end
+	local castSpells = TRB.Data.spellsData.spellsById[spellId]
+	return castSpells ~= nil and tContains(castSpells, spells.mindFlay)
+end
+
+local channelFrame = CreateFrame("Frame")
+channelFrame:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", "player")
+channelFrame:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", "player")
+channelFrame:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP", "player")
+channelFrame:SetScript("OnEvent", function(_, event, _, _, spellId)
+	if event == "UNIT_SPELLCAST_CHANNEL_START" then
+		-- A recast starts over the channel it clips, so the clipped one earns nothing.
+		mindFlayChannelEnd = IsMindFlayChannel(spellId) and ReadChannelEnd() or nil
+	elseif event == "UNIT_SPELLCAST_CHANNEL_UPDATE" then
+		if mindFlayChannelEnd ~= nil then
+			mindFlayChannelEnd = ReadChannelEnd()
+		end
+	else
+		local channelEnd = mindFlayChannelEnd
+		mindFlayChannelEnd = nil
+		if channelEnd ~= nil and GetTime() >= channelEnd - (TRB.Data.character.latency or 0) - fullChannelMargin then
+			StartDarkInspiration()
+		end
+	end
+end)
+
+---Counts a tracked buff down, marking bar text dirty when it runs out.
+---@param snapshot TRB.Classes.Snapshot?
+---@param currentTime number
+local function AdvanceBuff(snapshot, currentTime)
+	if snapshot ~= nil and snapshot.buff.isActive then
+		snapshot.buff:GetRemainingTime(currentTime)
+		if not snapshot.buff.isActive then
+			TRB.Functions.BarText:MarkLookupDirty()
+		end
+	end
+end
+
 ---@param spells TRB.Classes.SpecializationSpellsBase
 function runtime.CheckClassCharacter(spells)
 	TRB.Data.character.maxInnerFireStacks = GetInnerFireMaxStacks(spells --[[@as TRB.Classes.Forever.Priest.GeneralSpells]])
 	if loadingScreenSyncPending then
 		TryLoadingScreenSync()
 	end
+	darkInspirationSync:OnCheckCharacter()
 end
 
----A cast of any rank restarts Inner Fire at full charges.
+---A Mind Blast of any rank starts Dark Inspiration, and an Inner Fire of any rank restarts it at full charges.
 ---@param spellId integer?
 function runtime.OnSpellCastSucceeded(spellId)
 	local innerFire, spells = GetInnerFire()
@@ -279,7 +384,14 @@ function runtime.OnSpellCastSucceeded(spellId)
 		return
 	end
 	local castSpells = TRB.Data.spellsData.spellsById[spellId]
-	if castSpells == nil or not tContains(castSpells, spells.innerFire) then
+	if castSpells == nil then
+		return
+	end
+	if tContains(castSpells, spells.mindBlast) then
+		StartDarkInspiration()
+		return
+	end
+	if not tContains(castSpells, spells.innerFire) then
 		return
 	end
 	local maxStacks = GetInnerFireMaxStacks(spells)
@@ -293,13 +405,8 @@ end
 
 ---@param currentTime number
 function runtime.UpdateClassSnapshot(currentTime)
-	local innerFire = GetInnerFire()
-	if innerFire ~= nil and innerFire.buff.isActive then
-		innerFire.buff:GetRemainingTime(currentTime)
-		if not innerFire.buff.isActive then
-			TRB.Functions.BarText:MarkLookupDirty()
-		end
-	end
+	AdvanceBuff(GetInnerFire(), currentTime)
+	AdvanceBuff(GetDarkInspiration(), currentTime)
 end
 
 ---@param lookup table
@@ -307,28 +414,33 @@ end
 ---@param prevState table
 ---@param activeVars table?
 function runtime.RefreshClassLookupData(lookup, lookupLogic, prevState, activeVars)
-	if activeVars and not (activeVars["$innerFireStacks"] or activeVars["$innerFireStacksMax"] or activeVars["$innerFireTime"]) then
-		return
-	end
 	local innerFire = GetInnerFire()
-	if innerFire == nil then
-		return
+	if innerFire ~= nil and (activeVars == nil or activeVars["$innerFireStacks"] or activeVars["$innerFireStacksMax"] or activeVars["$innerFireTime"]) then
+		-- Reset leaves both at 0 once the buff is gone.
+		local stacks = innerFire.buff.applications
+		local remaining = innerFire.buff.remaining
+		local maxStacks = TRB.Data.character.maxInnerFireStacks
+		lookupLogic["$innerFireStacks"] = stacks
+		lookupLogic["$innerFireStacksMax"] = maxStacks
+		lookupLogic["$innerFireTime"] = remaining
+		if lookupChanged(prevState, "$innerFireStacks", stacks) then
+			lookup["$innerFireStacks"] = tostring(stacks)
+		end
+		if lookupChanged(prevState, "$innerFireStacksMax", maxStacks) then
+			lookup["$innerFireStacksMax"] = tostring(maxStacks)
+		end
+		if lookupChanged(prevState, "$innerFireTime", remaining) then
+			lookup["$innerFireTime"] = TRB.Functions.BarText:TimerPrecision(remaining)
+		end
 	end
-	-- Reset leaves both at 0 once the buff is gone.
-	local stacks = innerFire.buff.applications
-	local remaining = innerFire.buff.remaining
-	local maxStacks = TRB.Data.character.maxInnerFireStacks
-	lookupLogic["$innerFireStacks"] = stacks
-	lookupLogic["$innerFireStacksMax"] = maxStacks
-	lookupLogic["$innerFireTime"] = remaining
-	if lookupChanged(prevState, "$innerFireStacks", stacks) then
-		lookup["$innerFireStacks"] = tostring(stacks)
-	end
-	if lookupChanged(prevState, "$innerFireStacksMax", maxStacks) then
-		lookup["$innerFireStacksMax"] = tostring(maxStacks)
-	end
-	if lookupChanged(prevState, "$innerFireTime", remaining) then
-		lookup["$innerFireTime"] = TRB.Functions.BarText:TimerPrecision(remaining)
+
+	local darkInspiration = GetDarkInspiration()
+	if darkInspiration ~= nil and (activeVars == nil or activeVars["$darkInspirationTime"]) then
+		local remaining = darkInspiration.buff.remaining
+		lookupLogic["$darkInspirationTime"] = remaining
+		if lookupChanged(prevState, "$darkInspirationTime", remaining) then
+			lookup["$darkInspirationTime"] = TRB.Functions.BarText:TimerPrecision(remaining)
+		end
 	end
 end
 
@@ -338,6 +450,9 @@ function runtime.IsValidClassVariable(var)
 	if var == "$innerFireStacks" or var == "$innerFireTime" then
 		local innerFire = GetInnerFire()
 		return innerFire ~= nil and innerFire.buff.isActive
+	elseif var == "$darkInspirationTime" then
+		local darkInspiration = GetDarkInspiration()
+		return darkInspiration ~= nil and darkInspiration.buff.isActive
 	end
 	return var == "$innerFireStacksMax"
 end
@@ -345,7 +460,8 @@ end
 ---@return boolean
 function runtime.HasClassTimers()
 	local innerFire = GetInnerFire()
-	return innerFire ~= nil and innerFire.buff.isActive
+	local darkInspiration = GetDarkInspiration()
+	return (innerFire ~= nil and innerFire.buff.isActive) or (darkInspiration ~= nil and darkInspiration.buff.isActive)
 end
 
 TRB.Classes.SpecDescriptor:Declare("priest_general", {

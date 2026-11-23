@@ -4549,3 +4549,7 @@ L["MageFrostCheckboxShatterChargeViewTooltip"] = "Shows one node per Ice Lance i
 L["MageFrostShatterCustomIndicatorNote"] = "Each custom indicator recolors the single Shatter stack set below, overriding the Ice Lance stack color on it. With Ice Lance charges shown, it instead recolors the charge holding that stack once it is reached. Spellslinger Only and Frostfire Only apply only while that hero talent tree is active."
 L["MageFrostShatterChargeWidth"] = "Ice Lance Charge Width"
 L["MageFrostShatterChargeHeight"] = "Ice Lance Charge Height"
+L["ForeverPriestBarTextVariable_darkInspirationTime"] = "Time remaining on your Dark Inspiration"
+L["ForeverPriestCheckboxDarkInspiration"] = "Dark Inspiration"
+L["ForeverPriestIndicatorDarkInspirationTooltip"] = "Changes to this color while Dark Inspiration is active, from your Mind Blast or fully channeled Mind Flay until its time runs out."
+L["ForeverPriestIndicatorDarkInspirationColor"] = "Dark Inspiration is active"
