@@ -8,6 +8,13 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 1.60.1.22-release (2026-11-23)
+## Priest
+
+- [#1026](#1026) Add Dark Inspiration tracking, with a Color Indicator and the `$darkInspirationTime` and `#darkInspiration` bar text variables. The indicator isn't listed by default; add it with Add Built-in Color Indicator.
+
+---
+
 # 1.60.1.21-release (2026-11-19)
 ## General
 ### Color Indicators

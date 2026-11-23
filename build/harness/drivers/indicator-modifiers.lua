@@ -642,16 +642,20 @@ function hooks.afterEvents(ctx)
 						and RowLabel(rowIndex) == notLabel)
 				end
 
+				-- Only a listed built-in makes the row a copy; switching to a deleted one restores its key, checked below.
+				local function IsDeleted(k)
+					return shared.removed ~= nil and shared.removed[k] == true
+				end
 				local other = nil
 				for _, def in ipairs(sorted) do
-					if other == nil and def.key ~= key and def.barKeys == nil then other = def.key end
+					if other == nil and def.key ~= key and def.barKeys == nil and not IsDeleted(def.key) then other = def.key end
 				end
 				if other == nil then
 					local everyBarCount = 0
 					for _, def in ipairs(defs) do
-						if def.barKeys == nil then everyBarCount = everyBarCount + 1 end
+						if def.barKeys == nil and not IsDeleted(def.key) then everyBarCount = everyBarCount + 1 end
 					end
-					check(label .. ": no other built-in that offers every bar to switch to", everyBarCount == 1)
+					check(label .. ": no other listed built-in that offers every bar to switch to", everyBarCount == 1)
 				else
 					local ROW_COLOR = "FF0E0E01"
 					shared.indicatorColors[key].color = ROW_COLOR
@@ -669,7 +673,7 @@ function hooks.afterEvents(ctx)
 
 					local third = nil
 					for _, def in ipairs(sorted) do
-						if third == nil and def.key ~= key and def.key ~= other and def.barKeys == nil then third = def.key end
+						if third == nil and def.key ~= key and def.key ~= other and def.barKeys == nil and not IsDeleted(def.key) then third = def.key end
 					end
 					if third ~= nil then
 						check(label .. ": switching a copy", PickSource(rowIndex, "nodeOrder", third))
@@ -683,6 +687,23 @@ function hooks.afterEvents(ctx)
 					check(label .. ": with the row's color and modifiers", shared.indicatorColors[key].color == ROW_COLOR and shared.indicatorColors[key].copyOf == nil
 						and shared.indicatorColors[key].modifiers ~= nil and shared.indicatorColors[key].modifiers.notActive == true)
 					check(label .. ": and only the row's targets through a login", TargetsAfterLogin(key) == picked)
+				end
+
+				-- Switching to a built-in that starts deleted restores its key, saved false so a login keeps it listed.
+				local startsDeleted = nil
+				for _, def in ipairs(sorted) do
+					if startsDeleted == nil and def.key ~= key and def.barKeys == nil and IsDeleted(def.key)
+						and defaults ~= nil and defaults.removed ~= nil and defaults.removed[def.key] == true then
+						startsDeleted = def.key
+					end
+				end
+				if startsDeleted ~= nil then
+					check(label .. ": switching to " .. startsDeleted .. ", which starts deleted", PickSource(rowIndex, "nodeOrder", startsDeleted))
+					check(label .. ": restores its own key in the row's place, recorded as false", KeyAtRow(rowIndex, "nodeOrder") == startsDeleted
+						and shared.removed[startsDeleted] == false and shared.indicatorColors[startsDeleted].copyOf == nil)
+					local merged = Table:Merge({ colors = { shared = Table:DeepCopy(defaults) } }, { colors = { shared = Table:DeepCopy(shared) } })
+					Settings:ReconcileSharedIndicators(merged, defaults)
+					check(label .. ": which a login keeps listed", IndexOf(merged.colors.shared.nodeOrder, startsDeleted) ~= nil)
 				end
 
 				-- A built-in that offers only some bars keeps only the row's targets on those.

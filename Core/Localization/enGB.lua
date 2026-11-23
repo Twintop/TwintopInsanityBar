@@ -583,4 +583,5 @@ if locale == "enGB" then
 	L["CheckboxUseGlobalTooltip_TotemsDimensions"] = "When checked, this bar's position and size come from the global Totems screen instead of this specialisation's own settings."
 	L["CheckboxUseGlobalTooltip_TotemsColors"] = "When checked, this bar's colours come from the global Totems screen instead of this specialisation's own settings."
 	L["MageFrostShatterCustomIndicatorNote"] = "Each custom indicator recolours the single Shatter stack set below, overriding the Ice Lance stack colour on it. With Ice Lance charges shown, it instead recolours the charge holding that stack once it is reached. Spellslinger Only and Frostfire Only apply only while that hero talent tree is active."
+	L["ForeverPriestIndicatorDarkInspirationTooltip"] = "Changes to this colour while Dark Inspiration is active, from your Mind Blast or fully channelled Mind Flay until its time runs out."
 end
