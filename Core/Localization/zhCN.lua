@@ -4520,4 +4520,9 @@ if locale == "zhCN" then
 	L["DeathKnightBarTextVariable_coagulatingBloodStacks"] = "当前凝血层数，每层对应1%。取自暴雪冷却管理器；在凝血添加至监控视图前，将使用全局选项中「冷却管理器数值不可用时」设定的兜底值。"
 	L["CheckboxUseGlobalTooltip_TotemsDimensions"] = "勾选后，此条的位置与尺寸将沿用全局图腾面板设置，而非当前专精独立配置。"
 	L["CheckboxUseGlobalTooltip_TotemsColors"] = "勾选后，此条的颜色将沿用全局图腾面板设置，而非当前专精独立配置。"
+	L["MageFrostCheckboxShatterChargeView"] = "显示冰枪术层数"
+	L["MageFrostCheckboxShatterChargeViewTooltip"] = "每个节点代表一层冰枪术，而非一层碎冰层数：每层包含5层碎冰，点出磨砺专注天赋后为6层，最后一个节点承载剩余2层。关闭【匹配锚点条宽度】时，该宽度代表一层完整层数，条体会随之缩短。"
+	L["MageFrostShatterCustomIndicatorNote"] = "每个自定义指示器会对下方的碎冰层数单独重新着色，覆盖该层上冰枪层数的颜色。开启显示冰枪层数后，则在到达对应层数节点时对该节点着色。仅疾咒师、仅霜火仅在对应英雄天赋树激活时生效。"
+	L["MageFrostShatterChargeWidth"] = "冰枪层数宽度"
+	L["MageFrostShatterChargeHeight"] = "冰枪层数高度"
 end
