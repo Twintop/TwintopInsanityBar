@@ -20,7 +20,9 @@
 	specialization's render; it runs once per class. indicator-modifiers checks Not Active, Only In Combat, gradient Border Glows, and the Edit menu's Change Source in
 	resolution, the options, and every specialization's render; it runs once per class. bartext-conformance checks that the bar text engine renders exactly what
 	the legacy resolver does, and skips only when nothing it shows changed; it runs once per class. inner-fire checks the Forever, Classic, and TBC
-	Priest's Inner Fire charges, timer, bar text, and Color Indicator, and Forever's diagnostic; it runs once per class. slice-and-dice checks the
+	Priest's Inner Fire charges, timer, bar text, and Color Indicator, and Forever's diagnostic; it runs once per class. dark-inspiration checks the
+	Forever Priest's Dark Inspiration: its talent gate, Mind Blast and full Mind Flay channels, the aura sync, bar text, and its Color Indicator,
+	which starts deleted; it runs once per class. slice-and-dice checks the
 	Forever, Classic, and TBC Rogue's Slice and Dice timer, bar text, and Active and Ending Color Indicators; it runs once per class.
 	brews checks the Live Brewmaster's Brews bar: its nodes by talent, order, and enable, charges counted from the plain cooldown flags, bar text,
 	timer bindings, and Color Indicator targets; it runs once per class. arcane-blast checks the Forever and TBC Mage's Arcane Blast bar: its
@@ -55,7 +57,7 @@
 	Lua 5.1 interpreter to use. Defaults to "lua5.1" on the PATH.
 
 .PARAMETER Driver
-	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, five-second-rule, combat-conditions, classic-overcap, totems, preview-mode, indicator-copies, indicator-modifiers, bartext-conformance, inner-fire, slice-and-dice, brews, arcane-blast, spell-data, custom-bars, eclipse, elemental-shield, timer-precision, mounted-conditions, bartext-display-list, bartext-refresh, spell-usable, finisher-lines, shatter-charges). Default: all.
+	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, five-second-rule, combat-conditions, classic-overcap, totems, preview-mode, indicator-copies, indicator-modifiers, bartext-conformance, inner-fire, dark-inspiration, slice-and-dice, brews, arcane-blast, spell-data, custom-bars, eclipse, elemental-shield, timer-precision, mounted-conditions, bartext-display-list, bartext-refresh, spell-usable, finisher-lines, shatter-charges). Default: all.
 
 .PARAMETER Flavor
 	Restrict to one flavor (mainline, forever, classic, tbc). Default: all.
@@ -98,6 +100,7 @@ $drivers = @(
 	[pscustomobject]@{ Name = "indicator-modifiers"; EveryClass = $true },
 	[pscustomobject]@{ Name = "bartext-conformance"; EveryClass = $true },
 	[pscustomobject]@{ Name = "inner-fire"; EveryClass = $true },
+	[pscustomobject]@{ Name = "dark-inspiration"; EveryClass = $true },
 	[pscustomobject]@{ Name = "slice-and-dice"; EveryClass = $true },
 	[pscustomobject]@{ Name = "brews"; EveryClass = $true },
 	[pscustomobject]@{ Name = "arcane-blast"; EveryClass = $true },
