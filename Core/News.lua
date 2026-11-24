@@ -7,7 +7,7 @@ TRB.Details.coreNewsContent = [====[
 # Live 12.1.5.16-release / Forever 1.60.1.22-release / Classic 1.15.9.7-release / TBC 2.5.6.5-release (2026-11-24)
 ## General
 
-- The Anchor to, Bound to Bar, and Move to Bar dropdowns now group their bars under Built-in, Cast Bars, Timer Bars, Pet Bars, Skyriding, and Custom Bars.
+- [#1030](#1030) The Anchor to, Bound to Bar, and Move to Bar dropdowns now group their bars under Built-in, Cast Bars, Timer Bars, Pet Bars, Skyriding, and Custom Bars.
 
 ## Color Indicators
 
@@ -16,7 +16,7 @@ TRB.Details.coreNewsContent = [====[
 ## Custom Bars
 
 - [#1028](#1028) Custom bars can now be Color Indicator targets, listed by name in the target dropdowns.
-- Bar Text's Move to Bar menu now lists custom bars.
+- [#1030](#1030) Bar Text's Move to Bar menu now lists custom bars.
 
 ---
 
