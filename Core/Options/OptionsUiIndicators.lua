@@ -32,6 +32,10 @@ local barTargetGroups = {
 	{ key = "petBars", label = L["TabPetBars"] },
 	{ key = "customBars", label = L["TabCustomBars"] },
 }
+local barTargetGroupKeys = {}
+for _, group in ipairs(barTargetGroups) do
+	barTargetGroupKeys[group.key] = true
+end
 
 ---A target menu entry's name with how many of its targets are on, tinted once any is.
 ---@param label string
@@ -247,7 +251,11 @@ function TRB.Functions.OptionsUi.Indicators:BuildBarTargetMenu(rootDescription, 
 			end
 		end
 		if offersElement then
-			local groupKey = barDef.group or builtInTargetGroup
+			local groupKey = barDef.group
+			-- A group with no section would never be drawn, so its bar falls back to Built-in.
+			if groupKey == nil or not barTargetGroupKeys[groupKey] then
+				groupKey = builtInTargetGroup
+			end
 			local offered = offeredByGroup[groupKey]
 			if offered == nil then
 				offered = {}
