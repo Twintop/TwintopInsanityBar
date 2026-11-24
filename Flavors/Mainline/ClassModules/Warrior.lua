@@ -1280,9 +1280,21 @@ local function UpdateWhirlwindCharges(specSettings, specCacheSettings, flatColor
 end
 
 
+-- Each spec's built-in indicators by the talent they can't be met without.
+local indicatorGates = {
+	fury = {
+		zeroStackBackground = "improvedWhirlwind",
+	},
+	protection = {
+		violentOutburst = "violentOutburst",
+	},
+}
+
 -- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
 -- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
 local scratch = {
+	-- Shared by the specs' indicator calls; only one runs per tick.
+	gateState1 = Color:NewIndicatorGateState(),
 	conditionMap1 = {},
 	conditionMap2 = {},
 	conditionMap3 = {},
@@ -1486,7 +1498,8 @@ local function UpdateResourceBar()
 			barColorMap.enrageBar = enrageColors
 			barColorMap.rageBar = rageColors
 			barColorMap.whirlwindBar = whirlwindColors
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.fury, spells, talents)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 			-- Flat indicators settle the base colors; the overcap gradient below curves from them.
 			barColor = rageColors.bar
 			barBorderColor = rageColors.border
@@ -1624,7 +1637,8 @@ local function UpdateResourceBar()
 				nodeColors.background = defensivesBackground
 				barColorMap[targetKey] = nodeColors
 			end
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.protection, spells, talents)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 			-- Flat indicators settle the base colors; the overcap gradient below curves from them.
 			barColor = rageColors.bar
 			barBorderColor = rageColors.border

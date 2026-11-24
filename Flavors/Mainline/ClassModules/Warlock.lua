@@ -1344,9 +1344,30 @@ function TRB.Functions.Class:DisableEvents()
 end
 
 
+-- Each spec's built-in indicators by the talent they can't be met without; any one of a list will do.
+local indicatorGates = {
+	affliction = {
+		shardInstability = "shardInstability",
+	},
+	-- Infernal Bolt and Demonic Art come from the Diabolist hero tree, whose keystone is Diabolic Ritual.
+	demonology = {
+		dominionOfArgusEnd = { "dominionOfArgus", "dominionOfArgus2", "dominionOfArgus3" },
+		dominionOfArgus = { "dominionOfArgus", "dominionOfArgus2", "dominionOfArgus3" },
+		infernalBolt = "diabolicRitual",
+		ruination = "ruination",
+		demonicArt = "diabolicRitual",
+	},
+	destruction = {
+		infernalBolt = "diabolicRitual",
+		ruination = "ruination",
+	},
+}
+
 -- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
 -- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
 local scratch = {
+	-- Shared by the three specs' indicator calls; only one runs per tick.
+	gateState1 = Color:NewIndicatorGateState(),
 	conditionMap1 = {},
 	manaBarColors1 = {},
 	soulShardsOverride1 = {},
@@ -1620,11 +1641,10 @@ local function UpdateResourceBar()
 			local sharedColors = specSettings.colors.shared
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 
-			-- No talent gate: a buff that is up is proof enough the talent is taken, and the talent
-			-- lookup keys off the spell ID, which is not guaranteed to be the tree's node ID.
 			local shardInstabilitySnapshot = snapshots[spells.shardInstability.id]
 			local conditionMap = scratch.conditionMap1
 			wipe(conditionMap)
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.affliction, spells, talents)
 			conditionMap.shardInstability = shardInstabilitySnapshot ~= nil and shardInstabilitySnapshot.buff.isActive == true
 
 			local manaBarColors = scratch.manaBarColors1
@@ -1640,7 +1660,7 @@ local function UpdateResourceBar()
 			barColorMap.soulShardsBar = soulShardsOverride
 
 			-- Apply flat indicator colors (priority order, last writer wins)
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
@@ -1703,6 +1723,7 @@ local function UpdateResourceBar()
 
 			local conditionMap = scratch.conditionMap2
 			wipe(conditionMap)
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.demonology, spells, talents)
 			conditionMap.dominionOfArgusEnd = doaActive and doaEndMet
 			conditionMap.dominionOfArgus = doaActive
 			conditionMap.demonicCore = snapshotData.snapshots[spells.demonicCore.id] ~= nil and snapshotData.snapshots[spells.demonicCore.id].buff.isActive
@@ -1723,7 +1744,7 @@ local function UpdateResourceBar()
 			barColorMap.soulShardsBar = soulShardsOverride
 
 			-- Apply flat indicator colors (priority order, last writer wins)
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
@@ -1772,6 +1793,7 @@ local function UpdateResourceBar()
 
 			local conditionMap = scratch.conditionMap3
 			wipe(conditionMap)
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.destruction, spells, talents)
 			conditionMap.infernalBolt = snapshots[spells.infernalBolt.id] ~= nil and snapshots[spells.infernalBolt.id].buff.isActive
 			conditionMap.ruination = snapshots[spells.ruination.id] ~= nil and snapshots[spells.ruination.id].buff.isActive
 
@@ -1788,7 +1810,7 @@ local function UpdateResourceBar()
 			barColorMap.soulShardsBar = soulShardsOverride
 
 			-- Apply flat indicator colors (priority order, last writer wins)
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true

@@ -438,11 +438,16 @@ function hooks.afterEvents(ctx)
 	-- A Color Indicator aimed at one brew's border colors that brew's nodes alone.
 	local indicator = TRB.Data.settings.monk.brewmaster.colors.shared.indicatorColors.invokeNiuzao
 	indicator.targets.brewsPurifyingBrewBar = { bar = false, border = true, background = false }
+	-- Invoke Niuzao is a talent, and its indicator stays off without it.
+	Learn(INVOKE_NIUZAO)
+	Fire("SPELLS_CHANGED")
 	Cast(INVOKE_NIUZAO)
 	Draw()
 	check("a Color Indicator on Purifying Brew's border colors its nodes only", borders[Node(1)] == indicator.color and borders[Node(2)] == indicator.color
 		and borders[Node(3)] == brewColors.border.color and borders[Node(4)] == brewColors.border.color)
 	indicator.targets.brewsPurifyingBrewBar = nil
+	Unlearn(INVOKE_NIUZAO)
+	Fire("SPELLS_CHANGED")
 
 	BarNode.SetTimerDuration = setTimer
 	BarNode.ClearTimerDuration = clearTimer

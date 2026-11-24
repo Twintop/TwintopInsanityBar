@@ -122,6 +122,7 @@ function TRB.Classes.Mainline.Evoker.PreservationSpells:New()
     
     self.essenceBurst = TRB.Classes.SpellBase:New({
         id = 369299,
+        talentId = 369297,
 		isBuff = true,
 		duration = 15,
 		maxStacks = 2
@@ -200,6 +201,7 @@ function TRB.Classes.Mainline.Evoker.AugmentationSpells:New()
 
     self.essenceBurst = TRB.Classes.SpellBase:New({
         id = 392268,
+        talentId = 396187,
 		isBuff = true,
 		duration = 15,
 		maxStacks = 2

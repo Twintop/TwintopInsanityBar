@@ -1891,9 +1891,31 @@ local thresholdBar = TRB.Classes.ThresholdBar:New()
 local thresholdState = TRB.Classes.ThresholdState:New() --[[@as TRB.Classes.Mainline.Druid.ThresholdState]]
 local thresholdData = TRB.Classes.ThresholdData:New()
 
+-- Each spec's built-in indicators by the talent they can't be met without; any one of a list will do. Balance has
+-- none: two Eclipses at once, and free Starsurges and Starfalls, have more than one source.
+local indicatorGates = {
+	feral = {
+		apexPredator = "apexPredatorsCraving",
+		ravage = "ravageMinimum",
+		clearcasting = "omenOfClarity",
+	},
+	guardian = {
+		berserkEnd = { "berserk", "incarnationGuardianOfUrsoc" },
+		berserk = { "berserk", "incarnationGuardianOfUrsoc" },
+	},
+	restoration = {
+		incarnationEnd = "incarnationTreeOfLife",
+		incarnation = "incarnationTreeOfLife",
+		noEfflorescence = "efflorescence",
+		clearcasting = "omenOfClarity",
+	},
+}
+
 -- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
 -- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
 local scratch = {
+	-- Shared by the specs' indicator calls; only one runs per tick.
+	gateState1 = Color:NewIndicatorGateState(),
 	conditionMap1 = {},
 	astralPowerBarColors1 = {},
 	comboPointColors1 = {},
@@ -2429,7 +2451,10 @@ local function UpdateResourceBar()
 			barColorMap.comboPoints = comboPointColors
 
 			-- Apply flat indicator colors (priority order, last writer wins)
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.feral, spells, talents)
+			-- Halazzi's Fury comes from the Midnight Season 2 two-piece set bonus.
+			unavailable.halazzisFury = not TRB.Functions.Item:HasSetBonus(TRB.Classes.Mainline.Druid.FeralSpells.midnightSeason2SetKey, 2) or nil
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 			comboPointOverrides = comboPointColors
 
 			if IsFormBarVisible(formSpecCacheSettings, "primary") then
@@ -2744,7 +2769,8 @@ local function UpdateResourceBar()
 			barColorMap.ironfurBar = ironfurColors
 
 			-- Apply flat indicator colors (priority order, last writer wins)
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.guardian, spells, talents)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 			comboPointOverrides = comboPointColors
 
 			if IsFormBarVisible(formSpecCacheSettings, "primary") then
@@ -2873,7 +2899,8 @@ local function UpdateResourceBar()
 			barColorMap.comboPoints = comboPointColors
 
 			-- Apply flat indicator colors (priority order, last writer wins)
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.restoration, spells, talents)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 			comboPointOverrides = comboPointColors
 
 			if IsFormBarVisible(formSpecCacheSettings, "primary") then

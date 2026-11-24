@@ -483,6 +483,11 @@ function TRB.Classes.Mainline.Druid.FeralSpells:New()
     self.clearcasting = TRB.Classes.SpellBase:New({
         id = 135700
     })
+    -- The talent that grants Feral's Clearcasting.
+    self.omenOfClarity = TRB.Classes.SpellBase:New({
+        id = 16864,
+        isTalent = true
+    })
     self.primalWrath = TRB.Classes.SpellComboPointThreshold:New({
         id = 285381,
         primaryResourceType = Enum.PowerType.Energy,
@@ -556,7 +561,9 @@ function TRB.Classes.Mainline.Druid.FeralSpells:New()
         modifier = 0.75
     })
     self.apexPredatorsCraving = TRB.Classes.SpellBase:New({
-        id = 391882
+        id = 391882,
+        talentId = 391881,
+        isTalent = true
     })
     -- Druid of the Claw
     self.empoweredShapeshifting = TRB.Classes.SpellBase:New({
@@ -1110,6 +1117,7 @@ function TRB.Classes.Mainline.Druid.RestorationSpells:New()
     })
     self.incarnationTreeOfLife = TRB.Classes.SpellBase:New({
         id = 117679,
+        talentId = 33891,
         castId = 33891,
         isTalent = true,
         duration = 30
@@ -1120,6 +1128,11 @@ function TRB.Classes.Mainline.Druid.RestorationSpells:New()
     })
     self.clearcasting = TRB.Classes.SpellBase:New({
         id = 16870
+    })
+    -- The talent that grants Restoration's Clearcasting.
+    self.omenOfClarity = TRB.Classes.SpellBase:New({
+        id = 113043,
+        isTalent = true
     })
 
     return self

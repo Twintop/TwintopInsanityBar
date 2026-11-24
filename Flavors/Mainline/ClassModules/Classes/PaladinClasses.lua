@@ -22,11 +22,24 @@ function TRB.Classes.Mainline.Paladin.HolySpells:New()
 		resource = 1
     })
 
+    -- The talent that makes Flash of Light instant.
+    self.infusionOfLight = TRB.Classes.SpellBase:New({
+        id = 54149,
+        talentId = 53576,
+        isTalent = true
+    })
+
     self.divinePurpose = TRB.Classes.SpellBase:New({
         id = 223819,
+        talentId = 223817,
         spellId = 223819, -- Id the proc's activation overlay is announced under
         isBuff = true,
         duration = 12
+    })
+    -- Divine Purpose's other class talent node; either one grants the proc.
+    self.divinePurposeAlt = TRB.Classes.SpellBase:New({
+        id = 408459,
+        isTalent = true
     })
 
 	self.holyLight = TRB.Classes.SpellBase:New({
@@ -97,9 +110,15 @@ function TRB.Classes.Mainline.Paladin.ProtectionSpells:New()
 
 	self.divinePurpose = TRB.Classes.SpellBase:New({
 		id = 223819,
+		talentId = 223817,
 		spellId = 223819, -- Id the proc's activation overlay is announced under
 		isBuff = true,
 		duration = 12
+	})
+	-- Divine Purpose's other class talent node; either one grants the proc.
+	self.divinePurposeAlt = TRB.Classes.SpellBase:New({
+		id = 408459,
+		isTalent = true
 	})
 
     return self
@@ -159,9 +178,15 @@ function TRB.Classes.Mainline.Paladin.RetributionSpells:New()
 
     self.divinePurpose = TRB.Classes.SpellBase:New({
         id = 223819,
+        talentId = 408459,
         spellId = 408458, -- Id the proc's activation overlay is announced under
         isBuff = true,
         duration = 12
+    })
+    -- Divine Purpose's other class talent node; either one grants the proc.
+    self.divinePurposeAlt = TRB.Classes.SpellBase:New({
+        id = 223817,
+        isTalent = true
     })
 
     self.executionSentence = TRB.Classes.SpellBase:New({

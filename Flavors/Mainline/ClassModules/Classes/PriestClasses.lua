@@ -61,6 +61,7 @@ function TRB.Classes.Mainline.Priest.HealerSpells:New()
 	})
 	self.surgeOfLight = TRB.Classes.SpellBase:New({
 		id = 114255,
+		talentId = 109186,
 		isBuff = true,
 		duration = 20,
 		maxStacks = 2,
@@ -153,8 +154,24 @@ function TRB.Classes.Mainline.Priest.DisciplineSpells:New()
 
 	-- Voidweaver
 	
+	-- One talent node with three entries; any of them grants Void Shield.
 	self.masterTheDarkness = TRB.Classes.SpellBase:New({
 		id = 1253593,
+		talentId = 1253590,
+		buffId = 1253591,
+		isBuff = true,
+		duration = 60
+	})
+	self.masterTheDarkness2 = TRB.Classes.SpellBase:New({
+		id = 1253593,
+		talentId = 1253827,
+		buffId = 1253591,
+		isBuff = true,
+		duration = 60
+	})
+	self.masterTheDarkness3 = TRB.Classes.SpellBase:New({
+		id = 1253593,
+		talentId = 1253845,
 		buffId = 1253591,
 		isBuff = true,
 		duration = 60
@@ -774,6 +791,7 @@ function TRB.Classes.Mainline.Priest.ShadowSpells:New()
 	})
 	self.shadowyInsight = TRB.Classes.SpellBase:New({
 		id = 375981,
+		talentId = 375888,
 		isTalent = true
 	})
 

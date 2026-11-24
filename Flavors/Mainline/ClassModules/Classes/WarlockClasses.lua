@@ -148,6 +148,7 @@ function TRB.Classes.Mainline.Warlock.DemonologySpells:New()
     })
     self.ruination = TRB.Classes.SpellBase:New({
         id = 434635,
+        talentId = 428522,
         isTalent = true,
         duration = 20
     })
@@ -339,8 +340,14 @@ function TRB.Classes.Mainline.Warlock.DestructionSpells:New()
     })
     self.ruination = TRB.Classes.SpellBase:New({
         id = 434635,
+        talentId = 428522,
         isTalent = true,
         duration = 20
+    })
+    -- The Diabolist hero tree's keystone.
+    self.diabolicRitual = TRB.Classes.SpellBase:New({
+        id = 428514,
+        isTalent = true
     })
 
     return self

@@ -61,12 +61,25 @@ function TRB.Classes.Mainline.Mage.ArcaneSpells:New()
         maxStacksMod = 2
     })
     -- Glows on the Arcane Blast button it replaces.
+    -- One talent node with three entries; any of them grants the proc.
     self.prismaticBolt = TRB.Classes.SpellBase:New({
         id = 1295924,
+        talentId = 1295923,
+        duration = 60
+    })
+    self.prismaticBolt2 = TRB.Classes.SpellBase:New({
+        id = 1295924,
+        talentId = 1295944,
+        duration = 60
+    })
+    self.prismaticBolt3 = TRB.Classes.SpellBase:New({
+        id = 1295924,
+        talentId = 1295946,
         duration = 60
     })
     self.overpoweredMissiles = TRB.Classes.SpellBase:New({
-        id = 1277009
+        id = 1277009,
+        talentId = 1244329
     })
 
     return self
@@ -227,6 +240,7 @@ function TRB.Classes.Mainline.Mage.FireSpells:New()
     })
     self.frostfireEmpowerment = TRB.Classes.SpellBase:New({
         id = 431177,
+        talentId = 431176,
         duration = 20
     })
 
@@ -326,11 +340,13 @@ function TRB.Classes.Mainline.Mage.FrostSpells:New()
     })
     self.fingersOfFrost = TRB.Classes.SpellBase:New({
         id = 44544,
+        talentId = 112965,
         duration = 15,
         maxStacks = 2
     })
     self.brainFreeze = TRB.Classes.SpellBase:New({
-        id = 190446
+        id = 190446,
+        talentId = 190447
     })
     self.polishedFocus = TRB.Classes.SpellBase:New({
         id = 1261082,
@@ -354,6 +370,7 @@ function TRB.Classes.Mainline.Mage.FrostSpells:New()
     -- Frostfire Empowerment glows on the Frostfire Bolt button.
     self.frostfireEmpowerment = TRB.Classes.SpellBase:New({
         id = 431177,
+        talentId = 431176,
         duration = 20
     })
 

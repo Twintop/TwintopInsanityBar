@@ -1530,9 +1530,38 @@ local function UpdateArcaneSalvo(specSettings, specCacheSettings, barColors, fil
 end
 
 
+-- Each spec's built-in indicators, by specId, and the talent they can't be met without; any one of a list will do.
+-- Arcane's first Clearcasting, Hot Streak, and Heating Up are the specs' own.
+local indicatorGates = {
+	-- Arcane
+	[1] = {
+		arcaneSurge = "arcaneSurge",
+		arcaneSurgeEnd = "arcaneSurge",
+		overpoweredMissiles = "overpoweredMissiles",
+		prismaticBolt = { "prismaticBolt", "prismaticBolt2", "prismaticBolt3" },
+		clearcasting2 = "improvedClearcasting",
+		clearcasting3 = "improvedClearcasting",
+	},
+	-- Fire
+	[2] = {
+		combustion = "combustion",
+		combustionEnd = "combustion",
+		frostfireEmpowerment = "frostfireEmpowerment",
+	},
+	-- Frost: Flash Freeze also grants Fingers of Frost.
+	[3] = {
+		brainFreeze = "brainFreeze",
+		fingersOfFrost = { "fingersOfFrost", "flashFreeze" },
+		fingersOfFrost2 = { "fingersOfFrost", "flashFreeze" },
+		frostfireEmpowerment = "frostfireEmpowerment",
+	},
+}
+
 -- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
 -- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
 local scratch = {
+	-- Shared by the specs' indicator calls; only one runs per tick.
+	gateState1 = Color:NewIndicatorGateState(),
 	conditionMap1 = {},
 	manaBarColors1 = {},
 	iciclesBarColors1 = {},
@@ -1666,7 +1695,8 @@ local function UpdateResourceBar()
 			barColorMap.arcaneChargesBar = arcaneChargesBarColors
 			barColorMap.arcaneSalvo = arcaneSalvoBarColors
 
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, indicatorTargets)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, indicatorTargets,
+				Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates[TRB.Data.character.specId], spells, talents))
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
@@ -1807,7 +1837,8 @@ local function UpdateResourceBar()
 			barColorMap.manaBar = manaBarColors
 			barColorMap.fireBlastChargesBar = fireBlastBarColors
 
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, indicatorTargets)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, indicatorTargets,
+				Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates[TRB.Data.character.specId], spells, talents))
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
@@ -1950,7 +1981,8 @@ local function UpdateResourceBar()
 			barColorMap.iciclesBar = iciclesBarColors
 			barColorMap.shatterBar = shatterBarColors
 
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, indicatorTargets)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, indicatorTargets,
+				Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates[TRB.Data.character.specId], spells, talents))
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
