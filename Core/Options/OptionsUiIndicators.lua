@@ -91,36 +91,9 @@ StaticPopupDialogs["TwintopResourceBar_ConfirmDeleteCustomIndicator"] = {
 	preferredIndex = 3,
 }
 
----Turns a target menu scrollable when the rows it is about to draw would overflow the screen.
----@param rootDescription table The root menu description being populated
----@param barTargetDefs TRB.Classes.OptionsUi.BarTargetDef[] The bars the menu offers
----@param isExcluded fun(barDef: table, elemKey: string): boolean Whether an element is omitted from the menu
----@param hasGlowRow boolean? Whether every bar section also draws the Border Glow submenu row
-local function ApplyTargetMenuScrollMode(rootDescription, barTargetDefs, isExcluded, hasGlowRow)
-	if not rootDescription.SetScrollMode then
-		return
-	end
-
-	local rows = 0
-	for _, barDef in ipairs(barTargetDefs) do
-		local sectionRows = hasGlowRow and 1 or 0
-		for _, elemDef in ipairs(barDef.elements or defaultElementDefs) do
-			if not isExcluded(barDef, elemDef.key) then
-				sectionRows = sectionRows + 1
-			end
-		end
-		if sectionRows > 0 then
-			-- The section's title row, and the divider drawn ahead of every section but the first.
-			rows = rows + sectionRows + (rows > 0 and 2 or 1)
-		end
-	end
-
-	TRB.Functions.OptionsUi.Primitives:LimitMenuRows(rootDescription, rows)
-end
-
----Builds the Border Glow submenu for one bar in a flat indicator's target menu. Any number of glows can be
+---Builds the Border Glow submenu for one bar in an indicator's target menu. Any number of glows can be
 ---checked and all of them run at once; a glow that pins its own color is marked as such in the list.
----@param rootDescription table The bar section being populated
+---@param rootDescription table The bar's submenu being populated
 ---@param getTargets fun(): table? Resolves the indicator's target table for this bar, live
 ---@param onChanged fun() Runs after a pick, to resync the row's summary and enabled state
 local function CreateBorderGlowSubmenu(rootDescription, getTargets, onChanged)
@@ -170,6 +143,86 @@ local function CreateBorderGlowSubmenu(rootDescription, getTargets, onChanged)
 			targets.glows[guid] = (not targets.glows[guid]) or nil
 			onChanged()
 		end)
+	end
+end
+
+---How many of a bar's targets a row has on: the elements its menu offers, plus its Border Glows.
+---@param barDef TRB.Classes.OptionsUi.BarTargetDef
+---@param isExcluded fun(barDef: table, elemKey: string): boolean
+---@param targets table? The row's targets for this bar
+---@return integer
+local function CountBarTargets(barDef, isExcluded, targets)
+	if targets == nil then
+		return 0
+	end
+	local count = 0
+	for _, elemDef in ipairs(barDef.elements or defaultElementDefs) do
+		if targets[elemDef.key] and not isExcluded(barDef, elemDef.key) then
+			count = count + 1
+		end
+	end
+	if targets.glows ~= nil then
+		for _, glow in ipairs(TRB.Functions.Glow:GetOrdered()) do
+			if targets.glows[glow.guid] then
+				count = count + 1
+			end
+		end
+	end
+	return count
+end
+
+---Fills a row's target menu. Each bar is a submenu named with how many of its targets the row has on, holding
+---the bar's elements and its Border Glows.
+---@param rootDescription table The root menu description being populated
+---@param barTargetDefs TRB.Classes.OptionsUi.BarTargetDef[] The bars the row can target
+---@param isExcluded fun(barDef: table, elemKey: string): boolean Whether an element is omitted from the menu
+---@param offersEveryBar boolean A flat row lists every bar, for its Border Glows; a gradient row skips a bar with no element it can take
+---@param getTargets fun(barKey: string): table? Resolves the row's target table for a bar, live
+---@param onChanged fun() Runs after a pick, to resync the row's summary and enabled state
+function TRB.Functions.OptionsUi.Indicators:BuildBarTargetMenu(rootDescription, barTargetDefs, isExcluded, offersEveryBar, getTargets, onChanged)
+	local offered = {}
+	for _, barDef in ipairs(barTargetDefs) do
+		local offersElement = offersEveryBar
+		if not offersElement then
+			for _, elemDef in ipairs(barDef.elements or defaultElementDefs) do
+				if not isExcluded(barDef, elemDef.key) then
+					offersElement = true
+					break
+				end
+			end
+		end
+		if offersElement then
+			offered[#offered + 1] = barDef
+		end
+	end
+	TRB.Functions.OptionsUi.Primitives:LimitMenuRows(rootDescription, #offered)
+
+	for _, barDef in ipairs(offered) do
+		local submenu = rootDescription:CreateButton(barDef.label)
+		local function getBarTargets()
+			return getTargets(barDef.key)
+		end
+		-- Blizzard bakes the label in at creation; a pick's Refresh re-runs this, keeping the count live.
+		submenu:AddInitializer(function(button)
+			button.fontString:SetTextToFit(barDef.label .. " (" .. CountBarTargets(barDef, isExcluded, getBarTargets()) .. ")")
+		end)
+
+		for _, elemDef in ipairs(barDef.elements or defaultElementDefs) do
+			if not isExcluded(barDef, elemDef.key) then
+				submenu:CreateCheckbox(elemDef.label, function()
+					local targets = getBarTargets()
+					return (targets ~= nil and targets[elemDef.key]) or false
+				end, function()
+					local targets = getBarTargets()
+					if targets == nil then
+						return
+					end
+					targets[elemDef.key] = not targets[elemDef.key]
+					onChanged()
+				end)
+			end
+		end
+		CreateBorderGlowSubmenu(submenu, getBarTargets, onChanged)
 	end
 end
 
@@ -1444,59 +1497,20 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			if not currentIndicator then return end
 			currentIndicator.targets = currentIndicator.targets or {}
 
-			local rowBarTargetDefs = GetBarTargetDefsFor(indicatorDefByKey[currentKey])
-			ApplyTargetMenuScrollMode(rootDescription, rowBarTargetDefs, IsExcluded, true)
-
-			-- Every bar offers a Border Glow, so no bar section can be excluded outright here.
-			local firstBar = true
-			for _, barDef in ipairs(rowBarTargetDefs) do
-				local barElementDefs = barDef.elements or defaultElementDefs
-				if not firstBar then
-					rootDescription:CreateDivider()
-				end
-				firstBar = false
-				rootDescription:CreateTitle(barDef.label)
-				currentIndicator.targets[barDef.key] = currentIndicator.targets[barDef.key] or {}
-
-				for _, elemDef in ipairs(barElementDefs) do
-					if not IsExcluded(barDef, elemDef.key) then
-						rootDescription:CreateCheckbox(
-							elemDef.label,
-							function()
-								local ck = orderedKeys[capturedRowIdx]
-								local ci = indicatorColors[ck]
-								return ci and ci.targets and ci.targets[barDef.key] and ci.targets[barDef.key][elemDef.key] or false
-							end,
-							function()
-								local ck = orderedKeys[capturedRowIdx]
-								local ci = indicatorColors[ck]
-								if not ci then return end
-								ci.targets = ci.targets or {}
-								ci.targets[barDef.key] = ci.targets[barDef.key] or {}
-								ci.targets[barDef.key][elemDef.key] = not ci.targets[barDef.key][elemDef.key]
-								local targetRow = rows[capturedRowIdx]
-								SyncEnabled(ci, targetRow and targetRow.colorPicker)
-								-- Re-applies a not-tracked custom row's faded name, which SyncEnabled just reset.
-								RefreshRow(capturedRowIdx)
-							end
-						)
-					end
-				end
-
-				CreateBorderGlowSubmenu(rootDescription, function()
-					local ck = orderedKeys[capturedRowIdx]
-					local ci = indicatorColors[ck]
-					if not ci then return nil end
-					ci.targets = ci.targets or {}
-					ci.targets[barDef.key] = ci.targets[barDef.key] or {}
-					return ci.targets[barDef.key]
-				end, function()
-					local ci = indicatorColors[orderedKeys[capturedRowIdx]]
-					local targetRow = rows[capturedRowIdx]
-					SyncEnabled(ci, targetRow and targetRow.colorPicker)
-					RefreshRow(capturedRowIdx)
-				end)
-			end
+			-- Every bar offers a Border Glow, so a flat row lists them all.
+			TRB.Functions.OptionsUi.Indicators:BuildBarTargetMenu(rootDescription, GetBarTargetDefsFor(indicatorDefByKey[currentKey]), IsExcluded, true, function(barKey)
+				local ci = indicatorColors[orderedKeys[capturedRowIdx]]
+				if not ci then return nil end
+				ci.targets = ci.targets or {}
+				ci.targets[barKey] = ci.targets[barKey] or {}
+				return ci.targets[barKey]
+			end, function()
+				local ci = indicatorColors[orderedKeys[capturedRowIdx]]
+				local targetRow = rows[capturedRowIdx]
+				SyncEnabled(ci, targetRow and targetRow.colorPicker)
+				-- Re-applies a not-tracked custom row's faded name, which SyncEnabled just reset.
+				RefreshRow(capturedRowIdx)
+			end)
 		end)
 		row.dropdown = dd
 
@@ -1976,61 +1990,16 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 				if not ci then return end
 				ci.targets = ci.targets or {}
 
-				local rowBarTargetDefs = GetBarTargetDefsFor(indicatorDefByKey[ck])
-				ApplyTargetMenuScrollMode(rootDescription, rowBarTargetDefs, IsGradientExcluded, true)
-
-				local firstBar = true
-				for _, barDef in ipairs(rowBarTargetDefs) do
-					local barElementDefs = barDef.elements or defaultElementDefs
-					local allExcluded = true
-					for _, elemDef in ipairs(barElementDefs) do
-						if not IsGradientExcluded(barDef, elemDef.key) then
-							allExcluded = false
-							break
-						end
-					end
-					if not allExcluded then
-						if not firstBar then
-							rootDescription:CreateDivider()
-						end
-						firstBar = false
-						rootDescription:CreateTitle(barDef.label)
-						ci.targets[barDef.key] = ci.targets[barDef.key] or {}
-
-						for _, elemDef in ipairs(barElementDefs) do
-							if not IsGradientExcluded(barDef, elemDef.key) then
-								rootDescription:CreateCheckbox(
-									elemDef.label,
-									function()
-										local gk = orderedGradientKeys[capturedGradIdx]
-										local indicator = indicatorColors[gk]
-										return indicator and indicator.targets and indicator.targets[barDef.key] and indicator.targets[barDef.key][elemDef.key] or false
-									end,
-									function()
-										local gk = orderedGradientKeys[capturedGradIdx]
-										local indicator = indicatorColors[gk]
-										if not indicator then return end
-										indicator.targets = indicator.targets or {}
-										indicator.targets[barDef.key] = indicator.targets[barDef.key] or {}
-										indicator.targets[barDef.key][elemDef.key] = not indicator.targets[barDef.key][elemDef.key]
-										SyncEnabled(indicator, gradRow.colorPicker)
-									end
-								)
-							end
-						end
-
-						-- Only on bars that take a gradient: the glow fades in at the same step as the color.
-						CreateBorderGlowSubmenu(rootDescription, function()
-							local indicator = indicatorColors[orderedGradientKeys[capturedGradIdx]]
-							if not indicator then return nil end
-							indicator.targets = indicator.targets or {}
-							indicator.targets[barDef.key] = indicator.targets[barDef.key] or {}
-							return indicator.targets[barDef.key]
-						end, function()
-							SyncEnabled(indicatorColors[orderedGradientKeys[capturedGradIdx]], gradRow.colorPicker)
-						end)
-					end
-				end
+				-- Border Glows only on bars that take a gradient: the glow fades in at the same step as the color.
+				TRB.Functions.OptionsUi.Indicators:BuildBarTargetMenu(rootDescription, GetBarTargetDefsFor(indicatorDefByKey[ck]), IsGradientExcluded, false, function(barKey)
+					local indicator = indicatorColors[orderedGradientKeys[capturedGradIdx]]
+					if not indicator then return nil end
+					indicator.targets = indicator.targets or {}
+					indicator.targets[barKey] = indicator.targets[barKey] or {}
+					return indicator.targets[barKey]
+				end, function()
+					SyncEnabled(indicatorColors[orderedGradientKeys[capturedGradIdx]], gradRow.colorPicker)
+				end)
 			end)
 
 			gradRow.dropdown = dd
