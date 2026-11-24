@@ -511,12 +511,23 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		end
 	end
 
+	---The bar picker section an anchor lists under; nil is the screen.
+	---@param anchor TRB.Classes.BarTextAnchor
+	---@return string?
+	local function AnchorSection(anchor)
+		return TRB.Functions.Bar:GetBarTargetSection(anchor.barKey, classId, specId)
+	end
+
 	local function RelativeToFrameGenerator(dropdown, rootDescription)
+		local listed = {}
 		for _, anchor in ipairs(CatalogFor(workingBarText).entries) do
 			if IsGroupListed(anchor.groupKey) then
-				rootDescription:CreateRadio(anchor.label, RelativeToFrameIsSelected, RelativeToFrameSetSelected, anchor.frame)
+				listed[#listed + 1] = anchor
 			end
 		end
+		TRB.Functions.OptionsUi.Primitives:AddBarSections(rootDescription, listed, AnchorSection, function(menu, anchor)
+			menu:CreateRadio(anchor.label, RelativeToFrameIsSelected, RelativeToFrameSetSelected, anchor.frame)
+		end)
 		rootDescription:SetScrollMode(400)
 	end
 	barTextRelativeToFrame:SetupMenu(RelativeToFrameGenerator)
@@ -1300,16 +1311,6 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		end
 	end
 
-	local moveGroupLabels = {
-		spec = L["BarTextGroupSpecBars"],
-		castbar = L["TabCastbars"],
-		otherBars = L["TabOtherBars"],
-		petBars = L["TabPetBars"],
-		totems = L["ResourceTotems"],
-		skyriding = L["TabSkyriding"],
-	}
-	local moveGroupOrder = { "spec", "castbar", "otherBars", "petBars", "totems", "skyriding" }
-
 	---Binds an entry to another bar, then redraws the lists and text the move changes.
 	---@param entry TRB.Classes.Settings.DisplayTextEntry
 	---@param anchor TRB.Classes.BarTextAnchor
@@ -1336,25 +1337,9 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 			MoveBarTextEntryToAnchor(entry, anchor)
 		end
 
-		local entryCatalog = CatalogFor(entry)
-		for _, anchor in ipairs(entryCatalog.entries) do
-			if anchor.groupKey == "screen" then
-				menu:CreateRadio(anchor.label, IsCurrentAnchor, MoveToAnchor, anchor)
-			end
-		end
-		for _, moveGroupKey in ipairs(moveGroupOrder) do
-			local isFirst = true
-			for _, anchor in ipairs(entryCatalog.entries) do
-				if anchor.groupKey == moveGroupKey then
-					if isFirst then
-						menu:CreateDivider()
-						menu:CreateTitle(moveGroupLabels[moveGroupKey])
-						isFirst = false
-					end
-					menu:CreateRadio(anchor.label, IsCurrentAnchor, MoveToAnchor, anchor)
-				end
-			end
-		end
+		TRB.Functions.OptionsUi.Primitives:AddBarSections(menu, CatalogFor(entry).entries, AnchorSection, function(target, anchor)
+			target:CreateRadio(anchor.label, IsCurrentAnchor, MoveToAnchor, anchor)
+		end)
 	end
 
 	local function ProfileHasCore(profileName)

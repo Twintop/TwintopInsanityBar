@@ -24,19 +24,6 @@ local defaultElementDefs = {
 	{ key = "endCap", label = L["EndCap"] },
 }
 
--- The sections a row's target menu lists its bars under, in order; a bar target with no group is Built-in.
-local builtInTargetGroup = "builtIn"
-local barTargetGroups = {
-	{ key = builtInTargetGroup, label = L["IndicatorTargetGroupBuiltIn"] },
-	{ key = "castBars", label = L["TabCastbars"] },
-	{ key = "petBars", label = L["TabPetBars"] },
-	{ key = "customBars", label = L["TabCustomBars"] },
-}
-local barTargetGroupKeys = {}
-for _, group in ipairs(barTargetGroups) do
-	barTargetGroupKeys[group.key] = true
-end
-
 ---A target menu entry's name with how many of its targets are on, tinted once any is.
 ---@param label string
 ---@param count integer
@@ -238,8 +225,7 @@ end
 ---@param getTargets fun(barKey: string): table? Resolves the row's target table for a bar, live
 ---@param onChanged fun() Runs after a pick, to resync the row's summary and enabled state
 function TRB.Functions.OptionsUi.Indicators:BuildBarTargetMenu(rootDescription, barTargetDefs, isExcluded, offersEveryBar, getTargets, onChanged)
-	local offeredByGroup = {}
-	local rows = 0
+	local offered = {}
 	for _, barDef in ipairs(barTargetDefs) do
 		local offersElement = offersEveryBar
 		if not offersElement then
@@ -251,38 +237,17 @@ function TRB.Functions.OptionsUi.Indicators:BuildBarTargetMenu(rootDescription, 
 			end
 		end
 		if offersElement then
-			local groupKey = barDef.group
-			-- A group with no section would never be drawn, so its bar falls back to Built-in.
-			if groupKey == nil or not barTargetGroupKeys[groupKey] then
-				groupKey = builtInTargetGroup
-			end
-			local offered = offeredByGroup[groupKey]
-			if offered == nil then
-				offered = {}
-				offeredByGroup[groupKey] = offered
-				-- The section's title, and the divider ahead of every section but the first.
-				rows = rows + (rows > 0 and 2 or 1)
-			end
 			offered[#offered + 1] = barDef
-			rows = rows + 1
 		end
 	end
-	TRB.Functions.OptionsUi.Primitives:LimitMenuRows(rootDescription, rows)
 
-	local firstGroup = true
-	for _, group in ipairs(barTargetGroups) do
-		local offered = offeredByGroup[group.key]
-		if offered ~= nil then
-			if not firstGroup then
-				rootDescription:CreateDivider()
-			end
-			firstGroup = false
-			rootDescription:CreateTitle(group.label)
-			for _, barDef in ipairs(offered) do
-				CreateBarTargetSubmenu(rootDescription, barDef, isExcluded, getTargets, onChanged)
-			end
-		end
-	end
+	local Primitives = TRB.Functions.OptionsUi.Primitives
+	local rows = Primitives:AddBarSections(rootDescription, offered, function(barDef)
+		return barDef.group or TRB.Functions.Bar.builtInBarSection
+	end, function(menu, barDef)
+		CreateBarTargetSubmenu(menu, barDef, isExcluded, getTargets, onChanged)
+	end)
+	Primitives:LimitMenuRows(rootDescription, rows)
 end
 
 ---The bar targets every spec gets for free: the health bar and the cast bar. Appended to whatever bars the

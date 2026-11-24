@@ -3435,6 +3435,52 @@ function TRB.Functions.Bar:GetBarTargetRank(barKey)
 	return 3
 end
 
+-- A bar with no section of its own, and every Totems bar, lists under Built-in.
+TRB.Functions.Bar.builtInBarSection = "builtIn"
+
+---@type { key: string, label: string }[]?
+local barTargetSections = nil
+
+---The sections every bar picker lists its bars under, in order.
+---@return { key: string, label: string }[]
+function TRB.Functions.Bar:GetBarTargetSections()
+	if barTargetSections == nil then
+		local L = TRB.Localization
+		barTargetSections = {
+			{ key = self.builtInBarSection, label = L["BarSectionBuiltIn"] },
+			{ key = "castBars", label = L["TabCastbars"] },
+			{ key = "otherBars", label = L["TabOtherBars"] },
+			{ key = "petBars", label = L["TabPetBars"] },
+			{ key = "skyriding", label = L["TabSkyriding"] },
+			{ key = "customBars", label = L["TabCustomBars"] },
+		}
+	end
+	return barTargetSections
+end
+
+---The section a bar picker lists a bar under, or nil for the screen, which leads the list untitled.
+---@param barKey string
+---@param classId integer?
+---@param specId integer?
+---@return string?
+function TRB.Functions.Bar:GetBarTargetSection(barKey, classId, specId)
+	if barKey == "screen" then
+		return nil
+	end
+	local registry = TRB.Classes.BarTypeRegistry
+	-- Totems is Built-in for every spec, whichever tab its options sit on.
+	if registry:IsTotemBar(barKey) then
+		return self.builtInBarSection
+	end
+	local group = registry:GetBarGroup(barKey, classId, specId)
+	if group == "castbar" then
+		return "castBars"
+	elseif group == "spec" then
+		return self.builtInBarSection
+	end
+	return group
+end
+
 ---Sorts bar-target entries by rank, then group name; entries sharing a group keep their given order.
 ---@param entries any[] # Distinct values: tables, or bar key strings
 ---@param getSortKey fun(entry: any): string, string # Returns the bar key to rank by and the group's name

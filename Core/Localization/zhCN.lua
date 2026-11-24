@@ -4077,7 +4077,6 @@ if locale == "zhCN" then
 	L["CheckboxIncludeAllBarTextGroups"] = "将其他文字标签页的进度条文字加入此表格"
 	L["CheckboxIncludeAllBarTextGroupsTooltip"] = "勾选后，表格会列出其他所有进度条文字标签页中的条目（如施法条下的文字），可在此和原标签页编辑。仅改变表格显示内容，不会改动进度条上实际展示的文字。该设置不会保存。"
 	L["BarTextMoveToBar"] = "移动至进度条"
-	L["BarTextGroupSpecBars"] = "专精进度条"
 	L["BarTextDeleteGlobalConfirmation"] = "「%s」是全局进度条文字。删除后，所有正在使用它（%d个）的专精都会一并移除，确定吗？"
 	L["BarTextGlobalBadgeTooltip"] = "该文字来自全局选项，在此修改会同步到所有启用全局文字的专精。"
 	L["CheckboxUseGlobalBarText"] = "在此专精的进度条上显示全局进度条文字"

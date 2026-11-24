@@ -520,7 +520,6 @@ if locale == "enGB" then
 	L["BarVisibilityCustomizeBar"] = "Customise This Bar"
 	L["CheckboxUseGlobalAllSpecsListedBars"] = "Use global settings for the bars listed here in all specialisations"
 	L["CheckboxUseGlobalAllSpecsListedBarsTooltip"] = "When checked, every bar listed here follows its global settings in all specialisations across all classes. When unchecked, each of those specialisations uses its own settings for these bars."
-	L["BarTextGroupSpecBars"] = "Specialisation bars"
 	L["BarTextDeleteGlobalConfirmation"] = "'%s' is Global Bar Text. Deleting it also deletes it for every other specialisation that uses it (%d). Are you sure?"
 	L["BarTextGlobalBadgeTooltip"] = "This bar text comes from Global Options. Changing it here changes it for every specialisation that displays Global Bar Text."
 	L["CheckboxUseGlobalBarText"] = "Display Global Bar Text on this specialisation's bars"
