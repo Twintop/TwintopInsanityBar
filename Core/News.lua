@@ -5,6 +5,10 @@ local _, TRB = ...
 TRB.Details.coreNewsContent = [====[
 
 # Live 12.1.5.16-release / Forever 1.60.1.22-release / Classic 1.15.9.7-release / TBC 2.5.6.5-release (2026-11-24)
+## Color Indicators
+
+- Each bar in a Color Indicator's target dropdown is now its own submenu, named with how many of its targets are on.
+
 ## Custom Bars
 
 - [#1028](#1028) Custom bars can now be Color Indicator targets, listed by name in the target dropdowns.
