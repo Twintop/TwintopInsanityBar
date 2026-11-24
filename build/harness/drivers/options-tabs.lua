@@ -300,9 +300,13 @@ function hooks.afterEvents(ctx)
 			local Glow = TRB_.Functions.Glow
 			local getOrdered = Glow.GetOrdered
 			Glow.GetOrdered = function() return { { guid = "driverGlow", name = "Driver Glow" } } end
+			-- Out of section order, and with a second ungrouped bar last, as Totems is.
 			local defs = {
 				{ key = "driverFirst", label = "Driver First" },
-				{ key = "driverSecond", label = "Driver Second", elements = { { key = "border", label = "Driver Border" } }, gradientExcluded = { border = true } },
+				{ key = "driverCustom", label = "Driver Custom", group = "customBars" },
+				{ key = "driverSecond", label = "Driver Second", group = "castBars", elements = { { key = "border", label = "Driver Border" } }, gradientExcluded = { border = true } },
+				{ key = "driverPet", label = "Driver Pet", group = "petBars" },
+				{ key = "driverLast", label = "Driver Last" },
 			}
 			local targets = { driverFirst = { border = true } }
 			local changes = 0
@@ -331,40 +335,60 @@ function hooks.afterEvents(ctx)
 				end
 				return table.concat(kinds, ",")
 			end
+			local function Labels(entry)
+				local labels = {}
+				for _, child in ipairs(entry ~= nil and entry.children or {}) do
+					if child.kind ~= "divider" then
+						labels[#labels + 1] = child.label
+					end
+				end
+				return table.concat(labels, "|")
+			end
+			local function Off(label, count) return string.format(L_["IndicatorTargetCountFormat"], label, count) end
+			local function On(label, count) return string.format(L_["IndicatorTargetCountActiveFormat"], label, count) end
+			local builtIn, castBars, petBars, customBars = L_["IndicatorTargetGroupBuiltIn"], L_["TabCastbars"], L_["TabPetBars"], L_["TabCustomBars"]
 
 			local flat = Build(function() return false end, true)
-			local first, second = flat.children[1], flat.children[2]
-			check("a row's target menu lists each bar as its own submenu, with no titles or dividers", Kinds(flat) == "button,button"
-				and first.label == "Driver First" and second.label == "Driver Second")
+			check("a row's target menu lists its bars under a title per kind, in a fixed order, with a divider between them",
+				Kinds(flat) == "title,button,button,divider,title,button,divider,title,button,divider,title,button"
+				and Labels(flat) == table.concat({ builtIn, "Driver First", "Driver Last", castBars, "Driver Second", petBars, "Driver Pet", customBars, "Driver Custom" }, "|"))
+			local first, second = flat.children[2], flat.children[6]
 			check("a bar's submenu holds its elements, then Border Glow", Kinds(first) == "checkbox,checkbox,checkbox,checkbox,button"
 				and first.children[1].label == L_["BarElementBar"] and first.children[4].label == L_["EndCap"]
 				and first.children[5].label == L_["BarElementBorderGlow"] and Kinds(second) == "checkbox,button"
 				and second.children[1].label == "Driver Border")
-			check("each bar is named with how many of its targets are on", Shown(first) == "Driver First (1)" and Shown(second) == "Driver Second (0)")
+			check("each bar is named with how many of its targets are on, tinted once any is", Shown(first) == On("Driver First", 1)
+				and Shown(second) == Off("Driver Second", 0) and Off("Driver First", 1) == "Driver First (1)"
+				and On("Driver First", 1) ~= Off("Driver First", 1) and On("Driver First", 1):find("^|c%x%x%x%x%x%x%x%xDriver First %(1%)|r$") ~= nil)
 			if first ~= nil and #first.children == 5 then
 				local barBox, glowMenu = first.children[1], first.children[5]
 				try("pick an element", function() barBox.setSelected() end)
 				check("picking an element turns it on, counts it, and reports the change", targets.driverFirst.bar == true and barBox.isSelected() == true
-					and Shown(first) == "Driver First (2)" and changes == 1)
+					and Shown(first) == On("Driver First", 2) and changes == 1)
 				try("pick it again", function() barBox.setSelected() end)
-				check("picking it again turns it off", targets.driverFirst.bar == false and barBox.isSelected() == false and Shown(first) == "Driver First (1)")
+				check("picking it again turns it off", targets.driverFirst.bar == false and barBox.isSelected() == false and Shown(first) == On("Driver First", 1))
 				local glowBox = glowMenu.children[1]
 				check("Border Glow lists the glows, named with how many are on", Kinds(glowMenu) == "checkbox" and glowBox.label == "Driver Glow"
-					and Shown(glowMenu) == L_["BarElementBorderGlow"] .. " (0)")
+					and Shown(glowMenu) == Off(L_["BarElementBorderGlow"], 0))
 				if glowBox ~= nil then
 					try("pick a glow", function() glowBox.setSelected() end)
-					check("a picked glow counts on Border Glow and on its bar", targets.driverFirst.glows.driverGlow == true
-						and Shown(glowMenu) == L_["BarElementBorderGlow"] .. " (1)" and Shown(first) == "Driver First (2)")
+					check("a picked glow counts, and tints, on Border Glow and on its bar", targets.driverFirst.glows.driverGlow == true
+						and Shown(glowMenu) == On(L_["BarElementBorderGlow"], 1) and Shown(first) == On("Driver First", 2))
 				end
+				targets.driverFirst = {}
+				check("with nothing left on, the bar loses its tint", Shown(first) == Off("Driver First", 0))
 			end
 
 			local gradient = Build(function(barDef, elemKey)
 				return barDef.gradientExcluded ~= nil and barDef.gradientExcluded[elemKey] == true
 			end, false)
-			check("a gradient row skips a bar with no element it can take, and keeps Border Glow on the rest", Kinds(gradient) == "button"
-				and gradient.children[1].label == "Driver First" and Kinds(gradient.children[1]) == "checkbox,checkbox,checkbox,checkbox,button")
+			check("a gradient row skips a bar with no element it can take, and a section left with no bars",
+				Kinds(gradient) == "title,button,button,divider,title,button,divider,title,button"
+				and Labels(gradient) == table.concat({ builtIn, "Driver First", "Driver Last", petBars, "Driver Pet", customBars, "Driver Custom" }, "|")
+				and Kinds(gradient.children[2]) == "checkbox,checkbox,checkbox,checkbox,button")
 
 			-- Every built panel's rows draw their menus the same way.
+			local sectionOrder = { [builtIn] = 1, [castBars] = 2, [petBars] = 3, [customBars] = 4 }
 			local menus, misdrawn = 0, 0
 			for name in pairs(drv.nameCount) do
 				if name:find("_Indicator_Row%d+_Targets$") or name:find("_Gradient_Row%d+_Targets$") then
@@ -373,9 +397,20 @@ function hooks.afterEvents(ctx)
 						local root = drv.newDesc("root", "root")
 						if try("open " .. name, function() dropdown.__generator(dropdown, root) end) then
 							menus = menus + 1
-							for _, bar in ipairs(root.children) do
-								local last = bar.children[#bar.children]
-								if bar.kind ~= "button" or bar.initializer == nil or last == nil or last.label ~= L_["BarElementBorderGlow"] then
+							local section, lastOrder = nil, 0
+							for _, child in ipairs(root.children) do
+								if child.kind == "title" then
+									local order = sectionOrder[child.label]
+									if order == nil or order <= lastOrder then
+										misdrawn = misdrawn + 1
+									end
+									section, lastOrder = child.label, order or lastOrder
+								elseif child.kind == "button" then
+									local last = child.children[#child.children]
+									if section == nil or child.initializer == nil or last == nil or last.label ~= L_["BarElementBorderGlow"] then
+										misdrawn = misdrawn + 1
+									end
+								elseif child.kind ~= "divider" then
 									misdrawn = misdrawn + 1
 								end
 							end
@@ -383,7 +418,32 @@ function hooks.afterEvents(ctx)
 					end
 				end
 			end
-			check("every built row's target menu is bars only, each ending in Border Glow", menus > 0 and misdrawn == 0)
+			check("every built row's target menu is titled sections of bars, each bar ending in Border Glow", menus > 0 and misdrawn == 0)
+
+			-- Totems is Built-in for every specialization that has it, whichever tab its options sit on.
+			local totems, totemsElsewhere = 0, 0
+			for _, entry in ipairs(TRB_.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+				if TRB_.Classes.BarTypeRegistry:SpecHasTotems(entry.classId, entry.specId) then
+					local classSettings = TRB_.Data.settings[entry.className]
+					local root = drv.newDesc("root", "root")
+					try("build " .. entry.compositeKey .. "'s target menu", function()
+						local specDefs = Indicators:BuildBarTargetDefs(classSettings ~= nil and classSettings[entry.specName] or {}, entry.classId, entry.specId, {})
+						Indicators:BuildBarTargetMenu(root, specDefs, function() return false end, true, function() return nil end, function() end)
+					end)
+					local section = nil
+					for _, child in ipairs(root.children) do
+						if child.kind == "title" then
+							section = child.label
+						elseif child.label == L_["ResourceTotems"] then
+							totems = totems + 1
+							if section ~= builtIn then
+								totemsElsewhere = totemsElsewhere + 1
+							end
+						end
+					end
+				end
+			end
+			check("Totems is listed under Built-in on every specialization that has it", totems > 0 and totemsElsewhere == 0)
 			Glow.GetOrdered = getOrdered
 		end
 

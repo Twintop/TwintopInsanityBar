@@ -2191,8 +2191,9 @@ function hooks.afterEvents(ctx)
 				paintedDef, paintedIndex = barDef, index
 			end
 		end
-		check("the target menus list it by name, after the spec's own and the shared bars, with no gradient on its fill", paintedDef ~= nil
-			and paintedDef.label == spec.customBars.bars[paintedGuid].name and paintedDef.elements == nil and paintedDef.gradientExcluded.bar == true
+		check("the target menus list it by name under Custom Bars, after the spec's own and the shared bars, with no gradient on its fill", paintedDef ~= nil
+			and paintedDef.label == spec.customBars.bars[paintedGuid].name and paintedDef.group == "customBars" and targetDefs[1].group == nil
+			and paintedDef.elements == nil and paintedDef.gradientExcluded.bar == true
 			and paintedDef.gradientExcluded.border == nil and targetDefs[1].key == "driverOwnBar" and paintedIndex > 2)
 		check("settings with no custom bars list only the shared bars", #TRB.Functions.OptionsUi.Indicators:BuildBarTargetDefs({}, classId, specId, {})
 			== #targetDefs - 1 - #CustomBars:GetOrdered(spec))
