@@ -93,6 +93,16 @@ function hooks.afterLoad(ctx)
 		end
 		return applyIndicators(self, sharedColors, conditionMap, ...)
 	end
+	-- The harness has no talents or spellbook; a forced condition stands for a learned spell.
+	local getUnavailable = Color.GetUnavailableIndicators
+	-- Drops the keys a spec adds for its own dependencies, such as Cooldown Manager tracking.
+	local noneUnavailable = setmetatable({}, { __newindex = function() end })
+	Color.GetUnavailableIndicators = function(...)
+		if drv.force ~= nil then
+			return noneUnavailable
+		end
+		return getUnavailable(...)
+	end
 
 	local Tabs = TRB.Functions.OptionsUi.Tabs
 	local buildTabGroup = Tabs.BuildTabGroup
@@ -247,6 +257,19 @@ function hooks.afterEvents(ctx)
 		local map = { builtIn = false }
 		check("IsIndicatorMet flips a built-in", Color:IsIndicatorMet(map, "builtIn", shared.indicatorColors.builtIn) == true)
 		check("and reads a row without modifiers as is", not Color:IsIndicatorMet({ builtIn = false }, "copy_1", shared.indicatorColors.copy_1))
+
+		-- A built-in whose spell isn't learned stays off, Not Active included, and so do its copies.
+		local unlearned = { builtIn = true }
+		check("an unlearned built-in stays off under Not Active", Color:IsIndicatorMet({ builtIn = false }, "builtIn", shared.indicatorColors.builtIn, unlearned) == false)
+		check("and its copy stays off while met", Color:IsIndicatorMet({ builtIn = true, copy_1 = true }, "copy_1", shared.indicatorColors.copy_1, unlearned) == false)
+		check("a learned built-in still flips", Color:IsIndicatorMet({ builtIn = false }, "builtIn", shared.indicatorColors.builtIn, {}) == true)
+		local unlearnedBar
+		try("resolve unlearned", function()
+			local barColorMap = { testBar = {}, otherBar = {} }
+			Color:ApplyIndicatorColors(shared, { builtIn = false }, barColorMap, nil, unlearned)
+			unlearnedBar = barColorMap.testBar
+		end)
+		check("and the resolve paints neither", unlearnedBar ~= nil and unlearnedBar.border == nil and unlearnedBar.background == nil)
 
 		-- Only In Combat keeps a row off out of combat, and in combat leaves its condition and Not Active as they are.
 		local character = TRB.Data.character

@@ -1250,13 +1250,17 @@ end
 ---@field notActive boolean? # The row is on while its condition is not met
 ---@field onlyInCombat boolean? # The row is on only while the player is in combat
 
----Whether a flat row is on right now: its condition, flipped by Not Active and gated by Only In Combat. A custom
----source that can't be read stays off either way; a built-in condition the spec left unset counts as not met.
+---Whether a flat row is on right now: its condition, flipped by Not Active and gated by Only In Combat. An unreadable
+---custom source or an unavailable built-in (and its copies) stays off; a built-in left unset counts as not met.
 ---@param conditionMap table<string, boolean?>
 ---@param key string
 ---@param indicator table # An indicatorColors entry; `modifiers` is a TRB.IndicatorModifiers
+---@param unavailable table<string, boolean>? # Built-in keys whose spell isn't learned
 ---@return boolean?
-local function IsIndicatorMet(conditionMap, key, indicator)
+local function IsIndicatorMet(conditionMap, key, indicator, unavailable)
+	if unavailable ~= nil and unavailable[indicator.copyOf or key] then
+		return false
+	end
 	local met = conditionMap[key]
 	local modifiers = indicator.modifiers
 	if modifiers ~= nil then
@@ -1268,6 +1272,79 @@ local function IsIndicatorMet(conditionMap, key, indicator)
 		end
 	end
 	return met
+end
+
+-- Bumped on every spellbook change, so indicator gates read the spellbook again only then.
+local spellbookGeneration = 0
+local spellbookFrame = CreateFrame("Frame")
+spellbookFrame:RegisterEvent("SPELLS_CHANGED")
+spellbookFrame:SetScript("OnEvent", function()
+	spellbookGeneration = spellbookGeneration + 1
+end)
+
+---What a spec's indicator gates were last resolved against, and the result.
+---@class TRB.IndicatorGateState
+---@field unavailable table<string, boolean> # Built-in keys whose spell isn't learned
+---@field gates table? # The gates the set was built from
+---@field spells table?
+---@field talentTable table? # The talents object's table at build time; GetTalents replaces it on every refresh
+---@field generation integer?
+
+---A new, empty gate state for a spec to keep.
+---@return TRB.IndicatorGateState
+function TRB.Functions.Color:NewIndicatorGateState()
+	return { unavailable = {} }
+end
+
+---Whether a gate's spell is learned: its talent for a talent, the spellbook for anything else.
+---@param spell TRB.Classes.SpellBase?
+---@param talents TRB.Classes.Talents
+---@return boolean
+local function IsGateSpellLearned(spell, talents)
+	if spell == nil then
+		return false
+	elseif spell.isTalent or spell.talentId ~= nil or spell.isPvp then
+		return talents:IsTalentActive(spell)
+	end
+	return spell:IsKnown()
+end
+
+---The built-in indicators whose spell isn't learned, for ApplyIndicatorColors. Rebuilt only when the talents, the
+---spellbook, the spell set, or the gates change; a caller may add keys of its own after each call.
+---@param state TRB.IndicatorGateState
+---@param gates table<string, string|string[]|false> # Built-in key -> the `spells` key it can't be met without, a list of which any one will do, or false for never
+---@param spells table
+---@param talents TRB.Classes.Talents?
+---@return table<string, boolean>
+function TRB.Functions.Color:GetUnavailableIndicators(state, gates, spells, talents)
+	local unavailable = state.unavailable
+	if talents == nil or spells == nil then
+		wipe(unavailable)
+		state.gates = nil
+		return unavailable
+	end
+	if state.gates == gates and state.spells == spells and state.talentTable == talents.talents and state.generation == spellbookGeneration then
+		return unavailable
+	end
+	wipe(unavailable)
+	for key, gate in pairs(gates) do
+		local learned
+		if gate == false then
+			learned = false
+		elseif type(gate) == "table" then
+			learned = false
+			for i = 1, #gate do
+				learned = learned or IsGateSpellLearned(spells[gate[i]], talents)
+			end
+		else
+			learned = IsGateSpellLearned(spells[gate], talents)
+		end
+		if not learned then
+			unavailable[key] = true
+		end
+	end
+	state.gates, state.spells, state.talentTable, state.generation = gates, spells, talents.talents, spellbookGeneration
+	return unavailable
 end
 
 ---Whether a gradient row's curve applies right now: its built-in's condition, gated by Only In Combat. A gradient
@@ -1288,9 +1365,10 @@ end
 ---@param conditionMap table<string, boolean?> # After ApplyCustomIndicatorConditions
 ---@param key string
 ---@param indicator table
+---@param unavailable table<string, boolean>? # Built-in keys whose spell isn't learned
 ---@return boolean?
-function TRB.Functions.Color:IsIndicatorMet(conditionMap, key, indicator)
-	return IsIndicatorMet(conditionMap, key, indicator)
+function TRB.Functions.Color:IsIndicatorMet(conditionMap, key, indicator, unavailable)
+	return IsIndicatorMet(conditionMap, key, indicator, unavailable)
 end
 
 -- Shared bars whose resolved colors live in TRB.Data.resolvedIndicators under their own bar key.
@@ -1312,7 +1390,8 @@ local gradientGlowsWritten = true
 ---@param conditionMap table<string, boolean> # Indicator key -> whether its condition is met right now; custom indicator keys are written into it
 ---@param barColorMap table<string, table>? # barKey -> { bar =, border =, background = }, seeded with the spec's unindicated colors; nil when the spec colors its own bars
 ---@param overrides table<string, table<string, boolean>>? # Optional: for each barKey the caller seeds here, records which elements an indicator claimed (specs that render an element differently once an indicator owns it)
-function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, overrides)
+---@param unavailable table<string, boolean>? # Optional: built-in keys whose spell isn't learned; they and their copies stay off, Not Active included
+function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, overrides, unavailable)
 	local resolved = TRB.Data.resolvedIndicators
 	local castbar = resolved.castbar
 	local petCastbar = resolved.petCastbar
@@ -1415,7 +1494,7 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 		for i = #nodeOrder, 1, -1 do
 			local key = nodeOrder[i]
 			local indicator = indicatorColors[key]
-			if indicator and indicator.enabled and indicator.targets and IsIndicatorMet(conditionMap, key, indicator) then
+			if indicator and indicator.enabled and indicator.targets and IsIndicatorMet(conditionMap, key, indicator, unavailable) then
 				for barKey, elements in pairs(indicator.targets) do
 					-- Glows resolve for every bar, not just the ones in this caller's color map: the nodes
 					-- they land on are found from the bar's own render path, well after this runs.

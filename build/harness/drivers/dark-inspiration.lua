@@ -140,6 +140,7 @@ function hooks.afterEvents(ctx)
 	end
 	local function Learn(learned)
 		talents.talents[DARK_INSPIRATION] = learned and TRB.Classes.Talent:New(DARK_INSPIRATION, 5, 5) or nil
+		stubs.fireEvents("SPELLS_CHANGED", ctx.addonName)
 	end
 	local Class = TRB.Functions.Class
 
@@ -290,6 +291,13 @@ function hooks.afterEvents(ctx)
 	check("listed on the mana bar border, it paints while Dark Inspiration is up", Draw())
 	Tick(10)
 	check("and stops when its time runs out", not buff.isActive and not Draw())
+	indicator.modifiers = { notActive = true }
+	check("Not Active paints it while Dark Inspiration is down", Draw())
+	Learn(false)
+	check("but not without the talent", not Draw())
+	Learn(true)
+	check("and again once it is learned", Draw())
+	indicator.modifiers = nil
 	table.remove(shared.nodeOrder, #shared.nodeOrder)
 	shared.removed.darkInspiration = true
 	indicator.enabled = false
