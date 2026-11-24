@@ -535,6 +535,21 @@ function hooks.afterEvents(ctx)
 				and Labels(single) == table.concat({ sectionLabels.castBars, "Cast", "Cast Icon" }, "|") and singleRows == 3)
 			local empty, emptyRows = Draw({})
 			check("an empty picker draws nothing", #empty.children == 0 and emptyRows == 0)
+			local stray, strayRows = Draw({ { label = "Stray", section = "driverNoSection" }, { label = "Resource", section = "builtIn" } })
+			check("an entry in a section the list doesn't name is listed under Built-in", Kinds(stray) == "title,radio,radio"
+				and Labels(stray) == table.concat({ sectionLabels.builtIn, "Stray", "Resource" }, "|") and strayRows == 3)
+			local foldMenu, foldedRows = drv.newDesc("root", "root"), nil
+			try("draw a bar picker that folds an entry into a row already drawn", function()
+				foldedRows = Primitives:AddBarSections(foldMenu,{ { label = "Container" }, { label = "Segment" } }, function() return "builtIn" end,
+					function(menu, entry)
+						if entry.label == "Container" then
+							menu:CreateButton("Driver Bar")
+							return 1
+						end
+						return 0
+					end)
+			end)
+			check("an entry that joins a row already drawn adds nothing to the row count", foldedRows == 2)
 
 			---How a built dropdown's menu breaks the picker layout: a row before any title that isn't the leading screen, a title
 			---out of order or with no row under it, a title with no divider ahead of it, or a submenu that isn't two or more picks.
