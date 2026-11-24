@@ -751,17 +751,25 @@ end
 ---@param menu table # The menu or submenu description being populated
 ---@param entries any[] # In the order they list within a section
 ---@param getSection fun(entry: any): string? # The entry's section key, from TRB.Functions.Bar:GetBarTargetSections
----@param addEntry fun(menu: table, entry: any) # Adds the entry's row
+---@param addEntry fun(menu: table, entry: any): integer? # Adds the entry's row, returning 0 when it went into a row already drawn
 ---@return integer rows # How many rows were added, for a caller that limits the menu's height
 function TRB.Functions.OptionsUi.Primitives:AddBarSections(menu, entries, getSection, addEntry)
+	local sections = TRB.Functions.Bar:GetBarTargetSections()
+	local knownSections = {}
+	for _, section in ipairs(sections) do
+		knownSections[section.key] = true
+	end
 	local bySection = {}
 	local rows = 0
 	for _, entry in ipairs(entries) do
 		local sectionKey = getSection(entry)
 		if sectionKey == nil then
-			addEntry(menu, entry)
-			rows = rows + 1
+			rows = rows + (addEntry(menu, entry) or 1)
 		else
+			-- A section the list doesn't name would never be drawn, so its entries fall back to Built-in.
+			if not knownSections[sectionKey] then
+				sectionKey = TRB.Functions.Bar.builtInBarSection
+			end
 			local listed = bySection[sectionKey]
 			if listed == nil then
 				listed = {}
@@ -771,7 +779,7 @@ function TRB.Functions.OptionsUi.Primitives:AddBarSections(menu, entries, getSec
 		end
 	end
 
-	for _, section in ipairs(TRB.Functions.Bar:GetBarTargetSections()) do
+	for _, section in ipairs(sections) do
 		local listed = bySection[section.key]
 		if listed ~= nil then
 			if rows > 0 then
@@ -781,8 +789,7 @@ function TRB.Functions.OptionsUi.Primitives:AddBarSections(menu, entries, getSec
 			menu:CreateTitle(section.label)
 			rows = rows + 1
 			for _, entry in ipairs(listed) do
-				addEntry(menu, entry)
-				rows = rows + 1
+				rows = rows + (addEntry(menu, entry) or 1)
 			end
 		end
 	end

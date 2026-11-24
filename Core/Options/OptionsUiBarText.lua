@@ -522,19 +522,28 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 	---for the bar, holding its container and each segment.
 	---@param menu table
 	---@param anchors TRB.Classes.BarTextAnchor[]
+	---@param isGlobal boolean # The anchors are Global Bar Text's, which name their bars for no specialization
 	---@param addRadio fun(menu: table, anchor: TRB.Classes.BarTextAnchor)
-	local function AddAnchorSections(menu, anchors, addRadio)
+	local function AddAnchorSections(menu, anchors, isGlobal, addRadio)
+		local nameClassId, nameSpecId = classId, specId
+		if isGlobal then
+			nameClassId, nameSpecId = nil, nil
+		end
 		local submenus = {}
 		TRB.Functions.OptionsUi.Primitives:AddBarSections(menu, anchors, AnchorSection, function(target, anchor)
+			local rows = 1
 			if anchor.segmented then
 				local submenu = submenus[anchor.barKey]
 				if submenu == nil then
-					submenu = target:CreateButton(TRB.Functions.Bar:GetBarDisplayName(anchor.barKey, classId, specId))
+					submenu = target:CreateButton(TRB.Functions.Bar:GetBarDisplayName(anchor.barKey, nameClassId, nameSpecId))
 					submenus[anchor.barKey] = submenu
+				else
+					rows = 0
 				end
 				target = submenu
 			end
 			addRadio(target, anchor)
+			return rows
 		end)
 	end
 
@@ -545,7 +554,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 				listed[#listed + 1] = anchor
 			end
 		end
-		AddAnchorSections(rootDescription, listed, function(menu, anchor)
+		AddAnchorSections(rootDescription, listed, IsGlobalEntry(workingBarText), function(menu, anchor)
 			menu:CreateRadio(anchor.label, RelativeToFrameIsSelected, RelativeToFrameSetSelected, anchor.frame)
 		end)
 		rootDescription:SetScrollMode(400)
@@ -1357,7 +1366,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 			MoveBarTextEntryToAnchor(entry, anchor)
 		end
 
-		AddAnchorSections(menu, CatalogFor(entry).entries, function(target, anchor)
+		AddAnchorSections(menu, CatalogFor(entry).entries, IsGlobalEntry(entry), function(target, anchor)
 			target:CreateRadio(anchor.label, IsCurrentAnchor, MoveToAnchor, anchor)
 		end)
 	end
