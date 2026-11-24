@@ -830,7 +830,16 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			shared = {
 				nodeOrder = { "benediction", "holyWordSerenity", "holyWordSanctify", "holyWordChastise", "apotheosisEnd", "apotheosis", "surgeOfLight2", "surgeOfLight", "lightweaver" },
 				gradientOrder = {},
+				-- Epiphany starts deleted, so it stays out of nodeOrder until it is added from Add Built-in.
+				removed = { epiphany = true },
 				indicatorColors = {
+					epiphany = {
+						color = "FFFF8AD8",
+						color2 = "FFFF8AD8",
+						gradientDirection = "disabled",
+						enabled = false,
+						targets = { manaBar = { bar = false, border = false, background = false }, holyWordsBar = { bar = false, border = false, background = false }, lightweaverBar = { bar = false, border = false, background = false } },
+					},
 					benediction = {
 						color = "FFC4933F",
 						color2 = "FFC4933F",
@@ -937,6 +946,12 @@ local function HolyLoadDefaultSettings(includeBarText, classic)
 			},
 			benediction={
 				name = L["PriestHolyAudioBenediction"],
+				enabled=false,
+				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
+				soundName = L["LSMSoundBoxingArenaGong"]
+			},
+			epiphany={
+				name = L["PriestHolyAudioEpiphany"],
 				enabled=false,
 				sound="Interface\\Addons\\TwintopInsanityBar\\Sounds\\BoxingArenaSound.ogg",
 				soundName = L["LSMSoundBoxingArenaGong"]
@@ -2141,6 +2156,7 @@ local function HolyConstructIndicatorColorsPanel(parent)
 			{ key = "surgeOfLight",       label = L["PriestCheckboxSurgeOfLight"],                  tooltip = L["PriestHolyIndicatorSurgeOfLightTooltip"],       colorLabel = L["PriestHolyIndicatorSurgeOfLightColor"] },
 			{ key = "surgeOfLight2",      label = L["PriestCheckboxSurgeOfLight2"],                 tooltip = L["PriestHolyIndicatorSurgeOfLight2Tooltip"],      colorLabel = L["PriestHolyIndicatorSurgeOfLight2Color"] },
 			{ key = "lightweaver",        label = L["PriestHolyCheckboxLightweaver"],               tooltip = L["PriestHolyIndicatorLightweaverTooltip"],        colorLabel = L["PriestHolyIndicatorLightweaverColor"] },
+			{ key = "epiphany",           label = L["PriestHolyCheckboxEpiphany"],                  tooltip = L["PriestHolyIndicatorEpiphanyTooltip"],           colorLabel = L["PriestHolyIndicatorEpiphanyColor"] },
 		},
 		barTargetDefs = {
 			{ key = "manaBar", label = L["BarNameManaBar"] },

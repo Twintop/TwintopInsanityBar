@@ -4,6 +4,26 @@ local _, TRB = ...
 -- first. Titles name the Live, Forever, Classic, and TBC releases; the tab keeps only the running flavor's.
 TRB.Details.coreNewsContent = [====[
 
+# Live 12.1.5.16-release / Forever 1.60.1.22-release / Classic 1.15.9.7-release / TBC 2.5.6.5-release (2026-11-24)
+## General
+
+- [#1030](#1030) The Anchor to, Bound to Bar, and Move to Bar dropdowns now group their bars under Built-in, Cast Bars, Timer Bars, Pet Bars, Skyriding, and Custom Bars.
+
+## Bar Text
+
+- [#1030](#1030) The Bound to Bar and Move to Bar menus now list a segmented bar's container and segments in a submenu named for the bar.
+
+## Color Indicators
+
+- [#1029](#1029) Color Indicator target dropdowns now group their bars under Built-in, Cast Bars, Pet Bars, and Custom Bars. Each bar is its own submenu, named with how many of its targets are on and colored green when any are.
+
+## Custom Bars
+
+- [#1028](#1028) Custom bars can now be Color Indicator targets, listed by name in the target dropdowns.
+- [#1030](#1030) Bar Text's Move to Bar menu now lists custom bars.
+
+---
+
 # Live 12.1.5.15-release / Forever 1.60.1.21-release / Classic 1.15.9.6-release / TBC 2.5.6.4-release (2026-11-19)
 ## General
 

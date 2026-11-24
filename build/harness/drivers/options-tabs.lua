@@ -43,8 +43,14 @@ function hooks.afterInstall(ctx)
 			c.isSelected, c.setSelected, c.data = isSelected, setSelected, data
 			return c
 		end
+		function d:CreateCheckbox(text, isSelected, setSelected)
+			local c = add(newDesc(text, "checkbox"))
+			c.isSelected, c.setSelected = isSelected, setSelected
+			return c
+		end
 		function d:SetScrollMode() end
-		function d:AddInitializer() end
+		-- Kept so a check can read the label a menu row draws.
+		function d:AddInitializer(initializer) self.initializer = initializer end
 		return d
 	end
 	drv.newDesc = newDesc
@@ -287,6 +293,376 @@ function hooks.afterEvents(ctx)
 			i = i + 1
 		end
 		print(string.format("TABDRIVER groups=%d tabsDrained=%d errors=%d editors=%d", #groups, drained, errors, #drv.editors))
+
+		-- ===== Color Indicator target menus =====
+		do
+			local Indicators = TRB_.Functions.OptionsUi.Indicators
+			local Glow = TRB_.Functions.Glow
+			local getOrdered = Glow.GetOrdered
+			Glow.GetOrdered = function() return { { guid = "driverGlow", name = "Driver Glow" } } end
+			-- Out of section order, and with a second ungrouped bar last, as Totems is.
+			local defs = {
+				{ key = "driverFirst", label = "Driver First" },
+				{ key = "driverCustom", label = "Driver Custom", group = "customBars" },
+				{ key = "driverSecond", label = "Driver Second", group = "castBars", elements = { { key = "border", label = "Driver Border" } }, gradientExcluded = { border = true } },
+				{ key = "driverPet", label = "Driver Pet", group = "petBars" },
+				{ key = "driverLast", label = "Driver Last" },
+			}
+			local targets = { driverFirst = { border = true } }
+			local changes = 0
+			local function Build(isExcluded, offersEveryBar)
+				local root = drv.newDesc("root", "root")
+				try("build a target menu", function()
+					Indicators:BuildBarTargetMenu(root, defs, isExcluded, offersEveryBar, function(barKey)
+						targets[barKey] = targets[barKey] or {}
+						return targets[barKey]
+					end, function() changes = changes + 1 end)
+				end)
+				return root
+			end
+			---The label a menu row draws once its initializer has run.
+			local function Shown(entry)
+				local text = nil
+				if entry ~= nil and entry.initializer ~= nil then
+					-- Inside try, so a throwing initializer can't leave the Glow stub installed for the checks after this block.
+					try("draw a menu row's label", function()
+						entry.initializer({ fontString = { SetTextToFit = function(_, value) text = value end } })
+					end)
+				end
+				return text
+			end
+			local function Kinds(entry)
+				local kinds = {}
+				for index, child in ipairs(entry ~= nil and entry.children or {}) do
+					kinds[index] = child.kind
+				end
+				return table.concat(kinds, ",")
+			end
+			local function Labels(entry)
+				local labels = {}
+				for _, child in ipairs(entry ~= nil and entry.children or {}) do
+					if child.kind ~= "divider" then
+						labels[#labels + 1] = child.label
+					end
+				end
+				return table.concat(labels, "|")
+			end
+			local function Off(label, count) return string.format(L_["IndicatorTargetCountFormat"], label, count) end
+			local function On(label, count) return string.format(L_["IndicatorTargetCountActiveFormat"], label, count) end
+			local builtIn, castBars, petBars, customBars = L_["BarSectionBuiltIn"], L_["TabCastbars"], L_["TabPetBars"], L_["TabCustomBars"]
+
+			local flat = Build(function() return false end, true)
+			check("a row's target menu lists its bars under a title per kind, in a fixed order, with a divider between them",
+				Kinds(flat) == "title,button,button,divider,title,button,divider,title,button,divider,title,button"
+				and Labels(flat) == table.concat({ builtIn, "Driver First", "Driver Last", castBars, "Driver Second", petBars, "Driver Pet", customBars, "Driver Custom" }, "|"))
+			local first, second = flat.children[2], flat.children[6]
+			check("a bar's submenu holds its elements, then Border Glow", Kinds(first) == "checkbox,checkbox,checkbox,checkbox,button"
+				and first.children[1].label == L_["BarElementBar"] and first.children[4].label == L_["EndCap"]
+				and first.children[5].label == L_["BarElementBorderGlow"] and Kinds(second) == "checkbox,button"
+				and second.children[1].label == "Driver Border")
+			check("each bar is named with how many of its targets are on, tinted once any is", Shown(first) == On("Driver First", 1)
+				and Shown(second) == Off("Driver Second", 0) and Off("Driver First", 1) == "Driver First (1)"
+				and On("Driver First", 1) ~= Off("Driver First", 1) and On("Driver First", 1):find("^|c%x%x%x%x%x%x%x%xDriver First %(1%)|r$") ~= nil)
+			if first ~= nil and #first.children == 5 then
+				local barBox, glowMenu = first.children[1], first.children[5]
+				try("pick an element", function() barBox.setSelected() end)
+				check("picking an element turns it on, counts it, and reports the change", targets.driverFirst.bar == true and barBox.isSelected() == true
+					and Shown(first) == On("Driver First", 2) and changes == 1)
+				try("pick it again", function() barBox.setSelected() end)
+				check("picking it again turns it off", targets.driverFirst.bar == false and barBox.isSelected() == false and Shown(first) == On("Driver First", 1))
+				local glowBox = glowMenu.children[1]
+				check("Border Glow lists the glows, named with how many are on", Kinds(glowMenu) == "checkbox" and glowBox.label == "Driver Glow"
+					and Shown(glowMenu) == Off(L_["BarElementBorderGlow"], 0))
+				if glowBox ~= nil then
+					try("pick a glow", function() glowBox.setSelected() end)
+					check("a picked glow counts, and tints, on Border Glow and on its bar", targets.driverFirst.glows.driverGlow == true
+						and Shown(glowMenu) == On(L_["BarElementBorderGlow"], 1) and Shown(first) == On("Driver First", 2))
+				end
+				targets.driverFirst = {}
+				check("with nothing left on, the bar loses its tint", Shown(first) == Off("Driver First", 0))
+			end
+
+			local gradient = Build(function(barDef, elemKey)
+				return barDef.gradientExcluded ~= nil and barDef.gradientExcluded[elemKey] == true
+			end, false)
+			check("a gradient row skips a bar with no element it can take, and a section left with no bars",
+				Kinds(gradient) == "title,button,button,divider,title,button,divider,title,button"
+				and Labels(gradient) == table.concat({ builtIn, "Driver First", "Driver Last", petBars, "Driver Pet", customBars, "Driver Custom" }, "|")
+				and Kinds(gradient.children[2]) == "checkbox,checkbox,checkbox,checkbox,button")
+			local stray = drv.newDesc("root", "root")
+			try("build a target menu with a bar in a group that has no section", function()
+				Indicators:BuildBarTargetMenu(stray, { { key = "driverStray", label = "Driver Stray", group = "driverNoSection" } },
+					function() return false end, true, function(barKey) return targets[barKey] or {} end, function() end)
+			end)
+			check("a bar in a group with no section is listed under Built-in", Kinds(stray) == "title,button"
+				and Labels(stray) == builtIn .. "|Driver Stray")
+
+			-- Every built panel's rows draw their menus the same way.
+			local sectionOrder = { [builtIn] = 1, [castBars] = 2, [petBars] = 3, [customBars] = 4 }
+			local menus, misdrawn = 0, 0
+			for name in pairs(drv.nameCount) do
+				if name:find("_Indicator_Row%d+_Targets$") or name:find("_Gradient_Row%d+_Targets$") then
+					local dropdown = rawget(G, name)
+					if type(dropdown) == "table" and dropdown.__generator ~= nil then
+						local root = drv.newDesc("root", "root")
+						if try("open " .. name, function() dropdown.__generator(dropdown, root) end) then
+							menus = menus + 1
+							local section, lastOrder = nil, 0
+							for _, child in ipairs(root.children) do
+								if child.kind == "title" then
+									local order = sectionOrder[child.label]
+									if order == nil or order <= lastOrder then
+										misdrawn = misdrawn + 1
+									end
+									section, lastOrder = child.label, order or lastOrder
+								elseif child.kind == "button" then
+									local last = child.children[#child.children]
+									if section == nil or child.initializer == nil or last == nil or last.label ~= L_["BarElementBorderGlow"] then
+										misdrawn = misdrawn + 1
+									end
+								elseif child.kind ~= "divider" then
+									misdrawn = misdrawn + 1
+								end
+							end
+						end
+					end
+				end
+			end
+			check("every built row's target menu is titled sections of bars, each bar ending in Border Glow", menus > 0 and misdrawn == 0)
+
+			-- Totems is Built-in for every specialization that has it, whichever tab its options sit on.
+			local totems, totemsElsewhere = 0, 0
+			for _, entry in ipairs(TRB_.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+				if TRB_.Classes.BarTypeRegistry:SpecHasTotems(entry.classId, entry.specId) then
+					local classSettings = TRB_.Data.settings[entry.className]
+					local root = drv.newDesc("root", "root")
+					try("build " .. entry.compositeKey .. "'s target menu", function()
+						local specDefs = Indicators:BuildBarTargetDefs(classSettings ~= nil and classSettings[entry.specName] or {}, entry.classId, entry.specId, {})
+						Indicators:BuildBarTargetMenu(root, specDefs, function() return false end, true, function() return nil end, function() end)
+					end)
+					local section = nil
+					for _, child in ipairs(root.children) do
+						if child.kind == "title" then
+							section = child.label
+						elseif child.label == L_["ResourceTotems"] then
+							totems = totems + 1
+							if section ~= builtIn then
+								totemsElsewhere = totemsElsewhere + 1
+							end
+						end
+					end
+				end
+			end
+			check("Totems is listed under Built-in on every specialization that has it", totems > 0 and totemsElsewhere == 0)
+			Glow.GetOrdered = getOrdered
+		end
+
+		-- ===== Bar picker sections =====
+		do
+			local Bar = TRB_.Functions.Bar
+			local Primitives = TRB_.Functions.OptionsUi.Primitives
+			local registry = TRB_.Classes.BarTypeRegistry
+			local sections = Bar:GetBarTargetSections()
+			local sectionOrder, sectionLabels = {}, {}
+			for index, section in ipairs(sections) do
+				sectionOrder[section.label] = index
+				sectionLabels[section.key] = section.label
+			end
+			check("bar pickers share one list of sections, in order", #sections == 6 and sections[1].label == L_["BarSectionBuiltIn"]
+				and sections[2].label == L_["TabCastbars"] and sections[3].label == L_["TabOtherBars"] and sections[4].label == L_["TabPetBars"]
+				and sections[5].label == L_["TabSkyriding"] and sections[6].label == L_["TabCustomBars"])
+
+			local function Section(barKey, classId, specId)
+				return Bar:GetBarTargetSection(barKey, classId, specId)
+			end
+			check("the screen has no section, and the resource bars and Health are Built-in", Section("screen") == nil and Section("primary") == "builtIn"
+				and Section("secondary") == "builtIn" and Section("health") == "builtIn")
+			check("the four cast bars are Cast Bars, and the pet's other bars Pet Bars", Section("castbar") == "castBars" and Section("targetCastbar") == "castBars"
+				and Section("focusCastbar") == "castBars" and Section("petCastbar") == "castBars" and Section("petPower") == "petBars" and Section("petHealth") == "petBars")
+			check("a timer bar is Timer Bars, and a custom bar Custom Bars", Section(registry.otherBarKeys[1]) == "otherBars" and Section("custom_driver") == "customBars")
+			if #registry.skyridingBarKeys > 0 then
+				check("a Skyriding bar is Skyriding", Section(registry.skyridingBarKeys[1]) == "skyriding")
+			end
+			local totemsElsewhere = Section("totems") ~= "builtIn" and 1 or 0
+			for _, entry in ipairs(TRB_.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+				if Section("totems", entry.classId, entry.specId) ~= "builtIn" then
+					totemsElsewhere = totemsElsewhere + 1
+				end
+			end
+			check("Totems is Built-in in every scope, whichever tab its options sit on", totemsElsewhere == 0)
+
+			local function Kinds(entry)
+				local kinds = {}
+				for index, child in ipairs(entry.children) do
+					kinds[index] = child.kind
+				end
+				return table.concat(kinds, ",")
+			end
+			local function Labels(entry)
+				local labels = {}
+				for _, child in ipairs(entry.children) do
+					if child.kind ~= "divider" then
+						labels[#labels + 1] = child.label
+					end
+				end
+				return table.concat(labels, "|")
+			end
+			---Draws entries of { label, section } the way a bar picker does.
+			local function Draw(entries)
+				local root = drv.newDesc("root", "root")
+				local rows = nil
+				try("draw a bar picker", function()
+					rows = Primitives:AddBarSections(root, entries, function(entry) return entry.section end, function(menu, entry)
+						menu:CreateRadio(entry.label, function() return false end, function() end, entry.label)
+					end)
+				end)
+				return root, rows
+			end
+			local mixed, mixedRows = Draw({
+				{ label = "Custom", section = "customBars" },
+				{ label = "Screen" },
+				{ label = "Resource", section = "builtIn" },
+				{ label = "Pet", section = "petBars" },
+				{ label = "Timer", section = "otherBars" },
+				{ label = "Health", section = "builtIn" },
+			})
+			check("a picker lists the screen first, untitled, then each section in order under its title, with a divider ahead of each",
+				Kinds(mixed) == "radio,divider,title,radio,radio,divider,title,radio,divider,title,radio,divider,title,radio"
+				and Labels(mixed) == table.concat({ "Screen", sectionLabels.builtIn, "Resource", "Health", sectionLabels.otherBars, "Timer",
+					sectionLabels.petBars, "Pet", sectionLabels.customBars, "Custom" }, "|") and mixedRows == 14)
+			local single, singleRows = Draw({ { label = "Cast", section = "castBars" }, { label = "Cast Icon", section = "castBars" } })
+			check("a picker with one section still titles it, with no divider", Kinds(single) == "title,radio,radio"
+				and Labels(single) == table.concat({ sectionLabels.castBars, "Cast", "Cast Icon" }, "|") and singleRows == 3)
+			local empty, emptyRows = Draw({})
+			check("an empty picker draws nothing", #empty.children == 0 and emptyRows == 0)
+			local stray, strayRows = Draw({ { label = "Stray", section = "driverNoSection" }, { label = "Resource", section = "builtIn" } })
+			check("an entry in a section the list doesn't name is listed under Built-in", Kinds(stray) == "title,radio,radio"
+				and Labels(stray) == table.concat({ sectionLabels.builtIn, "Stray", "Resource" }, "|") and strayRows == 3)
+			local foldMenu, foldedRows = drv.newDesc("root", "root"), nil
+			try("draw a bar picker that folds an entry into a row already drawn", function()
+				foldedRows = Primitives:AddBarSections(foldMenu,{ { label = "Container" }, { label = "Segment" } }, function() return "builtIn" end,
+					function(menu, entry)
+						if entry.label == "Container" then
+							menu:CreateButton("Driver Bar")
+							return 1
+						end
+						return 0
+					end)
+			end)
+			check("an entry that joins a row already drawn adds nothing to the row count", foldedRows == 2)
+
+			---How a built dropdown's menu breaks the picker layout: a row before any title that isn't the leading screen, a title
+			---out of order or with no row under it, a title with no divider ahead of it, or a submenu that isn't two or more picks.
+			local function Misdrawn(root, screenLabel)
+				local wrong, lastOrder, titles, submenus = 0, 0, 0, 0
+				local previous, underTitle = nil, 0
+				for index, child in ipairs(root.children) do
+					if child.kind == "title" then
+						local order = sectionOrder[child.label]
+						if order == nil or order <= lastOrder or (index > 1 and (previous == nil or previous.kind ~= "divider"))
+							or (titles > 0 and underTitle == 0) then
+							wrong = wrong + 1
+						end
+						lastOrder, titles, underTitle = order or lastOrder, titles + 1, 0
+					elseif child.kind == "radio" then
+						if titles == 0 then
+							if child.label ~= screenLabel then
+								wrong = wrong + 1
+							end
+						else
+							underTitle = underTitle + 1
+						end
+					elseif child.kind == "button" then
+						local picks = 0
+						for _, pick in ipairs(child.children) do
+							if pick.kind == "radio" then
+								picks = picks + 1
+							else
+								wrong = wrong + 1
+							end
+						end
+						if titles == 0 or picks < 2 or child.label == nil or child.label == "" then
+							wrong = wrong + 1
+						end
+						underTitle = underTitle + 1
+						submenus = submenus + 1
+					elseif child.kind ~= "divider" then
+						wrong = wrong + 1
+					end
+					previous = child
+				end
+				if titles > 0 and underTitle == 0 then
+					wrong = wrong + 1
+				end
+				return wrong, titles, submenus
+			end
+			---Opens every built dropdown whose name matches and tallies the menus, the misdrawn ones, the titled ones, and the submenus.
+			local function Tally(pattern, screenLabel)
+				local menus, misdrawn, titled, submenus = 0, 0, 0, 0
+				for name in pairs(drv.nameCount) do
+					if name:find(pattern) then
+						local dropdown = rawget(G, name)
+						if type(dropdown) == "table" and dropdown.__generator ~= nil then
+							local root = drv.newDesc("root", "root")
+							if try("open " .. name, function() dropdown.__generator(dropdown, root) end) then
+								local wrong, titles, folded = Misdrawn(root, screenLabel)
+								menus = menus + 1
+								misdrawn = misdrawn + wrong
+								submenus = submenus + folded
+								if titles > 0 then
+									titled = titled + 1
+								end
+							end
+						end
+					end
+				end
+				return menus, misdrawn, titled, submenus
+			end
+			local anchorMenus, anchorMisdrawn, anchorTitled, anchorSubmenus = Tally("AnchorTo$", L_["AnchorBarScreen"])
+			check("every built Anchor To dropdown lists the screen, then its bars in titled sections, with no submenus", anchorMenus > 0
+				and anchorMisdrawn == 0 and anchorTitled > 0 and anchorSubmenus == 0)
+
+			-- Bar text anchors: a bar with segments is marked, and its container and segments fold into one submenu.
+			local segmentedBars, loneSegmented, plainSegmented, mostSegments = 0, 0, 0, 0
+			for _, entry in ipairs(TRB_.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+				local counts, marked = {}, {}
+				for _, anchor in ipairs(TRB_.Functions.BarText:GetAnchorCatalog(entry.classId, entry.specId).entries) do
+					counts[anchor.barKey] = (counts[anchor.barKey] or 0) + 1
+					if anchor.segmented then
+						marked[anchor.barKey] = (marked[anchor.barKey] or 0) + 1
+						if anchor.barKey == "screen" or anchor.barKey == "health" or Section(anchor.barKey, entry.classId, entry.specId) == "castBars" then
+							plainSegmented = plainSegmented + 1
+						end
+					end
+				end
+				for barKey, count in pairs(marked) do
+					segmentedBars = segmentedBars + 1
+					mostSegments = math.max(mostSegments, count)
+					-- Every anchor of the bar is marked, and there is more than one.
+					if count ~= counts[barKey] or count < 2 then
+						loneSegmented = loneSegmented + 1
+					end
+				end
+			end
+			check("a bar text anchor is marked when its bar has segments and more than one anchor, and never on the screen, Health, or a cast bar",
+				segmentedBars > 0 and mostSegments >= 4 and loneSegmented == 0 and plainSegmented == 0)
+			local textMenus, textMisdrawn, textTitled, textSubmenus = Tally("_barTextRelativeToFrame$", L_["Screen"])
+			check("every built Bound to Bar dropdown for bar text is titled the same way, with each segmented bar's anchors in a submenu of its own",
+				textMenus > 0 and textMisdrawn == 0 and textTitled > 0 and textSubmenus > 0)
+
+			-- A custom threshold line's targets each say which bar they are on, which is what sections them.
+			local character = TRB_.Data.character
+			local classSettings = TRB_.Data.settings[character.className]
+			local specSettings = classSettings ~= nil and classSettings[character.specName] or nil
+			local targets = specSettings ~= nil and TRB_.Functions.Threshold:GetCustomThresholdBarTargets(specSettings, character.classId, character.specId) or {}
+			local unsectioned = 0
+			for _, target in ipairs(targets) do
+				if target.barKey == nil or sectionLabels[Section(target.barKey, character.classId, character.specId) or ""] == nil then
+					unsectioned = unsectioned + 1
+				end
+			end
+			check("every custom threshold bar target names its bar, which has a section", #targets > 0 and unsectioned == 0)
+		end
 
 		-- ===== Textures tab checks =====
 		local function find(classId, specId, groupKey)

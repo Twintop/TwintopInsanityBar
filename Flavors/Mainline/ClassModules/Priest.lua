@@ -340,6 +340,10 @@ local function FillSpecializationCache()
 	---@type TRB.Classes.Snapshot
 	specCache.priest_holy.snapshotData.snapshots[spells.benediction.id] = TRB.Classes.Snapshot:New(spells.benediction)
 	---@type TRB.Classes.Snapshot
+	specCache.priest_holy.snapshotData.snapshots[spells.prayerOfMending.id] = TRB.Classes.Snapshot:New(spells.prayerOfMending)
+	---@type TRB.Classes.Snapshot
+	specCache.priest_holy.snapshotData.snapshots[spells.epiphany.id] = TRB.Classes.Snapshot:New(spells.epiphany)
+	---@type TRB.Classes.Snapshot
 	specCache.priest_holy.snapshotData.snapshots[spells.surgeOfLight.id] = TRB.Classes.Snapshot:New(spells.surgeOfLight)
 	-- The stack count is a secret in combat, so it is counted in Lua from SPELL_UPDATE_USES instead.
 	specCache.priest_holy.snapshotData.snapshots[spells.surgeOfLight.id].buff:InitializeProcCharges()
@@ -758,6 +762,7 @@ local function ApplyVoidbindingCDR(apply)
 		AdjustCooldownForVoidbinding(snapshots[spells.holyWordSerenity.id].cooldown, cdrPercent, apply)
 		AdjustCooldownForVoidbinding(snapshots[spells.holyWordSanctify.id].cooldown, cdrPercent, apply)
 		AdjustCooldownForVoidbinding(snapshots[spells.holyWordChastise.id].cooldown, cdrPercent, apply)
+		AdjustCooldownForVoidbinding(snapshots[spells.prayerOfMending.id].cooldown, cdrPercent, apply)
 	end
 end
 
@@ -820,6 +825,136 @@ function TRB.Functions.Class:PrintHolyWordDiagnostics()
 		snapshots[spells.apotheosis.id].buff.isActive and "up" or "down",
 		snapshots[spells.voidbinding.id].buff.isActive and "up" or "down",
 		snapshots[spells.surgeOfLight.id].buff.applications or 0))
+end
+
+---Prayer of Mending's charges before Epiphany's extra one.
+---@return integer
+local function GetPrayerOfMendingMaxCharges()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
+	local maxCharges = spells.prayerOfMending.attributes.maxCharges
+	if specCache.priest_holy.talents:IsTalentActive(spells.guidingLight) then
+		maxCharges = maxCharges + spells.guidingLight.attributes.maxChargesMod
+	end
+	return maxCharges
+end
+
+---Prayer of Mending's recharge. Haste is secret, so the GCD's share of its unhasted 1.5 seconds stands in for it.
+---@return number
+local function CalculatePrayerOfMendingRecharge()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
+	local duration = spells.prayerOfMending.duration
+	if specCache.priest_holy.talents:IsTalentActive(spells.wasteNoTime) then
+		duration = duration + spells.wasteNoTime.attributes.durationMod
+	end
+	duration = duration * (Character:GetCurrentGCDTime(true) / 1.5)
+
+	-- Voidbinding CDR: cooldowns recover cdrPercent faster (rate model, not flat reduction)
+	if TRB.Data.snapshotData.snapshots[spells.voidbinding.id].buff.isActive then
+		duration = duration / (1 + spells.voidbinding.attributes.cdrPercent)
+	end
+
+	return duration
+end
+
+---Prayer of Mending's charges as the game reports them, without Epiphany's extra one. A secret count leaves
+---only the never-secret recharging flag, which the game reports above one charge.
+---@param maxCharges integer # Without Epiphany's
+---@return integer? # nil when the game can't say
+local function ReadPrayerOfMendingCharges(maxCharges)
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
+	local info = C_Spell.GetSpellCharges(spells.prayerOfMending.id)
+	if info == nil then
+		return nil
+	end
+	if not issecretvalue(info.currentCharges) then
+		-- Epiphany raises the count and the maximum together.
+		local charges = info.currentCharges - math.max(0, info.maxCharges - maxCharges)
+		return math.max(0, math.min(maxCharges, charges))
+	end
+	if maxCharges > 1 and info["isActive"] == false then
+		return maxCharges
+	end
+	return nil
+end
+
+---The count to start Prayer of Mending's hand count from. A secret count that reads as recharging above one
+---charge is at least one short of full, so it starts there.
+---@param maxCharges integer # Without Epiphany's
+---@return integer? # nil to let the count start full
+local function SeedPrayerOfMendingCharges(maxCharges)
+	local charges = ReadPrayerOfMendingCharges(maxCharges)
+	if charges ~= nil or maxCharges <= 1 then
+		return charges
+	end
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
+	local info = C_Spell.GetSpellCharges(spells.prayerOfMending.id)
+	if info ~= nil and info["isActive"] == true then
+		return maxCharges - 1
+	end
+	return nil
+end
+
+-- When the game's count is next read; a read in the same moment as a cast can still show the charge it spent.
+local prayerOfMendingSettleAt = nil
+
+---Raises Prayer of Mending's hand count to the game's when a charge event shows more.
+local function SyncPrayerOfMendingCharges()
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
+	local cooldown = TRB.Data.snapshotData.snapshots[spells.prayerOfMending.id].cooldown
+	cooldown:SettleExpiredCharges()
+	local charges = ReadPrayerOfMendingCharges(cooldown.manualMaxCharges)
+	-- Only ever raised: a charge the tracker returned early is right again once the game's own lands.
+	if charges == nil or charges <= cooldown.manualCharges then
+		return
+	end
+
+	local recharge = CalculatePrayerOfMendingRecharge()
+	while cooldown.manualCharges < charges do
+		cooldown:GainCharge(recharge)
+	end
+	TRB.Data.lookupDirty = true
+end
+
+---Dumps the Prayer of Mending tracker's state beside the game's own charge read, whose count is plain out of combat.
+function TRB.Functions.Class:PrintMendingDiagnostics()
+	if TRB.Data.character.specId ~= 2 then
+		print("|cFFFF8800TRB Mending:|r Holy specialization only.")
+		return
+	end
+
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
+	---@type table<integer, TRB.Classes.Snapshot>
+	local snapshots = TRB.Data.snapshotData.snapshots
+	local cooldown = snapshots[spells.prayerOfMending.id].cooldown
+	local epiphanyBuff = snapshots[spells.epiphany.id].buff
+	local currentTime = GetTime()
+
+	local function Seconds(value)
+		return value and string.format("%.2fs", value) or "none"
+	end
+
+	local game = "no charge info"
+	local info = C_Spell.GetSpellCharges(spells.prayerOfMending.id)
+	if info ~= nil then
+		game = string.format("%s/%d%s",
+			issecretvalue(info.currentCharges) and "secret" or tostring(info.currentCharges),
+			info.maxCharges,
+			info["isActive"] == true and " recharging" or "")
+	end
+
+	print("|cFF00FF00TRB Mending:|r Prayer of Mending tracker state")
+	print(string.format("  tracked %d/%d charges | remaining %s | recharge %s | expected %s | game reads %s",
+		cooldown.manualCharges,
+		cooldown.manualMaxCharges,
+		Seconds(cooldown.manualCooldownExpires and (cooldown.manualCooldownExpires - currentTime)),
+		Seconds(cooldown.manualRechargeDuration),
+		Seconds(CalculatePrayerOfMendingRecharge()),
+		game))
+	print(string.format("  Epiphany %s | Guiding Light %s | Waste No Time %s | Voidbinding %s",
+		epiphanyBuff.isActive and string.format("up, %.2fs left", epiphanyBuff:GetRemainingTime(currentTime)) or "down",
+		talents:IsTalentActive(spells.guidingLight) and "yes" or "no",
+		talents:IsTalentActive(spells.wasteNoTime) and "yes" or "no",
+		snapshots[spells.voidbinding.id].buff.isActive and "up" or "down"))
 end
 
 local function RefreshLookupData_Discipline()
@@ -1204,6 +1339,63 @@ local function RefreshLookupData_Holy()
 		end
 		lookupLogic["$benediction"] = snapshots[spells.benediction.id].buff.isActive or false
 		lookup["$benediction"] = ""
+	end
+
+	-- Block G: Prayer of Mending and Epiphany ($pomCharges, $pomMaxCharges, $pomTime, $pomFullTime, $epiphany, $epiphanyTime)
+	if not activeVars or activeVars["$pomCharges"] or activeVars["$prayerOfMendingCharges"]
+		or activeVars["$pomMaxCharges"] or activeVars["$prayerOfMendingMaxCharges"]
+		or activeVars["$pomTime"] or activeVars["$prayerOfMendingTime"]
+		or activeVars["$pomFullTime"] or activeVars["$prayerOfMendingFullTime"]
+		or activeVars["$epiphany"] or activeVars["$epiphanyTime"] then
+		local pomCooldown = snapshots[spells.prayerOfMending.id].cooldown
+		local epiphanyBuff = snapshots[spells.epiphany.id].buff
+		local vbBuff = snapshots[spells.voidbinding.id].buff
+		local vbRemaining = vbBuff.isActive and vbBuff.remaining or 0
+		local cdrPercent = spells.voidbinding.attributes.cdrPercent
+		local _epiphanyActive = epiphanyBuff.isActive or false
+		-- The action button counts Epiphany's extra charge in both numbers, so these do too.
+		local epiphanyCharges = _epiphanyActive and spells.epiphany.attributes.maxChargesMod or 0
+		local _pomCharges = pomCooldown.charges + epiphanyCharges
+		local _pomMaxCharges = pomCooldown.maxCharges + epiphanyCharges
+		local _pomTime = CalculatePredictedCooldownRemaining(pomCooldown.remaining, vbRemaining, cdrPercent)
+		local _pomFullTime = CalculatePredictedCooldownRemaining(pomCooldown.remainingTotal, vbRemaining, cdrPercent)
+		local _epiphanyTime = _epiphanyActive and epiphanyBuff.remaining or 0
+
+		lookupLogic["$pomCharges"] = _pomCharges
+		lookupLogic["$prayerOfMendingCharges"] = _pomCharges
+		lookupLogic["$pomMaxCharges"] = _pomMaxCharges
+		lookupLogic["$prayerOfMendingMaxCharges"] = _pomMaxCharges
+		lookupLogic["$pomTime"] = _pomTime
+		lookupLogic["$prayerOfMendingTime"] = _pomTime
+		lookupLogic["$pomFullTime"] = _pomFullTime
+		lookupLogic["$prayerOfMendingFullTime"] = _pomFullTime
+		lookupLogic["$epiphany"] = _epiphanyActive
+		lookupLogic["$epiphanyTime"] = _epiphanyTime
+		lookup["$epiphany"] = ""
+
+		if lookupChanged(prevState, "$pomCharges", _pomCharges) then
+			local f = string.format("%.0f", _pomCharges)
+			lookup["$pomCharges"] = f
+			lookup["$prayerOfMendingCharges"] = f
+		end
+		if lookupChanged(prevState, "$pomMaxCharges", _pomMaxCharges) then
+			local f = string.format("%.0f", _pomMaxCharges)
+			lookup["$pomMaxCharges"] = f
+			lookup["$prayerOfMendingMaxCharges"] = f
+		end
+		if lookupChanged(prevState, "$pomTime", _pomTime) then
+			local f = TRB.Functions.BarText:TimerPrecision(_pomTime)
+			lookup["$pomTime"] = f
+			lookup["$prayerOfMendingTime"] = f
+		end
+		if lookupChanged(prevState, "$pomFullTime", _pomFullTime) then
+			local f = TRB.Functions.BarText:TimerPrecision(_pomFullTime)
+			lookup["$pomFullTime"] = f
+			lookup["$prayerOfMendingFullTime"] = f
+		end
+		if lookupChanged(prevState, "$epiphanyTime", _epiphanyTime) then
+			lookup["$epiphanyTime"] = TRB.Functions.BarText:TimerPrecision(_epiphanyTime)
+		end
 	end
 
 	TRB.Data.lookup = lookup
@@ -1669,6 +1861,12 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				snapshots[spells.holyWordSanctify.id].cooldown:SpendCharge(CalculateHolyWordDuration(spells.holyWordSanctify))
 			elseif spellId == spells.holyWordChastise.id then
 				snapshots[spells.holyWordChastise.id].cooldown:SpendCharge(CalculateHolyWordDuration(spells.holyWordChastise))
+			elseif spellId == spells.prayerOfMending.id then
+				-- A cast under Epiphany costs no charge, and its glow hides only after this event.
+				if not snapshots[spells.epiphany.id].buff.isActive then
+					snapshots[spells.prayerOfMending.id].cooldown:SpendCharge(CalculatePrayerOfMendingRecharge())
+				end
+				prayerOfMendingSettleAt = GetTime() + spells.prayerOfMending.attributes.chargeSettleDelay
 			end
 
 			-- Holy Word cooldown reduction from supporting spells
@@ -2064,9 +2262,62 @@ local function HandleSurgeOfLightEvent(spellId)
 	TRB.Functions.Class:TriggerResourceBarUpdates()
 end
 
+---Epiphany follows Prayer of Mending's glow, the only sign of it in combat.
+---@param spellId integer?
+---@param isShow boolean
+local function HandleEpiphanyGlowEvent(spellId, isShow)
+	if TRB.Data.character.specId ~= 2 then return end
+
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
+	if spellId ~= spells.prayerOfMending.id then return end
+
+	local snapshotData = TRB.Data.snapshotData --[[@as TRB.Classes.SnapshotData]]
+	local epiphanyBuff = snapshotData.snapshots[spells.epiphany.id].buff
+	if not isShow then
+		epiphanyBuff:Reset()
+		-- Keep isCustom so RefreshAllBuffs() won't re-detect the game aura
+		epiphanyBuff.isCustom = true
+		TRB.Functions.AudioCues:ResetLatch(snapshotData, "epiphany")
+	elseif talents:IsTalentActive(spells.epiphany) then
+		epiphanyBuff:InitializeCustom(spells.epiphany.duration, GetTime())
+		TRB.Functions.AudioCues:FireOnEvent(TRB.Data.settings.priest.holy, snapshotData, "epiphany")
+	end
+
+	TRB.Data.lookupDirty = true
+	TRB.Functions.Class:TriggerResourceBarUpdates()
+end
+
+---A second Epiphany proc shows no new glow, but names the buff on SPELL_UPDATE_COOLDOWN and restarts its time.
+---@param spellId integer?
+local function HandleEpiphanyRefreshEvent(spellId)
+	if TRB.Data.character.specId ~= 2 then return end
+
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
+	if spellId ~= spells.epiphany.id then return end
+
+	-- The buff's end names it too, in the frame its glow hides, so only a tracked Epiphany restarts.
+	local epiphanyBuff = TRB.Data.snapshotData.snapshots[spells.epiphany.id].buff
+	if not epiphanyBuff.isActive then return end
+
+	epiphanyBuff:InitializeCustom(spells.epiphany.duration, GetTime())
+	TRB.Data.lookupDirty = true
+end
+
 ---Updates data based on spell events
 local function HandleSpellEvents(self, event, ...)
-	if event == "SPELL_UPDATE_USES" then
+	-- First because it fires far more often than the rest.
+	if event == "SPELL_UPDATE_COOLDOWN" then
+		local spellId = ...
+		HandleEpiphanyRefreshEvent(spellId)
+	elseif event == "SPELL_UPDATE_CHARGES" then
+		if TRB.Data.character.specId == 2 then
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
+			prayerOfMendingSettleAt = GetTime() + spells.prayerOfMending.attributes.chargeSettleDelay
+		end
+	elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" or event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" then
+		local spellId = ...
+		HandleEpiphanyGlowEvent(spellId, event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
+	elseif event == "SPELL_UPDATE_USES" then
 		local spellId = ...
 		HandleSurgeOfLightEvent(spellId)
 	elseif event == "SPELL_ACTIVATION_OVERLAY_SHOW" or event == "SPELL_ACTIVATION_OVERLAY_HIDE" then
@@ -2137,6 +2388,18 @@ function TRB.Functions.Class:EnableEvents()
 	else
 		spellEventFrame:UnregisterEvent("SPELL_UPDATE_USES")
 	end
+	-- Prayer of Mending's charges and Epiphany are Holy's alone, toggled both ways for the same reason.
+	if TRB.Data.character.specId == 2 then
+		spellEventFrame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+		spellEventFrame:RegisterEvent("SPELL_UPDATE_CHARGES")
+		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
+		spellEventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
+	else
+		spellEventFrame:UnregisterEvent("SPELL_UPDATE_COOLDOWN")
+		spellEventFrame:UnregisterEvent("SPELL_UPDATE_CHARGES")
+		spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
+		spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
+	end
 end
 
 function TRB.Functions.Class:DisableEvents()
@@ -2144,6 +2407,10 @@ function TRB.Functions.Class:DisableEvents()
 	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_HIDE")
 	spellEventFrame:UnregisterEvent("COOLDOWN_VIEWER_SPELL_OVERRIDE_UPDATED")
 	spellEventFrame:UnregisterEvent("SPELL_UPDATE_USES")
+	spellEventFrame:UnregisterEvent("SPELL_UPDATE_COOLDOWN")
+	spellEventFrame:UnregisterEvent("SPELL_UPDATE_CHARGES")
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
+	spellEventFrame:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 end
 
 local function UpdateSnapshot()
@@ -2296,12 +2563,27 @@ local function UpdateSnapshot_Holy()
 	snapshots[spells.holyWordSerenity.id].cooldown:Refresh(true)
 	snapshots[spells.holyWordSanctify.id].cooldown:Refresh(true)
 	snapshots[spells.holyWordChastise.id].cooldown:Refresh()
+	if prayerOfMendingSettleAt ~= nil and currentTime >= prayerOfMendingSettleAt then
+		prayerOfMendingSettleAt = nil
+		SyncPrayerOfMendingCharges()
+	end
+	snapshots[spells.prayerOfMending.id].cooldown:Refresh(true)
 
 	-- Voidbinding buff natural expiry
 	local wasVoidbindingActive = snapshots[spells.voidbinding.id].buff.isActive
 	snapshots[spells.voidbinding.id].buff:GetRemainingTime(currentTime)
 	if wasVoidbindingActive and not snapshots[spells.voidbinding.id].buff.isActive then
 		ApplyVoidbindingCDR(false)
+	end
+
+	-- Epiphany running out unused: its glow hides a moment after its 20 seconds do.
+	local epiphanyBuff = snapshots[spells.epiphany.id].buff
+	if epiphanyBuff.isActive then
+		epiphanyBuff:GetRemainingTime(currentTime)
+		if not epiphanyBuff.isActive then
+			TRB.Functions.AudioCues:ResetLatch(TRB.Data.snapshotData, "epiphany")
+			TRB.Data.lookupDirty = true
+		end
 	end
 
 	-- Benediction buff natural expiry (handled by the Snapshot's buff timer).
@@ -2618,6 +2900,7 @@ local function UpdateResourceBar()
 			conditionMap.surgeOfLight = surgeOfLightStacks >= 1
 			conditionMap.surgeOfLight2 = surgeOfLightStacks >= 2
 			conditionMap.lightweaver = snapshots[spells.lightweaver.id].buff.isActive
+			conditionMap.epiphany = snapshots[spells.epiphany.id].buff.isActive
 
 			-- Color targets: barKey -> elementKey -> current color
 			local manaBarColors = scratch.manaBarColors2
@@ -3249,6 +3532,9 @@ local function SwitchSpec()
 		lookup["#af"] = spells.angelicFeather.icon
 		lookup["#angelicFeather"] = spells.angelicFeather.icon
 		lookup["#surgeOfLight"] = spells.surgeOfLight.icon
+		lookup["#pom"] = spells.prayerOfMending.icon
+		lookup["#prayerOfMending"] = spells.prayerOfMending.icon
+		lookup["#epiphany"] = spells.epiphany.icon
 		TRB.Data.lookup = lookup
 		TRB.Data.lookupLogic = {}
 
@@ -3277,6 +3563,10 @@ local function SwitchSpec()
 		holySnapshots[spells.holyWordSerenity.id].cooldown:InitializeManualCharges(hasMiracleWorker and 2 or 1)
 		holySnapshots[spells.holyWordSanctify.id].cooldown:InitializeManualCharges(hasMiracleWorker and 2 or 1)
 		holySnapshots[spells.holyWordChastise.id].cooldown:InitializeManualCharges(1)
+
+		-- Prayer of Mending's charge count is secret in combat too, so it is hand-counted the same way.
+		local prayerOfMendingMaxCharges = GetPrayerOfMendingMaxCharges()
+		holySnapshots[spells.prayerOfMending.id].cooldown:InitializeManualCharges(prayerOfMendingMaxCharges, SeedPrayerOfMendingCharges(prayerOfMendingMaxCharges))
 
 		-- Initialize manual charge tracking for Angelic Feather
 		local afSnapshot = holySnapshots[spells.angelicFeather.id]
@@ -3718,6 +4008,11 @@ function TRB.Functions.Class:ResetProcsOnDeath()
 				benedictionSnapshot.buff:Reset()
 			end
 			TRB.Functions.AudioCues:ResetLatch(snapshotData, "benediction")
+			local epiphanySnapshot = spells and spells.epiphany and snapshotData.snapshots and snapshotData.snapshots[spells.epiphany.id]
+			if epiphanySnapshot then
+				epiphanySnapshot.buff:Reset()
+			end
+			TRB.Functions.AudioCues:ResetLatch(snapshotData, "epiphany")
 		end
 	end
 end
@@ -3822,6 +4117,18 @@ do
 		local spells = TRB.Data.spellsData.spells
 		return TRB.Data.snapshotData.snapshots[spells.holyWordSanctify.id].cooldown.charges > 0
 	end
+	local epiphanyFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.epiphany.id].buff.isActive == true
+	end
+	local pomTimeFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.prayerOfMending.id].cooldown.remaining > 0
+	end
+	local pomChargesFn = function()
+		local spells = TRB.Data.spellsData.spells
+		return TRB.Data.snapshotData.snapshots[spells.prayerOfMending.id].cooldown.charges > 0 or epiphanyFn()
+	end
 	local holy = {
 		["$resource"] = false, ["$mana"] = false,
 		["$resourcePercent"] = false, ["$manaPercent"] = false,
@@ -3862,6 +4169,12 @@ do
 			local spells = TRB.Data.spellsData.spells
 			return TRB.Data.snapshotData.snapshots[spells.benediction.id].buff.isActive or false
 		end,
+		["$pomCharges"] = pomChargesFn, ["$prayerOfMendingCharges"] = pomChargesFn,
+		["$pomMaxCharges"] = true, ["$prayerOfMendingMaxCharges"] = true,
+		["$pomTime"] = pomTimeFn, ["$prayerOfMendingTime"] = pomTimeFn,
+		["$pomFullTime"] = pomTimeFn, ["$prayerOfMendingFullTime"] = pomTimeFn,
+		["$epiphany"] = epiphanyFn,
+		["$epiphanyTime"] = epiphanyFn,
 	}
 	for k, v in pairs(healthVars) do holy[k] = v end
 	-- Shadow
@@ -4082,7 +4395,7 @@ function TRB.Functions.Class:GetBarTextFrame(relativeToFrame)
 end
 
 ---Returns true when any spec-specific cooldown or buff timer is counting down.
----Disc: PW:Radiance CD, Angelic Feather CD, Void Shield, and Harsh Discipline; Holy: Holy Words CDs, Apotheosis, Lightweaver, AF CD;
+---Disc: PW:Radiance CD, Angelic Feather CD, Void Shield, and Harsh Discipline; Holy: Holy Words CDs, Apotheosis, Lightweaver, AF CD, Prayer of Mending's recharge, Epiphany;
 ---Shadow: Voidform, MFI, SotV, Entropic Rift, Resonant Energy, Void Volley, AF CD.
 ---@return boolean
 function TRB.Functions.Class:HasActiveTimers()
@@ -4108,6 +4421,8 @@ function TRB.Functions.Class:HasActiveTimers()
 			or (spells.apotheosis and snapshots[spells.apotheosis.id] and snapshots[spells.apotheosis.id].buff and snapshots[spells.apotheosis.id].buff.isActive)
 			or (spells.lightweaver and snapshots[spells.lightweaver.id] and snapshots[spells.lightweaver.id].buff and snapshots[spells.lightweaver.id].buff.isActive)
 			or (spells.angelicFeather and snapshots[spells.angelicFeather.id] and snapshots[spells.angelicFeather.id].cooldown and snapshots[spells.angelicFeather.id].cooldown.remaining > 0)
+			or snapshots[spells.prayerOfMending.id].cooldown.remaining > 0
+			or snapshots[spells.epiphany.id].buff.isActive
 			or surgeOfLightActive then
 			return true
 		end

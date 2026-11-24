@@ -73,6 +73,7 @@ local L = TRB.Localization
 ---@field public count number?
 ---@field public max number?
 ---@field public nodeKeys string[]? # Each node's value cache key
+---@field public indicated boolean? # Whether a Color Indicator colored, curved, or glowed the bar on its last draw
 
 CustomBars.kinds = {
 	buffTime = "buffTime",
@@ -871,6 +872,14 @@ function CustomBars:Delete(spec, classId, specId, guid)
 			table.remove(barText, index)
 		end
 	end
+	local indicatorColors = spec.colors ~= nil and spec.colors.shared ~= nil and spec.colors.shared.indicatorColors or nil
+	if indicatorColors ~= nil then
+		for _, indicator in pairs(indicatorColors) do
+			if type(indicator) == "table" and indicator.targets ~= nil then
+				indicator.targets[key] = nil
+			end
+		end
+	end
 	self:SyncRegistry(classId, specId, spec)
 end
 
@@ -971,6 +980,11 @@ local function EnsureRuntime()
 		runtimeHasBoundVariables = #boundBars > 0
 		TRB.Functions.BarText:SetBoundBarVariables(boundBars)
 	end
+	local targetKeys = {}
+	for index, entry in ipairs(runtime) do
+		targetKeys[index] = entry.key
+	end
+	TRB.Functions.Color:SetUserBarTargets(targetKeys)
 	pendingCooldownSync = pendingCooldownSync or hadCooldowns or runtimeHasCooldowns
 	-- The buffs followed by spell ID are read from the bar list.
 	pendingAuraSync = TRB.Flavor.playerAuras == true
@@ -1314,7 +1328,9 @@ local function RenderRechargeFill(entry, group, settings, count, recharge, redra
 		group:SetChargeTrackerValue(count)
 	end
 	local colors = settings.colors ~= nil and settings.colors.bars ~= nil and settings.colors.bars[entry.key] or nil
-	local fill = colors ~= nil and colors.bar or nil
+	-- A Color Indicator on the bar's fill colors the recharging charge too.
+	local indicators = TRB.Functions.Color:GetResolvedIndicators(entry.key)
+	local fill = (indicators ~= nil and indicators.bar) or (colors ~= nil and colors.bar) or nil
 	local texture = settings.textures ~= nil and settings.textures[entry.key .. "Bar"] or nil
 	if fill ~= nil and (redraw or entry.fillTexture ~= texture or entry.fillColor ~= fill.color or entry.fillColor2 ~= fill.color2
 		or entry.fillGradient ~= fill.gradientDirection) then
@@ -2208,6 +2224,55 @@ if TRB.Flavor.playerAuras then
 	CustomBars:RegisterProvider(CustomBars.auraProvider, auraProvider)
 end
 
+---Paints the Color Indicators resolved for a bar over its own colors, then leaves a bar nothing targets alone once
+---its own colors are back.
+---@param entry TRB.Classes.CustomBarRuntime
+---@param group TRB.Classes.BarGroup
+---@param settings table # The spec cache settings
+---@param redraw boolean
+local function RenderIndicators(entry, group, settings, redraw)
+	local Color = TRB.Functions.Color
+	local key = entry.key
+	local indicators = Color:GetResolvedIndicators(key)
+	local gradients = Color:GetResolvedGradients(key)
+	local gradientGlows = Color:GetResolvedGradientGlows(key)
+	local indicated = (indicators ~= nil and next(indicators) ~= nil) or (gradients ~= nil and next(gradients) ~= nil)
+		or Color:GetResolvedGlow(key) ~= nil or (gradientGlows ~= nil and gradientGlows.count > 0)
+	if not indicated and not entry.indicated and not redraw then
+		return
+	end
+	entry.indicated = indicated
+
+	local colors = settings.colors ~= nil and settings.colors.bars ~= nil and settings.colors.bars[key] or nil
+	if colors == nil then
+		return
+	end
+	-- The defaults are a fresh table per call, and the bar's data already holds every color, so only a gap reads them.
+	local defaults = (colors.bar == nil or colors.border == nil or colors.background == nil)
+		and entry.definition:GetDefaultColors() or nil
+	local ownBorder = colors.border or (defaults ~= nil and defaults.border) or nil
+	local ownBackground = colors.background or (defaults ~= nil and defaults.background) or nil
+	local fill = (indicators ~= nil and indicators.bar) or colors.bar or (defaults ~= nil and defaults.bar) or nil
+	local border = (indicators ~= nil and indicators.border) or (ownBorder ~= nil and ownBorder.color) or nil
+	local background = (indicators ~= nil and indicators.background) or (ownBackground ~= nil and ownBackground.color) or nil
+	for i = 1, group.nodeCount do
+		local node = group.nodes[i]
+		if node ~= nil then
+			if fill ~= nil then
+				Color:ApplyFillColor(node, fill)
+				if node.engineDriven then
+					-- The aura engine draws an aura bar's fill, and takes a new color only from a container built for it.
+					TRB.Functions.AuraEngine:Reattach(node)
+				end
+			end
+			Color:ApplyResolvedBorderOrBackground(node, key, "border", border)
+			Color:ApplyResolvedBorderOrBackground(node, key, "background", background)
+			Color:ApplyResolvedEndCap(node, key)
+			TRB.Functions.Glow:ApplyIndicatorGlow(node, key)
+		end
+	end
+end
+
 ---Draws the displayed custom bars. Runs on the 20Hz tick, ahead of the visibility pass.
 function CustomBars:Render()
 	EnsureRuntime()
@@ -2266,6 +2331,7 @@ function CustomBars:Render()
 				redraw = true
 			end
 			needsLayout = entry.provider.Render(entry, group, node, settings, now, redraw) or needsLayout
+			RenderIndicators(entry, group, settings, redraw)
 			activityChanged = activityChanged or entry.active ~= wasActive
 			timerActive = timerActive or (entry.isTimer and entry.active) or entry.recharging == true
 		end

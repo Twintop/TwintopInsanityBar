@@ -287,6 +287,9 @@ end
 ---@field public energyConservation TRB.Classes.SpellBase
 ---@field public sustainedPotency TRB.Classes.SpellBase
 ---@field public spiritwell TRB.Classes.SpellBase
+---@field public epiphany TRB.Classes.SpellBase
+---@field public guidingLight TRB.Classes.SpellBase
+---@field public wasteNoTime TRB.Classes.SpellBase
 TRB.Classes.Mainline.Priest.HolySpells = setmetatable({}, {__index = TRB.Classes.Mainline.Priest.HealerSpells})
 TRB.Classes.Mainline.Priest.HolySpells.__index = TRB.Classes.Mainline.Priest.HolySpells
 
@@ -372,6 +375,11 @@ function TRB.Classes.Mainline.Priest.HolySpells:New()
 		id = 33076,
 		holyWordKey = "holyWordSerenity",
 		holyWordReduction = 4, -- Per rank of Voice of Harmony
+		duration = 12,
+		hasCharges = true,
+		isHasted = true,
+		maxCharges = 1,
+		chargeSettleDelay = 0.3, -- How long after a charge event the game's count is trusted
 	})
 	self.benediction = TRB.Classes.Mainline.Priest.HolyWordSpell:New({
 		id = 1262763,
@@ -430,8 +438,27 @@ function TRB.Classes.Mainline.Priest.HolySpells:New()
 		isTalent = true,
 		durationMod = 12
 	})
+	self.epiphany = TRB.Classes.SpellBase:New({
+		id = 414556,
+		talentId = 414553,
+		isTalent = true,
+		duration = 20,
+		maxChargesMod = 1
+	})
 	-- Set Bonuses
 
+
+	-- Oracle
+	self.guidingLight = TRB.Classes.SpellBase:New({
+		id = 1248423,
+		isTalent = true,
+		maxChargesMod = 1
+	})
+	self.wasteNoTime = TRB.Classes.SpellBase:New({
+		id = 440681,
+		isTalent = true,
+		durationMod = -1.5
+	})
 
 	-- Archon
 	self.manifestedPower = TRB.Classes.SpellBase:New({
@@ -495,6 +522,9 @@ function TRB.Classes.Mainline.Priest.HolySpells.FillBarTextVariables(specCacheEn
 		{ variable = "#af", icon = spells.angelicFeather.icon, description = spells.angelicFeather.name, printInSettings = true },
 		{ variable = "#angelicFeather", icon = spells.angelicFeather.icon, description = spells.angelicFeather.name, printInSettings = false },
 		{ variable = "#surgeOfLight", icon = spells.surgeOfLight.icon, description = spells.surgeOfLight.name, printInSettings = true },
+		{ variable = "#pom", icon = spells.prayerOfMending.icon, description = spells.prayerOfMending.name, printInSettings = true },
+		{ variable = "#prayerOfMending", icon = spells.prayerOfMending.icon, description = spells.prayerOfMending.name, printInSettings = false },
+		{ variable = "#epiphany", icon = spells.epiphany.icon, description = spells.epiphany.name, printInSettings = true },
 	})
 	local varCategory = TRB.Functions.BarText.VariableCategory
 	specCacheEntry.barTextVariables.values = TRB.Functions.BarText:GetCommonValues({
@@ -540,6 +570,18 @@ function TRB.Classes.Mainline.Priest.HolySpells.FillBarTextVariables(specCacheEn
 		{ variable = "$surgeOfLightStacksMax", description = L["PriestBarTextVariable_surgeOfLightStacksMax"], printInSettings = true, color = false },
 		{ variable = "$surgeOfLightTime", description = L["PriestBarTextVariable_surgeOfLightTime"], printInSettings = true, color = false },
 		{ variable = "$benediction", description = L["PriestHolyBarTextVariable_benediction"], printInSettings = true, color = false, logicType = "boolean" },
+
+		-- Counted in Lua from casts, since the game's charge count is secret in combat.
+		{ variable = "$pomCharges", description = L["PriestHolyBarTextVariable_pomCharges"], printInSettings = true, color = false },
+		{ variable = "$prayerOfMendingCharges", description = "", printInSettings = false, color = false },
+		{ variable = "$pomMaxCharges", description = L["PriestHolyBarTextVariable_pomMaxCharges"], printInSettings = true, color = false },
+		{ variable = "$prayerOfMendingMaxCharges", description = "", printInSettings = false, color = false },
+		{ variable = "$pomTime", description = L["PriestHolyBarTextVariable_pomTime"], printInSettings = true, color = false },
+		{ variable = "$prayerOfMendingTime", description = "", printInSettings = false, color = false },
+		{ variable = "$pomFullTime", description = L["PriestHolyBarTextVariable_pomFullTime"], printInSettings = true, color = false },
+		{ variable = "$prayerOfMendingFullTime", description = "", printInSettings = false, color = false },
+		{ variable = "$epiphany", description = L["PriestHolyBarTextVariable_epiphany"], printInSettings = true, color = false, logicType = "boolean" },
+		{ variable = "$epiphanyTime", description = L["PriestHolyBarTextVariable_epiphanyTime"], printInSettings = true, color = false },
 	})
 end
 
@@ -1317,6 +1359,12 @@ do
 				tooltip = L["PriestHolyAudioCheckboxBenedictionTooltip"],
 			},
 			{
+				id = "epiphany",
+				label = L["PriestHolyAudioEpiphany"],
+				trigger = L["PriestHolyAudioTriggerEpiphany"],
+				tooltip = L["PriestHolyAudioCheckboxEpiphanyTooltip"],
+			},
+			{
 				id = "lightweaverExpiring",
 				label = L["PriestHolyAudioLightweaverExpiring"],
 				trigger = L["PriestHolyAudioTriggerLightweaverExpiring"],
@@ -1426,11 +1474,18 @@ end
 do
 	local L = TRB.Localization
 	local SpecDescriptor = TRB.Classes.SpecDescriptor
-	-- /trb holywords prints the Holy Word diagnostics the Priest runtime module implements.
+	-- /trb holywords and /trb mending print the diagnostics the Priest runtime module implements.
 	SpecDescriptor:DeclareForClass("priest", {
 		slashCommands = {
 			holywords = function()
 				TRB.Functions.Class:PrintHolyWordDiagnostics()
+			end,
+			mending = function(subcommand)
+				if subcommand ~= nil and subcommand ~= "" then
+					print("|cFFFF8800TRB Mending:|r Unknown argument '" .. subcommand .. "'. Usage: /trb mending")
+					return
+				end
+				TRB.Functions.Class:PrintMendingDiagnostics()
 			end,
 		},
 	})

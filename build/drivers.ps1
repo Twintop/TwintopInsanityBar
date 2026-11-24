@@ -3,7 +3,8 @@
 	Runs the harness's check drivers for every flavor and fails on any FAIL or error.
 
 .DESCRIPTION
-	options-tabs builds every options tab for every class and runs the Textures tab checks; it runs once per flavor.
+	options-tabs builds every options tab for every class and runs the Textures tab, Color Indicator target menu, and bar
+	picker section checks; it runs once per flavor.
 	media-pickup checks that fonts, textures, and sounds that aren't loaded draw the default and are picked up live;
 	it runs once per class.
 	colors checks color conversion, color curves, class colors, and VertexColor animations; it runs once per flavor.
@@ -29,8 +30,8 @@
 	gate, cast-tracked stacks and timer, node fill, bar text, and audio counter; it runs once per class. spell-data checks that every
 	filled specialization's spellsById lists each spell once under each of its ids and ranks through loading screens, talent changes, and
 	specialization changes; it runs once per class.
-	custom-bars checks Custom Bars: an added bar's sources, registry scope, group, fill, visibility entry, bar text anchor, and the
-	options tab's add, edit, and delete; it runs once per class.
+	custom-bars checks Custom Bars: an added bar's sources, registry scope, group, fill, visibility entry, bar text anchor, Color
+	Indicator targets, and the options tab's add, edit, and delete; it runs once per class.
 	eclipse checks the Forever Druid's Eclipse bar: its talent gate, cast-tracked charges and timer, node fill, bar text, and
 	audio counter; it runs once per class.
 	elemental-shield checks the Forever Shaman's Elemental Shield bar: its gate, casts, orb spends and their lockout, Water
@@ -51,13 +52,16 @@
 	and Unusable only with none, on every specialization that has one; it runs once per class.
 	shatter-charges checks the Live Frost Mage Shatter bar's Ice Lance charges: nodes by Polished Focus, the full charge and
 	custom indicator colors, custom threshold lines, and the options checkbox; it runs once per class.
+	prayer-of-mending checks the Live Holy Priest's Prayer of Mending charges and Epiphany: the hand count, its hasted recharge
+	and corrections, Epiphany's glow, refresh, and free cast, bar text, the audio cue, the Color Indicator, which starts
+	deleted, and /trb mending; it runs once per class.
 	See build\harness\README.md.
 
 .PARAMETER Lua
 	Lua 5.1 interpreter to use. Defaults to "lua5.1" on the PATH.
 
 .PARAMETER Driver
-	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, five-second-rule, combat-conditions, classic-overcap, totems, preview-mode, indicator-copies, indicator-modifiers, bartext-conformance, inner-fire, dark-inspiration, slice-and-dice, brews, arcane-blast, spell-data, custom-bars, eclipse, elemental-shield, timer-precision, mounted-conditions, bartext-display-list, bartext-refresh, spell-usable, finisher-lines, shatter-charges). Default: all.
+	Restrict to one driver (options-tabs, media-pickup, colors, threshold-behavior, range-checks, aura-conditions, swing-timers, five-second-rule, combat-conditions, classic-overcap, totems, preview-mode, indicator-copies, indicator-modifiers, bartext-conformance, inner-fire, dark-inspiration, slice-and-dice, brews, arcane-blast, spell-data, custom-bars, eclipse, elemental-shield, timer-precision, mounted-conditions, bartext-display-list, bartext-refresh, spell-usable, finisher-lines, shatter-charges, prayer-of-mending). Default: all.
 
 .PARAMETER Flavor
 	Restrict to one flavor (mainline, forever, classic, tbc). Default: all.
@@ -114,7 +118,8 @@ $drivers = @(
 	[pscustomobject]@{ Name = "bartext-refresh"; EveryClass = $false },
 	[pscustomobject]@{ Name = "spell-usable"; EveryClass = $false },
 	[pscustomobject]@{ Name = "finisher-lines"; EveryClass = $true },
-	[pscustomobject]@{ Name = "shatter-charges"; EveryClass = $true }
+	[pscustomobject]@{ Name = "shatter-charges"; EveryClass = $true },
+	[pscustomobject]@{ Name = "prayer-of-mending"; EveryClass = $true }
 )
 $known = $drivers | ForEach-Object { $_.Name }
 if ($Driver -ne "" -and $known -notcontains $Driver) {

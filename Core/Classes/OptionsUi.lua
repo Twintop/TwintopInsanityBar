@@ -213,6 +213,7 @@ TRB.Classes.OptionsUi = TRB.Classes.OptionsUi or {}
 ---@field public label string Localized bar display name
 ---@field public elements TRB.Classes.OptionsUi.BarElementDef[]? Elements this bar offers; defaults to bar/border/background
 ---@field public gradientExcluded table<string, boolean>? Elements of this bar that cannot take a gradient indicator's color curve (e.g. a fill already driven by another curve, or a drawn texture rather than a node color)
+---@field public group string? The target menu section it is listed under ("castBars", "petBars", or "customBars"); nil is Built-in
 
 ---End-of-buff configuration for a single buff tracked by the Indicator Colors panel.
 ---@class TRB.Classes.OptionsUi.EndOfConfig

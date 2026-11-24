@@ -1913,7 +1913,7 @@ end
 ---@param settings TRB.Classes.Settings.SpecializationSettingsBase
 ---@param classId integer?
 ---@param specId integer?
----@return table[]
+---@return table[] # Each { key, barKey, label, decimals, isPercent }, where barKey is the bar the target is on
 function TRB.Functions.Threshold:GetCustomThresholdBarTargets(settings, classId, specId)
 	local targets = {}
 	if settings == nil then
@@ -1975,6 +1975,7 @@ function TRB.Functions.Threshold:GetCustomThresholdBarTargets(settings, classId,
 					if nodeConfig ~= nil then
 						AddTarget({
 							key = barKey .. ":" .. nodeKey,
+							barKey = barKey,
 							label = nodeConfig.colorLabel or nodeConfig.displayName or nodeKey,
 							decimals = nodeConfig.thresholdDecimals or 0,
 						}, barKey, barName)
@@ -1992,6 +1993,7 @@ function TRB.Functions.Threshold:GetCustomThresholdBarTargets(settings, classId,
 							or sub.label or sub.key
 						local target = {
 							key = barKey .. ":" .. sub.key,
+							barKey = barKey,
 							label = label,
 							decimals = sub.decimals or 0,
 							isPercent = sub.scale == "percent",
@@ -2006,6 +2008,7 @@ function TRB.Functions.Threshold:GetCustomThresholdBarTargets(settings, classId,
 				else
 					AddTarget({
 						key = barKey,
+						barKey = barKey,
 						label = barName,
 						decimals = GetCustomThresholdTargetDecimals(classId, specId, barKey),
 						isPercent = IsPercentScaleTarget(classId, specId, barKey, barTypeDef),

@@ -391,6 +391,7 @@ end
 ---@field public groupKey string # screen, or the option grouping that owns the bar: spec, castbar, otherBars, petBars, skyriding
 ---@field public label string
 ---@field public frame string
+---@field public segmented boolean # One of several anchors on a bar with segments, which the menus list in a submenu
 
 ---The frames a scope's bar text can anchor to, each bar's anchors together and tagged with its option grouping.
 ---@class TRB.Classes.BarTextAnchorCatalog
@@ -413,7 +414,8 @@ function TRB.Functions.BarText:GetAnchorCatalog(classId, specId)
 	---@param barKey string
 	---@param label string
 	---@param frame string
-	local function AddAnchorFrame(barKey, label, frame)
+	---@param isSegment boolean? # A bar's container or one of its segments, not the bar itself or its icon
+	local function AddAnchorFrame(barKey, label, frame, isSegment)
 		if frameByLabel[label] ~= nil then
 			return
 		end
@@ -422,6 +424,9 @@ function TRB.Functions.BarText:GetAnchorCatalog(classId, specId)
 			anchorGroups[barKey] = { barKey = barKey, labels = {} }
 		end
 		table.insert(anchorGroups[barKey].labels, label)
+		if isSegment then
+			anchorGroups[barKey].segmented = true
+		end
 	end
 
 	local primaryLabel = TRB.Functions.Bar:GetSpecResourceBarName("primary", classId, specId) or L["MainResourceBar"]
@@ -429,7 +434,7 @@ function TRB.Functions.BarText:GetAnchorCatalog(classId, specId)
 	AddAnchorFrame("primary", primaryLabel, "Resource")
 	-- Containers go in first so each leads its bar's nodes.
 	for _, containerAnchor in ipairs(self:GetContainerAnchorOptions(classId, specId)) do
-		AddAnchorFrame(containerAnchor.barGroupKey, containerAnchor.label, containerAnchor.id)
+		AddAnchorFrame(containerAnchor.barGroupKey, containerAnchor.label, containerAnchor.id, true)
 	end
 	local anchorFrames
 	if classId == nil then -- Global Bar Text
@@ -440,7 +445,7 @@ function TRB.Functions.BarText:GetAnchorCatalog(classId, specId)
 	end
 	for barKey, entries in pairs(anchorFrames) do
 		for _, entry in ipairs(entries) do
-			AddAnchorFrame(barKey, entry.label, entry.frame)
+			AddAnchorFrame(barKey, entry.label, entry.frame, true)
 		end
 	end
 	AddAnchorFrame("health", L["HealthBar"], "HealthBar")
@@ -475,7 +480,7 @@ function TRB.Functions.BarText:GetAnchorCatalog(classId, specId)
 	-- Totem slots reach the specs with the Totems bar, and the Global panel where it has one; one anchor per slot's node.
 	if registry:IsBarInScope("totems", classId, specId) then
 		for slot = 1, TRB.Functions.Totems:GetSlotCount() do
-			AddAnchorFrame("totems", self:GetTotemSlotAnchorLabel(slot), "TotemSlot" .. slot)
+			AddAnchorFrame("totems", self:GetTotemSlotAnchorLabel(slot), "TotemSlot" .. slot, true)
 		end
 	end
 
@@ -512,9 +517,11 @@ function TRB.Functions.BarText:GetAnchorCatalog(classId, specId)
 	local catalog = { entries = {}, primaryLabel = primaryLabel, frameByLabel = frameByLabel, labelByFrame = {}, groupByFrame = {}, groups = {} }
 	for _, group in ipairs(sortedAnchorGroups) do
 		local groupKey = group.barKey == "screen" and "screen" or registry:GetBarGroup(group.barKey, classId, specId)
+		-- A spec lists a lone bar here too, such as a second resource bar, which has nothing to group.
+		local segmented = group.segmented == true and #group.labels > 1
 		for _, label in ipairs(group.labels) do
 			local frame = frameByLabel[label]
-			catalog.entries[#catalog.entries + 1] = { barKey = group.barKey, groupKey = groupKey, label = label, frame = frame }
+			catalog.entries[#catalog.entries + 1] = { barKey = group.barKey, groupKey = groupKey, label = label, frame = frame, segmented = segmented }
 			catalog.labelByFrame[frame] = label
 			catalog.groupByFrame[frame] = groupKey
 		end

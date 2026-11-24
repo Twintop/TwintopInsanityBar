@@ -375,6 +375,22 @@ function TRB.Classes.BarNode:ClearGradient()
 	self.appearanceVersion = self.appearanceVersion + 1
 end
 
+---Points a useBorderColor end cap at a border color, or at its own color for the configured default when
+---useBorderColorExceptDefault asks to keep it.
+---@param node TRB.Classes.BarNode
+---@param config table # The node's endCapConfig
+---@param colorString string? # ARGB hex color string
+local function FollowBorderOnEndCap(node, config, colorString)
+	local endCapSlot = node.overlaySlots.endCap
+	if endCapSlot then
+		if config.useBorderColorExceptDefault and colorString == config.defaultBorderColor then
+			endCapSlot:SetEndCapColor(config.color)
+		else
+			endCapSlot:SetEndCapColor(colorString)
+		end
+	end
+end
+
 ---Sets the border color
 ---@param colorString string # ARGB hex color string
 function TRB.Classes.BarNode:SetBorderColor(colorString)
@@ -394,14 +410,7 @@ function TRB.Classes.BarNode:SetBorderColor(colorString)
 	-- Skipped while a Color Indicator owns the cap this frame (that takes priority).
 	local config = self.endCapConfig
 	if config and config.useBorderColor and not self.endCapIndicatorActive then
-		local endCapSlot = self.overlaySlots.endCap
-		if endCapSlot then
-			if config.useBorderColorExceptDefault and colorString == config.defaultBorderColor then
-				endCapSlot:SetEndCapColor(config.color)
-			else
-				endCapSlot:SetEndCapColor(colorString)
-			end
-		end
+		FollowBorderOnEndCap(self, config, colorString)
 	end
 end
 
@@ -703,8 +712,8 @@ end
 
 ---Applies an indicator-owned color to this node's end cap for the current frame. Color Indicator targets
 ---on the end cap take priority over the useBorderColor follow (and the cap's own color). Pass both nil when
----no indicator targets the cap this frame: the cap reverts to its own color, unless useBorderColor is on, in
----which case the border-follow (run earlier this frame via SetBorderColor) already settled it.
+---no indicator targets the cap this frame: the cap reverts to its own color, or with useBorderColor on, to the
+---border's current one, since a border repainted while the indicator held the cap skipped the follow.
 ---@param flatColor string? # Flat indicator color (ARGB hex), or nil
 ---@param gradientResult any? # Evaluated gradient ColorCurve result, or nil
 function TRB.Classes.BarNode:ApplyEndCapIndicator(flatColor, gradientResult)
@@ -727,6 +736,12 @@ function TRB.Classes.BarNode:ApplyEndCapIndicator(flatColor, gradientResult)
 		self.endCapIndicatorActive = false
 		if not config.useBorderColor then
 			slot:SetEndCapColor(config.color)
+		else
+			-- A curve-driven border leaves no plain color cached, and its own setter colors the cap.
+			local cached = TRB.Data.cache.colors.border[self.borderKey]
+			if cached ~= nil and cached.source ~= nil then
+				FollowBorderOnEndCap(self, config, cached.source)
+			end
 		end
 	end
 end

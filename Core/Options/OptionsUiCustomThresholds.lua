@@ -710,8 +710,11 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 
 		barTargetDropdown:SetDefaultText(targetLabel)
 		barTargetDropdown:SetupMenu(function(dd, rootDescription)
-			for _, target in ipairs(TRB.Functions.Threshold:GetCustomThresholdBarTargets(GetCurrentSpec() or spec, classId, specId)) do
-				rootDescription:CreateRadio(target.label, function(value) return value == (line.barTarget or "primary") end, function(value)
+			local targets = TRB.Functions.Threshold:GetCustomThresholdBarTargets(GetCurrentSpec() or spec, classId, specId)
+			local rows = TRB.Functions.OptionsUi.Primitives:AddBarSections(rootDescription, targets, function(target)
+				return TRB.Functions.Bar:GetBarTargetSection(target.barKey, classId, specId)
+			end, function(menu, target)
+				menu:CreateRadio(target.label, function(value) return value == (line.barTarget or "primary") end, function(value)
 					line.barTarget = value
 					local newMin, newMax = GetBarTargetRange(GetCurrentSpec() or spec, value, classId, specId)
 					local newDecimals = GetBarTargetDecimals(GetCurrentSpec() or spec, value, classId, specId)
@@ -730,7 +733,8 @@ function TRB.Functions.OptionsUi.CustomThresholds:GenerateCustomThresholdsPanel(
 					SetTableValues()
 					RefreshRuntime()
 				end, target.key)
-			end
+			end)
+			TRB.Functions.OptionsUi.Primitives:LimitMenuRows(rootDescription, rows)
 		end)
 
 		local iconTypeLabels = {

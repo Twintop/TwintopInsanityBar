@@ -511,12 +511,52 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		end
 	end
 
+	---The bar picker section an anchor lists under; nil is the screen.
+	---@param anchor TRB.Classes.BarTextAnchor
+	---@return string?
+	local function AnchorSection(anchor)
+		return TRB.Functions.Bar:GetBarTargetSection(anchor.barKey, classId, specId)
+	end
+
+	---Lists anchors in a bar text menu under their section titles. A bar with segments is one row: a submenu named
+	---for the bar, holding its container and each segment.
+	---@param menu table
+	---@param anchors TRB.Classes.BarTextAnchor[]
+	---@param isGlobal boolean # The anchors are Global Bar Text's, which name their bars for no specialization
+	---@param addRadio fun(menu: table, anchor: TRB.Classes.BarTextAnchor)
+	local function AddAnchorSections(menu, anchors, isGlobal, addRadio)
+		local nameClassId, nameSpecId = classId, specId
+		if isGlobal then
+			nameClassId, nameSpecId = nil, nil
+		end
+		local submenus = {}
+		TRB.Functions.OptionsUi.Primitives:AddBarSections(menu, anchors, AnchorSection, function(target, anchor)
+			local rows = 1
+			if anchor.segmented then
+				local submenu = submenus[anchor.barKey]
+				if submenu == nil then
+					submenu = target:CreateButton(TRB.Functions.Bar:GetBarDisplayName(anchor.barKey, nameClassId, nameSpecId))
+					submenus[anchor.barKey] = submenu
+				else
+					rows = 0
+				end
+				target = submenu
+			end
+			addRadio(target, anchor)
+			return rows
+		end)
+	end
+
 	local function RelativeToFrameGenerator(dropdown, rootDescription)
+		local listed = {}
 		for _, anchor in ipairs(CatalogFor(workingBarText).entries) do
 			if IsGroupListed(anchor.groupKey) then
-				rootDescription:CreateRadio(anchor.label, RelativeToFrameIsSelected, RelativeToFrameSetSelected, anchor.frame)
+				listed[#listed + 1] = anchor
 			end
 		end
+		AddAnchorSections(rootDescription, listed, IsGlobalEntry(workingBarText), function(menu, anchor)
+			menu:CreateRadio(anchor.label, RelativeToFrameIsSelected, RelativeToFrameSetSelected, anchor.frame)
+		end)
 		rootDescription:SetScrollMode(400)
 	end
 	barTextRelativeToFrame:SetupMenu(RelativeToFrameGenerator)
@@ -1300,16 +1340,6 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		end
 	end
 
-	local moveGroupLabels = {
-		spec = L["BarTextGroupSpecBars"],
-		castbar = L["TabCastbars"],
-		otherBars = L["TabOtherBars"],
-		petBars = L["TabPetBars"],
-		totems = L["ResourceTotems"],
-		skyriding = L["TabSkyriding"],
-	}
-	local moveGroupOrder = { "spec", "castbar", "otherBars", "petBars", "totems", "skyriding" }
-
 	---Binds an entry to another bar, then redraws the lists and text the move changes.
 	---@param entry TRB.Classes.Settings.DisplayTextEntry
 	---@param anchor TRB.Classes.BarTextAnchor
@@ -1336,25 +1366,9 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 			MoveBarTextEntryToAnchor(entry, anchor)
 		end
 
-		local entryCatalog = CatalogFor(entry)
-		for _, anchor in ipairs(entryCatalog.entries) do
-			if anchor.groupKey == "screen" then
-				menu:CreateRadio(anchor.label, IsCurrentAnchor, MoveToAnchor, anchor)
-			end
-		end
-		for _, moveGroupKey in ipairs(moveGroupOrder) do
-			local isFirst = true
-			for _, anchor in ipairs(entryCatalog.entries) do
-				if anchor.groupKey == moveGroupKey then
-					if isFirst then
-						menu:CreateDivider()
-						menu:CreateTitle(moveGroupLabels[moveGroupKey])
-						isFirst = false
-					end
-					menu:CreateRadio(anchor.label, IsCurrentAnchor, MoveToAnchor, anchor)
-				end
-			end
-		end
+		AddAnchorSections(menu, CatalogFor(entry).entries, IsGlobalEntry(entry), function(target, anchor)
+			target:CreateRadio(anchor.label, IsCurrentAnchor, MoveToAnchor, anchor)
+		end)
 	end
 
 	local function ProfileHasCore(profileName)

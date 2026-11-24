@@ -79,6 +79,24 @@ local function GetAnchorPointDisplayName(point)
 	return anchorPointDisplayNames[point or "TOP"] or point or "TOP"
 end
 
+---Fills an Anchor To menu: the screen, then the bars this one can anchor to under a title per kind of bar.
+---@param rootDescription table The root menu description to add radio items to
+---@param targets string[] Bar keys, from GetAvailableAnchorTargets
+---@param classId integer?
+---@param specId integer?
+---@param isSelected fun(barKey: string): boolean
+---@param setSelected fun(barKey: string)
+local function AddAnchorTargets(rootDescription, targets, classId, specId, isSelected, setSelected)
+	local Bar = TRB.Functions.Bar
+	local Primitives = TRB.Functions.OptionsUi.Primitives
+	local rows = Primitives:AddBarSections(rootDescription, targets, function(barKey)
+		return Bar:GetBarTargetSection(barKey, classId, specId)
+	end, function(menu, barKey)
+		menu:CreateRadio(Bar:GetBarDisplayName(barKey, classId, specId), isSelected, setSelected, barKey)
+	end)
+	Primitives:LimitMenuRows(rootDescription, rows)
+end
+
 ---Applies sensible defaults when changing anchor target type (screen <-> bar).
 ---When transitioning between screen and bar anchoring, the existing offset/point values
 ---are meaningless for the new context, so reset them to useful defaults.
@@ -581,9 +599,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateBarDimensionsOptions(parent, con
 	local function PrimaryAnchorToGenerator(dropdown, rootDescription)
 		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec, classId, specId)
 		local targets = TRB.Functions.Bar:GetAvailableAnchorTargets("primary", spec, nil, specBarKeys, classId, specId)
-		for _, barKey in ipairs(targets) do
-			rootDescription:CreateRadio(TRB.Functions.Bar:GetBarDisplayName(barKey, classId, specId), PrimaryAnchorToIsSelected, PrimaryAnchorToSetSelected, barKey)
-		end
+		AddAnchorTargets(rootDescription, targets, classId, specId, PrimaryAnchorToIsSelected, PrimaryAnchorToSetSelected)
 	end
 	primaryAnchorToDropdown:SetupMenu(PrimaryAnchorToGenerator)
 	primaryAnchorToDropdown:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
@@ -1156,9 +1172,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateAncillaryBarDimensionsOptions(pa
 		-- Build list of valid targets
 		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec, classId, specId)
 		local targets = TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, spec, nil, specBarKeys, classId, specId)
-		for _, barKey in ipairs(targets) do
-			rootDescription:CreateRadio(TRB.Functions.Bar:GetBarDisplayName(barKey, classId, specId), AnchorToIsSelected, AnchorToSetSelected, barKey)
-		end
+		AddAnchorTargets(rootDescription, targets, classId, specId, AnchorToIsSelected, AnchorToSetSelected)
 	end
 	anchorToDropdown:SetupMenu(AnchorToGenerator)
 	anchorToDropdown:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)
@@ -1801,9 +1815,7 @@ function TRB.Functions.OptionsUi.Layout:GenerateCustomBarDimensionsOptions(paren
 	local function AnchorToGenerator(dropdown, rootDescription)
 		local specBarKeys = TRB.Functions.Bar:GetAllBarKeysFromSettings(spec, classId, specId)
 		local targets = TRB.Functions.Bar:GetAvailableAnchorTargets(thisBarKey, spec, nil, specBarKeys, classId, specId)
-		for _, barKey in ipairs(targets) do
-			rootDescription:CreateRadio(TRB.Functions.Bar:GetBarDisplayName(barKey, classId, specId), AnchorToIsSelected, AnchorToSetSelected, barKey)
-		end
+		AddAnchorTargets(rootDescription, targets, classId, specId, AnchorToIsSelected, AnchorToSetSelected)
 	end
 	anchorToDropdown:SetupMenu(AnchorToGenerator)
 	anchorToDropdown:SetPoint("TOPLEFT", oUi.xCoord, yCoord - 30)

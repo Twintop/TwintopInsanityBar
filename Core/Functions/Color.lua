@@ -1149,6 +1149,9 @@ TRB.Data.resolvedIndicators = {
 	-- The Totems bar: border, background, and endCap only; its fill is per totem.
 	---@type table<string, string|table>
 	totemsBar = {},
+	-- The displayed spec's custom bars, by bar key: resolved like the shared bars, since no spec's color map names them.
+	---@type table<string, table<string, string|table>>
+	userBars = {},
 	-- barKey -> element -> active gradient indicator; only the render path knows the curve's base color.
 	---@type table<string, table<string, table>>
 	gradients = {},
@@ -1298,19 +1301,16 @@ local sharedIndicatorBars = {
 
 -- Only ApplyIndicatorColors writes these resolved tables, so a pass that wrote none leaves nothing to wipe.
 local sharedBarsWritten = true
+local userBarsWritten = true
 local gradientsWritten = true
 local glowsWritten = true
 local gradientGlowsWritten = true
 
----Resolves the indicator colors for a spec's own bars plus the shared health bar and cast bar. Walks
----nodeOrder back to front so earlier (higher-priority) entries overwrite later ones. The spec's bars are
----written back into barColorMap in place; the shared bars are parked in TRB.Data.resolvedIndicators.
----Pass a nil barColorMap when the spec colors its own bars itself and only needs the shared ones.
----
----Every call recomputes the shared bars, so more than one call a frame needs equivalent conditionMaps.
+---Writes a spec's own bars into barColorMap in place and parks the shared ones (health, cast, pet, and custom) in
+---TRB.Data.resolvedIndicators; earlier nodeOrder entries win, and every call recomputes the shared bars.
 ---@param sharedColors table? # spec.colors.shared -- indicatorColors + nodeOrder
 ---@param conditionMap table<string, boolean> # Indicator key -> whether its condition is met right now; custom indicator keys are written into it
----@param barColorMap table<string, table>? # barKey -> { bar =, border =, background = }, seeded with the spec's unindicated colors
+---@param barColorMap table<string, table>? # barKey -> { bar =, border =, background = }, seeded with the spec's unindicated colors; nil when the spec colors its own bars
 ---@param overrides table<string, table<string, boolean>>? # Optional: for each barKey the caller seeds here, records which elements an indicator claimed (specs that render an element differently once an indicator owns it)
 function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, overrides)
 	local resolved = TRB.Data.resolvedIndicators
@@ -1326,6 +1326,13 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 		wipe(resolved.petPowerBar)
 		wipe(resolved.totemsBar)
 		sharedBarsWritten = false
+	end
+	local userBars = resolved.userBars
+	if userBarsWritten then
+		for _, userBarColors in pairs(userBars) do
+			wipe(userBarColors)
+		end
+		userBarsWritten = false
 	end
 
 	local character = TRB.Data.character
@@ -1427,6 +1434,9 @@ function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, ba
 					if sharedIndicatorBars[barKey] then
 						targetColors = resolved[barKey]
 						sharedBarsWritten = true
+					elseif userBars[barKey] ~= nil then
+						targetColors = userBars[barKey]
+						userBarsWritten = true
 					else
 						targetColors = barColorMap and barColorMap[barKey]
 					end
@@ -1491,8 +1501,8 @@ function TRB.Functions.Color:SetResolvedEndCap(barKey, color)
 	resolved.barEndCaps[barKey] = color
 end
 
----Returns the resolved indicator colors for a shared bar ("healthBar" or "castbar"), or nil when the
----active spec hasn't resolved any (it has no indicators, or hasn't run its update yet this spec).
+---Returns the resolved indicator colors for a shared bar ("healthBar" or "castbar"), or nil when the active spec
+---hasn't resolved any. A custom bar something targets gets a table even while no indicator colors it.
 ---@param barKey string
 ---@return table<string, string|table>?
 function TRB.Functions.Color:GetResolvedIndicators(barKey)
@@ -1500,7 +1510,17 @@ function TRB.Functions.Color:GetResolvedIndicators(barKey)
 	if resolved.compositeKey ~= TRB.Data.character.compositeKey then
 		return nil
 	end
-	return resolved[barKey]
+	return resolved[barKey] or resolved.userBars[barKey]
+end
+
+---Names the custom bars Color Indicators can target right now: the displayed spec's.
+---@param barKeys string[]
+function TRB.Functions.Color:SetUserBarTargets(barKeys)
+	local userBars = TRB.Data.resolvedIndicators.userBars
+	wipe(userBars)
+	for i = 1, #barKeys do
+		userBars[barKeys[i]] = {}
+	end
 end
 
 ---The Border Glows a Color Indicator claims on a bar right now, as { glows, color }, or nil when none does.

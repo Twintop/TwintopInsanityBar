@@ -136,6 +136,8 @@ function hooks.afterEvents(ctx)
 	end
 
 	TRB.Functions.Bar.UpdateHealthBar = function() end
+	-- Only the Druid's Never Show check runs the real update.
+	local triggerUpdates = TRB.Functions.Class.TriggerResourceBarUpdates
 	TRB.Functions.Class.TriggerResourceBarUpdates = function() end
 	stubs.fireEvents(parity.releaseEvent, ctx.addonName)
 	Drain("SETUP")
@@ -2125,6 +2127,232 @@ function hooks.afterEvents(ctx)
 		end
 		try("recompose Feral with no custom bars", RecomposeFeral)
 		timerBuff.endTime = desktop.GetTime() - 1
+
+		-- Custom bars have their own visibility, so a live Druid's indicators resolve with the resource bar set to Never Show.
+		local Color = TRB.Functions.Color
+		local applyIndicators, resolves = Color.ApplyIndicatorColors, 0
+		Color.ApplyIndicatorColors = function(...)
+			resolves = resolves + 1
+			return applyIndicators(...)
+		end
+		local function ResolvesOnUpdate()
+			resolves = 0
+			local transition = TRB.Functions.Bar.IsRenderTransitionActive
+			TRB.Functions.Bar.IsRenderTransitionActive = function() return false end
+			try("run the Druid's update", function() triggerUpdates() end)
+			TRB.Functions.Bar.IsRenderTransitionActive = transition
+			return resolves > 0
+		end
+		-- The update reads the composed visibility, which a Use Global bar takes from the global settings.
+		local primaryVisibility = TRB.Data.specCache[character.compositeKey].settings.displayBar.primary
+		local shownResolves = ResolvesOnUpdate()
+		local neverShow = primaryVisibility.neverShow
+		primaryVisibility.neverShow = true
+		local hiddenResolves = ResolvesOnUpdate()
+		primaryVisibility.neverShow = neverShow
+		Color.ApplyIndicatorColors = applyIndicators
+		check("a Druid's indicators resolve with the resource bar shown and set to Never Show", shownResolves and hiddenResolves)
+	end
+
+	-- Color Indicators: a displayed custom bar is a target, painted over its own colors while a row is met.
+	do
+		local Color = TRB.Functions.Color
+		local Glow = TRB.Functions.Glow
+		local BarGroup = TRB.Classes.BarGroup
+		local ROW_COLOR = "FF112233"
+		-- Charges a class module counts by hand, as Prayer of Mending's are.
+		local countedSpell = TRB.Classes.SpellBase:New({
+			id = 990040,
+			duration = 30
+		})
+		countedSpell.name = "Driver Indicated Charges"
+		snapshots[countedSpell.id] = TRB.Classes.Snapshot:New(countedSpell)
+		local countedCooldown = snapshots[countedSpell.id].cooldown
+		countedCooldown:InitializeManualCharges(2, 2)
+		local countedSource = FindSource("charges", countedSpell.id)
+		check("hand-counted charges are offered for the indicated bar", countedSource ~= nil)
+		local paintedGuid = CustomBars:Add(spec, classId, specId, timerSource)
+		local countedGuid = countedSource ~= nil and CustomBars:Add(spec, classId, specId, countedSource) or nil
+		local paintedKey = CustomBars:GetBarKey(paintedGuid)
+		local countedKey = countedGuid ~= nil and CustomBars:GetBarKey(countedGuid) or nil
+		try("lay out the indicated bars", Relayout)
+		barGroups = TRB.Frames.barGroups
+		try("render the indicated bars", function() CustomBars:Render() end)
+		local userBars = TRB.Data.resolvedIndicators.userBars
+		local paintedGroup = barGroups[paintedKey]
+		local countedGroup = countedKey ~= nil and barGroups[countedKey] or nil
+		check("each displayed custom bar is a Color Indicator target, and no other key is", userBars[paintedKey] ~= nil
+			and countedKey ~= nil and userBars[countedKey] ~= nil and userBars.primary == nil and Color:GetResolvedIndicators("primary") == nil)
+
+		local targetDefs = TRB.Functions.OptionsUi.Indicators:BuildBarTargetDefs(spec, classId, specId, { { key = "driverOwnBar", label = "Own" } })
+		local paintedDef, paintedIndex = nil, nil
+		for index, barDef in ipairs(targetDefs) do
+			if barDef.key == paintedKey then
+				paintedDef, paintedIndex = barDef, index
+			end
+		end
+		check("the target menus list it by name under Custom Bars, after the spec's own and the shared bars, with no gradient on its fill", paintedDef ~= nil
+			and paintedDef.label == spec.customBars.bars[paintedGuid].name and paintedDef.group == "customBars" and targetDefs[1].group == nil
+			and paintedDef.elements == nil and paintedDef.gradientExcluded.bar == true
+			and paintedDef.gradientExcluded.border == nil and targetDefs[1].key == "driverOwnBar" and paintedIndex > 2)
+		check("settings with no custom bars list only the shared bars", #TRB.Functions.OptionsUi.Indicators:BuildBarTargetDefs({}, classId, specId, {})
+			== #targetDefs - 1 - #CustomBars:GetOrdered(spec))
+
+		if paintedGroup ~= nil and countedGroup ~= nil and countedKey ~= nil then
+			local fills, borders, backgrounds, glowed = {}, {}, {}, {}
+			local rechargeFill = nil
+			local setColor, setBorder, setBackground = BarNode.SetColor, BarNode.SetBorderColor, BarNode.SetBackgroundColorFromString
+			local setRechargeAppearance, applyGlow = BarGroup.SetChargeRechargeAppearance, Glow.ApplyIndicatorGlow
+			BarNode.SetColor = function(self, color, ...)
+				fills[self] = color
+				return setColor(self, color, ...)
+			end
+			BarNode.SetBorderColor = function(self, color, ...)
+				borders[self] = color
+				return setBorder(self, color, ...)
+			end
+			BarNode.SetBackgroundColorFromString = function(self, color, ...)
+				backgrounds[self] = color
+				return setBackground(self, color, ...)
+			end
+			BarGroup.SetChargeRechargeAppearance = function(self, texture, colorEntries)
+				if self == countedGroup and colorEntries ~= nil then
+					rechargeFill = colorEntries[1]
+				end
+				return setRechargeAppearance(self, texture, colorEntries)
+			end
+			Glow.ApplyIndicatorGlow = function(self, node, barKey)
+				glowed[barKey] = (glowed[barKey] or 0) + 1
+				return applyGlow(self, node, barKey)
+			end
+
+			local row = { color = ROW_COLOR, color2 = ROW_COLOR, gradientDirection = "disabled", enabled = true, targets = {
+				[paintedKey] = { bar = true, border = true, background = true },
+				[countedKey] = { bar = true },
+			} }
+			local shared = { nodeOrder = { "driverRow" }, gradientOrder = {}, indicatorColors = { driverRow = row } }
+			---What the spec's update does each tick, with the row met or not.
+			local function Resolve(met)
+				try("resolve the Color Indicators", function() Color:ApplyIndicatorColors(shared, { driverRow = met }, nil) end)
+			end
+			local function Render(label)
+				try(label, function() CustomBars:Render() end)
+			end
+			local own, ownCounted = spec.colors.bars[paintedKey], spec.colors.bars[countedKey]
+			local paintedNode = paintedGroup.nodes[1]
+			local firstCharge, secondCharge = countedGroup.nodes[1], countedGroup.nodes[2]
+
+			timerBuff:InitializeCustom(10)
+			Render("render before any row is met")
+			check("with no row met, the bars are left alone", glowed[paintedKey] == nil and glowed[countedKey] == nil)
+			Resolve(true)
+			Render("render a met row")
+			check("a met row paints the fill, border, and background it targets", fills[paintedNode] == ROW_COLOR and borders[paintedNode] == ROW_COLOR
+				and backgrounds[paintedNode] == ROW_COLOR)
+			check("on a segmented bar it paints every node, and only the element it targets", firstCharge ~= nil and secondCharge ~= nil
+				and fills[firstCharge] == ROW_COLOR and fills[secondCharge] == ROW_COLOR and borders[firstCharge] == ownCounted.border.color
+				and backgrounds[secondCharge] == ownCounted.background.color)
+			countedCooldown.manualCharges = 1
+			countedCooldown.manualCooldownDuration = 30
+			countedCooldown.manualCooldownExpires = desktop.GetTime() + 12
+			Resolve(true)
+			Render("render a recharging charge under a met row")
+			check("and the recharging charge's fill", rechargeFill ~= nil and rechargeFill.color == ROW_COLOR)
+
+			Resolve(false)
+			Render("render an unmet row")
+			check("an unmet row gives every element its own color back", fills[paintedNode] == own.bar.color and borders[paintedNode] == own.border.color
+				and backgrounds[paintedNode] == own.background.color and fills[firstCharge] == ownCounted.bar.color
+				and rechargeFill ~= nil and rechargeFill.color == ownCounted.bar.color)
+			local settled = (glowed[paintedKey] or 0) + (glowed[countedKey] or 0)
+			Resolve(false)
+			Render("render with nothing targeting them")
+			Render("and again")
+			check("then a bar no row targets isn't painted again", (glowed[paintedKey] or 0) + (glowed[countedKey] or 0) == settled)
+
+			row.targets[paintedKey] = { glows = { driverGlow = true } }
+			Resolve(true)
+			Render("render a row with a Border Glow")
+			local claimed = Color:GetResolvedGlow(paintedKey)
+			check("a row's Border Glows reach the bar's node, with the row's color", (glowed[paintedKey] or 0) > 0 and claimed ~= nil
+				and claimed.color == ROW_COLOR and claimed.glows.driverGlow == true and fills[paintedNode] == own.bar.color)
+			Resolve(false)
+			Render("render after the glow's row ends")
+
+			-- A met row reads no default colors, which are a fresh table per call, since the bar's data holds them all.
+			local Settings = TRB.Functions.Settings
+			local defaultColors, defaultReads = Settings.DefaultCustomBarColors, 0
+			Settings.DefaultCustomBarColors = function(...)
+				defaultReads = defaultReads + 1
+				return defaultColors(...)
+			end
+			row.targets[paintedKey] = { bar = true }
+			Resolve(true)
+			Render("render a met row reading the bar's own colors")
+			Settings.DefaultCustomBarColors = defaultColors
+			check("a met row builds no default colors on a bar whose data holds them", defaultReads == 0)
+
+			-- An aura bar's fill is drawn by the aura engine, which re-reads the new color in the same frame.
+			local AuraEngine = TRB.Functions.AuraEngine
+			local reattach, reattached = AuraEngine.Reattach, {}
+			rawset(AuraEngine, "Reattach", function(_, node) reattached[node] = true end)
+			paintedNode.engineDriven = true
+			Resolve(true)
+			Render("render a met row on an engine-filled bar")
+			paintedNode.engineDriven = nil
+			AuraEngine.Reattach = reattach
+			check("painting an engine-filled bar's fill hands the new color to the aura engine", reattached[paintedNode] == true)
+			Resolve(false)
+			Render("render after the fill's row ends")
+
+			-- An End Cap that follows the border takes the border's color back once the row on it ends.
+			own.endCap.enabled = true
+			own.endCap.useBorderColor = true
+			try("apply the indicated bar's End Cap", function() TRB.Functions.Bar:ApplyBarGroupsAppearance(Relayout(), TRB.Frames.barGroups) end)
+			barGroups = TRB.Frames.barGroups
+			local cappedNode = barGroups[paintedKey] ~= nil and barGroups[paintedKey].nodes[1] or nil
+			local capSlot = cappedNode ~= nil and cappedNode.overlaySlots.endCap or nil
+			local OverlaySlot = TRB.Classes.OverlaySlot
+			local setCap, capColors = OverlaySlot.SetEndCapColor, {}
+			OverlaySlot.SetEndCapColor = function(self, color, ...)
+				capColors[self] = color
+				return setCap(self, color, ...)
+			end
+			row.targets[paintedKey] = { endCap = true }
+			Resolve(true)
+			Render("render a met row on a border-following End Cap")
+			local capWhileMet = capSlot ~= nil and capColors[capSlot] or nil
+			Resolve(false)
+			Render("render after the End Cap's row ends")
+			Render("and again")
+			OverlaySlot.SetEndCapColor = setCap
+			check("a border-following End Cap takes the row's color, then the border's back once the row ends", capSlot ~= nil
+				and capWhileMet == ROW_COLOR and capColors[capSlot] == own.border.color)
+			own.endCap.enabled = false
+			own.endCap.useBorderColor = false
+			try("take the indicated bar's End Cap off", function() TRB.Functions.Bar:ApplyBarGroupsAppearance(Relayout(), TRB.Frames.barGroups) end)
+			barGroups = TRB.Frames.barGroups
+
+			-- A deleted bar leaves no row pointing at it.
+			if type(spec.colors.shared) == "table" and type(spec.colors.shared.indicatorColors) == "table" then
+				spec.colors.shared.indicatorColors.driverRow = row
+				CustomBars:Delete(spec, classId, specId, paintedGuid)
+				check("deleting a bar takes it out of every row's targets, and leaves the other bars'", row.targets[paintedKey] == nil
+					and row.targets[countedKey] ~= nil)
+				spec.colors.shared.indicatorColors.driverRow = nil
+				try("lay out without the deleted bar", Relayout)
+				Render("render without the deleted bar")
+				check("and it stops being a target", userBars[paintedKey] == nil and userBars[countedKey] ~= nil)
+			end
+
+			BarNode.SetColor, BarNode.SetBorderColor, BarNode.SetBackgroundColorFromString = setColor, setBorder, setBackground
+			BarGroup.SetChargeRechargeAppearance, Glow.ApplyIndicatorGlow = setRechargeAppearance, applyGlow
+		end
+		if countedGuid ~= nil then
+			CustomBars:Delete(spec, classId, specId, countedGuid)
+		end
+		timerBuff.endTime = desktop.GetTime() - 1
+		snapshots[countedSpell.id] = nil
 	end
 
 	-- Clean up, so nothing custom is left for a later check.
