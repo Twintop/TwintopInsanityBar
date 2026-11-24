@@ -9,6 +9,10 @@ TRB.Details.coreNewsContent = [====[
 
 - [#1030](#1030) The Anchor to, Bound to Bar, and Move to Bar dropdowns now group their bars under Built-in, Cast Bars, Timer Bars, Pet Bars, Skyriding, and Custom Bars.
 
+## Bar Text
+
+- [#1030](#1030) The Bound to Bar and Move to Bar menus now list a segmented bar's container and segments in a submenu named for the bar.
+
 ## Color Indicators
 
 - [#1029](#1029) Color Indicator target dropdowns now group their bars under Built-in, Cast Bars, Pet Bars, and Custom Bars. Each bar is its own submenu, named with how many of its targets are on and colored green when any are.
