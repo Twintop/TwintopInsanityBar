@@ -43,8 +43,14 @@ function hooks.afterInstall(ctx)
 			c.isSelected, c.setSelected, c.data = isSelected, setSelected, data
 			return c
 		end
+		function d:CreateCheckbox(text, isSelected, setSelected)
+			local c = add(newDesc(text, "checkbox"))
+			c.isSelected, c.setSelected = isSelected, setSelected
+			return c
+		end
 		function d:SetScrollMode() end
-		function d:AddInitializer() end
+		-- Kept so a check can read the label a menu row draws.
+		function d:AddInitializer(initializer) self.initializer = initializer end
 		return d
 	end
 	drv.newDesc = newDesc
@@ -287,6 +293,99 @@ function hooks.afterEvents(ctx)
 			i = i + 1
 		end
 		print(string.format("TABDRIVER groups=%d tabsDrained=%d errors=%d editors=%d", #groups, drained, errors, #drv.editors))
+
+		-- ===== Color Indicator target menus =====
+		do
+			local Indicators = TRB_.Functions.OptionsUi.Indicators
+			local Glow = TRB_.Functions.Glow
+			local getOrdered = Glow.GetOrdered
+			Glow.GetOrdered = function() return { { guid = "driverGlow", name = "Driver Glow" } } end
+			local defs = {
+				{ key = "driverFirst", label = "Driver First" },
+				{ key = "driverSecond", label = "Driver Second", elements = { { key = "border", label = "Driver Border" } }, gradientExcluded = { border = true } },
+			}
+			local targets = { driverFirst = { border = true } }
+			local changes = 0
+			local function Build(isExcluded, offersEveryBar)
+				local root = drv.newDesc("root", "root")
+				try("build a target menu", function()
+					Indicators:BuildBarTargetMenu(root, defs, isExcluded, offersEveryBar, function(barKey)
+						targets[barKey] = targets[barKey] or {}
+						return targets[barKey]
+					end, function() changes = changes + 1 end)
+				end)
+				return root
+			end
+			---The label a menu row draws once its initializer has run.
+			local function Shown(entry)
+				local text = nil
+				if entry ~= nil and entry.initializer ~= nil then
+					entry.initializer({ fontString = { SetTextToFit = function(_, value) text = value end } })
+				end
+				return text
+			end
+			local function Kinds(entry)
+				local kinds = {}
+				for index, child in ipairs(entry ~= nil and entry.children or {}) do
+					kinds[index] = child.kind
+				end
+				return table.concat(kinds, ",")
+			end
+
+			local flat = Build(function() return false end, true)
+			local first, second = flat.children[1], flat.children[2]
+			check("a row's target menu lists each bar as its own submenu, with no titles or dividers", Kinds(flat) == "button,button"
+				and first.label == "Driver First" and second.label == "Driver Second")
+			check("a bar's submenu holds its elements, then Border Glow", Kinds(first) == "checkbox,checkbox,checkbox,checkbox,button"
+				and first.children[1].label == L_["BarElementBar"] and first.children[4].label == L_["EndCap"]
+				and first.children[5].label == L_["BarElementBorderGlow"] and Kinds(second) == "checkbox,button"
+				and second.children[1].label == "Driver Border")
+			check("each bar is named with how many of its targets are on", Shown(first) == "Driver First (1)" and Shown(second) == "Driver Second (0)")
+			if first ~= nil and #first.children == 5 then
+				local barBox, glowMenu = first.children[1], first.children[5]
+				try("pick an element", function() barBox.setSelected() end)
+				check("picking an element turns it on, counts it, and reports the change", targets.driverFirst.bar == true and barBox.isSelected() == true
+					and Shown(first) == "Driver First (2)" and changes == 1)
+				try("pick it again", function() barBox.setSelected() end)
+				check("picking it again turns it off", targets.driverFirst.bar == false and barBox.isSelected() == false and Shown(first) == "Driver First (1)")
+				local glowBox = glowMenu.children[1]
+				check("Border Glow lists the glows, named with how many are on", Kinds(glowMenu) == "checkbox" and glowBox.label == "Driver Glow"
+					and Shown(glowMenu) == L_["BarElementBorderGlow"] .. " (0)")
+				if glowBox ~= nil then
+					try("pick a glow", function() glowBox.setSelected() end)
+					check("a picked glow counts on Border Glow and on its bar", targets.driverFirst.glows.driverGlow == true
+						and Shown(glowMenu) == L_["BarElementBorderGlow"] .. " (1)" and Shown(first) == "Driver First (2)")
+				end
+			end
+
+			local gradient = Build(function(barDef, elemKey)
+				return barDef.gradientExcluded ~= nil and barDef.gradientExcluded[elemKey] == true
+			end, false)
+			check("a gradient row skips a bar with no element it can take, and keeps Border Glow on the rest", Kinds(gradient) == "button"
+				and gradient.children[1].label == "Driver First" and Kinds(gradient.children[1]) == "checkbox,checkbox,checkbox,checkbox,button")
+
+			-- Every built panel's rows draw their menus the same way.
+			local menus, misdrawn = 0, 0
+			for name in pairs(drv.nameCount) do
+				if name:find("_Indicator_Row%d+_Targets$") or name:find("_Gradient_Row%d+_Targets$") then
+					local dropdown = rawget(G, name)
+					if type(dropdown) == "table" and dropdown.__generator ~= nil then
+						local root = drv.newDesc("root", "root")
+						if try("open " .. name, function() dropdown.__generator(dropdown, root) end) then
+							menus = menus + 1
+							for _, bar in ipairs(root.children) do
+								local last = bar.children[#bar.children]
+								if bar.kind ~= "button" or bar.initializer == nil or last == nil or last.label ~= L_["BarElementBorderGlow"] then
+									misdrawn = misdrawn + 1
+								end
+							end
+						end
+					end
+				end
+			end
+			check("every built row's target menu is bars only, each ending in Border Glow", menus > 0 and misdrawn == 0)
+			Glow.GetOrdered = getOrdered
+		end
 
 		-- ===== Textures tab checks =====
 		local function find(classId, specId, groupKey)

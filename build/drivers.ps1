@@ -3,7 +3,8 @@
 	Runs the harness's check drivers for every flavor and fails on any FAIL or error.
 
 .DESCRIPTION
-	options-tabs builds every options tab for every class and runs the Textures tab checks; it runs once per flavor.
+	options-tabs builds every options tab for every class and runs the Textures tab and Color Indicator target menu checks; it
+	runs once per flavor.
 	media-pickup checks that fonts, textures, and sounds that aren't loaded draw the default and are picked up live;
 	it runs once per class.
 	colors checks color conversion, color curves, class colors, and VertexColor animations; it runs once per flavor.
