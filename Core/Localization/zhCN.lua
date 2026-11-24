@@ -4525,4 +4525,8 @@ if locale == "zhCN" then
 	L["MageFrostShatterCustomIndicatorNote"] = "每个自定义指示器会对下方的碎冰层数单独重新着色，覆盖该层上冰枪层数的颜色。开启显示冰枪层数后，则在到达对应层数节点时对该节点着色。仅疾咒师、仅霜火仅在对应英雄天赋树激活时生效。"
 	L["MageFrostShatterChargeWidth"] = "冰枪层数宽度"
 	L["MageFrostShatterChargeHeight"] = "冰枪层数高度"
+	L["ForeverPriestBarTextVariable_darkInspirationTime"] = "黑暗启发剩余持续时间"
+	L["ForeverPriestCheckboxDarkInspiration"] = "黑暗启发"
+	L["ForeverPriestIndicatorDarkInspirationTooltip"] = "黑暗启发生效时切换为此颜色，由心灵震爆或完整引导的精神鞭笞触发，持续至时间结束。"
+	L["ForeverPriestIndicatorDarkInspirationColor"] = "黑暗启发已激活"
 end
