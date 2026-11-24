@@ -518,6 +518,26 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 		return TRB.Functions.Bar:GetBarTargetSection(anchor.barKey, classId, specId)
 	end
 
+	---Lists anchors in a bar text menu under their section titles. A bar with segments is one row: a submenu named
+	---for the bar, holding its container and each segment.
+	---@param menu table
+	---@param anchors TRB.Classes.BarTextAnchor[]
+	---@param addRadio fun(menu: table, anchor: TRB.Classes.BarTextAnchor)
+	local function AddAnchorSections(menu, anchors, addRadio)
+		local submenus = {}
+		TRB.Functions.OptionsUi.Primitives:AddBarSections(menu, anchors, AnchorSection, function(target, anchor)
+			if anchor.segmented then
+				local submenu = submenus[anchor.barKey]
+				if submenu == nil then
+					submenu = target:CreateButton(TRB.Functions.Bar:GetBarDisplayName(anchor.barKey, classId, specId))
+					submenus[anchor.barKey] = submenu
+				end
+				target = submenu
+			end
+			addRadio(target, anchor)
+		end)
+	end
+
 	local function RelativeToFrameGenerator(dropdown, rootDescription)
 		local listed = {}
 		for _, anchor in ipairs(CatalogFor(workingBarText).entries) do
@@ -525,7 +545,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 				listed[#listed + 1] = anchor
 			end
 		end
-		TRB.Functions.OptionsUi.Primitives:AddBarSections(rootDescription, listed, AnchorSection, function(menu, anchor)
+		AddAnchorSections(rootDescription, listed, function(menu, anchor)
 			menu:CreateRadio(anchor.label, RelativeToFrameIsSelected, RelativeToFrameSetSelected, anchor.frame)
 		end)
 		rootDescription:SetScrollMode(400)
@@ -1337,7 +1357,7 @@ function TRB.Functions.OptionsUi.BarText:GenerateBarTextEditor(parent, controls,
 			MoveBarTextEntryToAnchor(entry, anchor)
 		end
 
-		TRB.Functions.OptionsUi.Primitives:AddBarSections(menu, CatalogFor(entry).entries, AnchorSection, function(target, anchor)
+		AddAnchorSections(menu, CatalogFor(entry).entries, function(target, anchor)
 			target:CreateRadio(anchor.label, IsCurrentAnchor, MoveToAnchor, anchor)
 		end)
 	end
