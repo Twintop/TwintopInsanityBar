@@ -1376,13 +1376,47 @@ function TRB.Classes.SnapshotCooldown:InitializeCustom(duration, startTime, hast
 	self:GetRemainingTime()
 end
 
----Recalculates the remaining cooldown time when the GCD duration changes (indicating haste changed).
----Uses the ratio of old/new GCD to scale the remaining time, retroactively accounting for
----the time elapsed between when haste actually changed and when we observed the new GCD.
+---Rescales a hasted, hand-counted recharge when the GCD length changes: the running timer from the moment
+---haste changed, and the full length every later charge takes.
+---@param oldGcd number # The previous cached GCD value
+---@param newGcd number # The new cached GCD value
+---@param changeTimestamp number # GetTime() when the haste change was detected
+function TRB.Classes.SnapshotCooldown:RescaleManualRecharge(oldGcd, newGcd, changeTimestamp)
+	if not self.hastedCooldown or oldGcd == newGcd then
+		return
+	end
+
+	self:SettleExpiredCharges()
+	local ratio = newGcd / oldGcd
+	if self.manualRechargeDuration ~= nil then
+		self.manualRechargeDuration = self.manualRechargeDuration * ratio
+	end
+	if not self.onCooldown or self.manualCooldownExpires == nil then
+		return
+	end
+
+	local currentTime = GetTime()
+	local remaining = self.manualCooldownExpires - currentTime
+	-- A timer started after haste changed has only run at the old rate since its own start.
+	local dt = math.max(0, math.min(currentTime - changeTimestamp, currentTime - (self.manualCooldownStart or currentTime)))
+	self.manualCooldownExpires = currentTime + math.max(0, (remaining + dt) * ratio - dt)
+	if self.manualCooldownDuration ~= nil then
+		self.manualCooldownDuration = self.manualCooldownDuration * ratio
+	end
+	self:GetRemainingTime(currentTime)
+end
+
+---Rescales the remaining cooldown by the GCD ratio when the GCD length changes (haste changed), counted from
+---the moment haste changed rather than when the new GCD was seen. A hand-counted recharge rescales its own way.
 ---@param oldGcd number # The previous cached GCD value
 ---@param newGcd number # The new cached GCD value
 ---@param changeTimestamp number # GetTime() when the haste change was detected
 function TRB.Classes.SnapshotCooldown:RecalculateForGcdChange(oldGcd, newGcd, changeTimestamp)
+	if self.useManualCharges then
+		self:RescaleManualRecharge(oldGcd, newGcd, changeTimestamp)
+		return
+	end
+
 	if not self.hastedCooldown or not self.isCustom or not self.onCooldown or self.lastKnownGcd == nil then
 		return
 	end
@@ -1572,6 +1606,8 @@ end
 function TRB.Classes.SnapshotCooldown:InitializeManualCharges(maxCharges, currentCharges)
 	self.useManualCharges = true
 	self.manualMaxCharges = maxCharges
+	-- A hasted spell's recharge is rescaled when haste changes; see RescaleManualRecharge.
+	self.hastedCooldown = self.parent.spell ~= nil and self.parent.spell.isHasted == true
 
 	if currentCharges ~= nil then
 		self.manualCharges = currentCharges
