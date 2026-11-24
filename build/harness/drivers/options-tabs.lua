@@ -349,7 +349,7 @@ function hooks.afterEvents(ctx)
 			end
 			local function Off(label, count) return string.format(L_["IndicatorTargetCountFormat"], label, count) end
 			local function On(label, count) return string.format(L_["IndicatorTargetCountActiveFormat"], label, count) end
-			local builtIn, castBars, petBars, customBars = L_["IndicatorTargetGroupBuiltIn"], L_["TabCastbars"], L_["TabPetBars"], L_["TabCustomBars"]
+			local builtIn, castBars, petBars, customBars = L_["BarSectionBuiltIn"], L_["TabCastbars"], L_["TabPetBars"], L_["TabCustomBars"]
 
 			local flat = Build(function() return false end, true)
 			check("a row's target menu lists its bars under a title per kind, in a fixed order, with a divider between them",
@@ -455,6 +455,157 @@ function hooks.afterEvents(ctx)
 			end
 			check("Totems is listed under Built-in on every specialization that has it", totems > 0 and totemsElsewhere == 0)
 			Glow.GetOrdered = getOrdered
+		end
+
+		-- ===== Bar picker sections =====
+		do
+			local Bar = TRB_.Functions.Bar
+			local Primitives = TRB_.Functions.OptionsUi.Primitives
+			local registry = TRB_.Classes.BarTypeRegistry
+			local sections = Bar:GetBarTargetSections()
+			local sectionOrder, sectionLabels = {}, {}
+			for index, section in ipairs(sections) do
+				sectionOrder[section.label] = index
+				sectionLabels[section.key] = section.label
+			end
+			check("bar pickers share one list of sections, in order", #sections == 6 and sections[1].label == L_["BarSectionBuiltIn"]
+				and sections[2].label == L_["TabCastbars"] and sections[3].label == L_["TabOtherBars"] and sections[4].label == L_["TabPetBars"]
+				and sections[5].label == L_["TabSkyriding"] and sections[6].label == L_["TabCustomBars"])
+
+			local function Section(barKey, classId, specId)
+				return Bar:GetBarTargetSection(barKey, classId, specId)
+			end
+			check("the screen has no section, and the resource bars and Health are Built-in", Section("screen") == nil and Section("primary") == "builtIn"
+				and Section("secondary") == "builtIn" and Section("health") == "builtIn")
+			check("the four cast bars are Cast Bars, and the pet's other bars Pet Bars", Section("castbar") == "castBars" and Section("targetCastbar") == "castBars"
+				and Section("focusCastbar") == "castBars" and Section("petCastbar") == "castBars" and Section("petPower") == "petBars" and Section("petHealth") == "petBars")
+			check("a timer bar is Timer Bars, and a custom bar Custom Bars", Section(registry.otherBarKeys[1]) == "otherBars" and Section("custom_driver") == "customBars")
+			if #registry.skyridingBarKeys > 0 then
+				check("a Skyriding bar is Skyriding", Section(registry.skyridingBarKeys[1]) == "skyriding")
+			end
+			local totemsElsewhere = Section("totems") ~= "builtIn" and 1 or 0
+			for _, entry in ipairs(TRB_.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+				if Section("totems", entry.classId, entry.specId) ~= "builtIn" then
+					totemsElsewhere = totemsElsewhere + 1
+				end
+			end
+			check("Totems is Built-in in every scope, whichever tab its options sit on", totemsElsewhere == 0)
+
+			local function Kinds(entry)
+				local kinds = {}
+				for index, child in ipairs(entry.children) do
+					kinds[index] = child.kind
+				end
+				return table.concat(kinds, ",")
+			end
+			local function Labels(entry)
+				local labels = {}
+				for _, child in ipairs(entry.children) do
+					if child.kind ~= "divider" then
+						labels[#labels + 1] = child.label
+					end
+				end
+				return table.concat(labels, "|")
+			end
+			---Draws entries of { label, section } the way a bar picker does.
+			local function Draw(entries)
+				local root = drv.newDesc("root", "root")
+				local rows = nil
+				try("draw a bar picker", function()
+					rows = Primitives:AddBarSections(root, entries, function(entry) return entry.section end, function(menu, entry)
+						menu:CreateRadio(entry.label, function() return false end, function() end, entry.label)
+					end)
+				end)
+				return root, rows
+			end
+			local mixed, mixedRows = Draw({
+				{ label = "Custom", section = "customBars" },
+				{ label = "Screen" },
+				{ label = "Resource", section = "builtIn" },
+				{ label = "Pet", section = "petBars" },
+				{ label = "Timer", section = "otherBars" },
+				{ label = "Health", section = "builtIn" },
+			})
+			check("a picker lists the screen first, untitled, then each section in order under its title, with a divider ahead of each",
+				Kinds(mixed) == "radio,divider,title,radio,radio,divider,title,radio,divider,title,radio,divider,title,radio"
+				and Labels(mixed) == table.concat({ "Screen", sectionLabels.builtIn, "Resource", "Health", sectionLabels.otherBars, "Timer",
+					sectionLabels.petBars, "Pet", sectionLabels.customBars, "Custom" }, "|") and mixedRows == 14)
+			local single, singleRows = Draw({ { label = "Cast", section = "castBars" }, { label = "Cast Icon", section = "castBars" } })
+			check("a picker with one section still titles it, with no divider", Kinds(single) == "title,radio,radio"
+				and Labels(single) == table.concat({ sectionLabels.castBars, "Cast", "Cast Icon" }, "|") and singleRows == 3)
+			local empty, emptyRows = Draw({})
+			check("an empty picker draws nothing", #empty.children == 0 and emptyRows == 0)
+
+			---How a built dropdown's menu breaks the picker layout: a row before any title that isn't the leading screen, a title
+			---out of order or with no row under it, or a title with no divider ahead of it.
+			local function Misdrawn(root, screenLabel)
+				local wrong, lastOrder, titles = 0, 0, 0
+				local previous, underTitle = nil, 0
+				for index, child in ipairs(root.children) do
+					if child.kind == "title" then
+						local order = sectionOrder[child.label]
+						if order == nil or order <= lastOrder or (index > 1 and (previous == nil or previous.kind ~= "divider"))
+							or (titles > 0 and underTitle == 0) then
+							wrong = wrong + 1
+						end
+						lastOrder, titles, underTitle = order or lastOrder, titles + 1, 0
+					elseif child.kind == "radio" then
+						if titles == 0 then
+							if child.label ~= screenLabel then
+								wrong = wrong + 1
+							end
+						else
+							underTitle = underTitle + 1
+						end
+					elseif child.kind ~= "divider" then
+						wrong = wrong + 1
+					end
+					previous = child
+				end
+				if titles > 0 and underTitle == 0 then
+					wrong = wrong + 1
+				end
+				return wrong, titles
+			end
+			---Opens every built dropdown whose name matches and tallies the menus, the misdrawn ones, and the titles.
+			local function Tally(pattern, screenLabel)
+				local menus, misdrawn, titled = 0, 0, 0
+				for name in pairs(drv.nameCount) do
+					if name:find(pattern) then
+						local dropdown = rawget(G, name)
+						if type(dropdown) == "table" and dropdown.__generator ~= nil then
+							local root = drv.newDesc("root", "root")
+							if try("open " .. name, function() dropdown.__generator(dropdown, root) end) then
+								local wrong, titles = Misdrawn(root, screenLabel)
+								menus = menus + 1
+								misdrawn = misdrawn + wrong
+								if titles > 0 then
+									titled = titled + 1
+								end
+							end
+						end
+					end
+				end
+				return menus, misdrawn, titled
+			end
+			local anchorMenus, anchorMisdrawn, anchorTitled = Tally("AnchorTo$", L_["AnchorBarScreen"])
+			check("every built Anchor To dropdown lists the screen, then its bars in titled sections", anchorMenus > 0 and anchorMisdrawn == 0
+				and anchorTitled > 0)
+			local textMenus, textMisdrawn, textTitled = Tally("_barTextRelativeToFrame$", L_["Screen"])
+			check("every built Bound to Bar dropdown for bar text does too", textMenus > 0 and textMisdrawn == 0 and textTitled > 0)
+
+			-- A custom threshold line's targets each say which bar they are on, which is what sections them.
+			local character = TRB_.Data.character
+			local classSettings = TRB_.Data.settings[character.className]
+			local specSettings = classSettings ~= nil and classSettings[character.specName] or nil
+			local targets = specSettings ~= nil and TRB_.Functions.Threshold:GetCustomThresholdBarTargets(specSettings, character.classId, character.specId) or {}
+			local unsectioned = 0
+			for _, target in ipairs(targets) do
+				if target.barKey == nil or sectionLabels[Section(target.barKey, character.classId, character.specId) or ""] == nil then
+					unsectioned = unsectioned + 1
+				end
+			end
+			check("every custom threshold bar target names its bar, which has a section", #targets > 0 and unsectioned == 0)
 		end
 
 		-- ===== Textures tab checks =====
