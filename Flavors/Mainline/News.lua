@@ -9,6 +9,10 @@ TRB.Flavor.newsContent = [====[
 ---
 
 # 12.1.5.16-release (2026-11-21)
+## Druid
+
+- [#1028](#1028) Fix Color Indicators on the health bar, cast bars, and combo points stopping while the resource bar is set to Never Show, and in other forms as Feral or Restoration.
+
 ## Mage
 ### Frost
 
