@@ -4,6 +4,13 @@ local _, TRB = ...
 -- first. Titles name the Live, Forever, Classic, and TBC releases; the tab keeps only the running flavor's.
 TRB.Details.coreNewsContent = [====[
 
+# Live 12.1.5.16-release / Forever 1.60.1.22-release / Classic 1.15.9.7-release / TBC 2.5.6.5-release (2026-11-24)
+## Custom Bars
+
+- Custom bars can now be Color Indicator targets. Each is listed by name in the target dropdowns, with Bar, Border, Background, End Cap, and Border Glow.
+
+---
+
 # Live 12.1.5.15-release / Forever 1.60.1.21-release / Classic 1.15.9.6-release / TBC 2.5.6.4-release (2026-11-19)
 ## General
 
