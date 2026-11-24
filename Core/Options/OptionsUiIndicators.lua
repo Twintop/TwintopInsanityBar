@@ -287,6 +287,28 @@ local function BuildSharedBarTargetDefs(classId, specId)
 	return defs
 end
 
+---The bars a spec's indicators can target: its own, the ones every spec shares, and its custom bars by name.
+---@param spec table The spec settings table
+---@param classId integer
+---@param specId integer
+---@param specBarTargetDefs TRB.Classes.OptionsUi.BarTargetDef[] The spec's own bars, left unmodified
+---@return TRB.Classes.OptionsUi.BarTargetDef[]
+function TRB.Functions.OptionsUi.Indicators:BuildBarTargetDefs(spec, classId, specId, specBarTargetDefs)
+	local barTargetDefs = {}
+	for _, barDef in ipairs(specBarTargetDefs) do
+		barTargetDefs[#barTargetDefs + 1] = barDef
+	end
+	for _, barDef in ipairs(BuildSharedBarTargetDefs(classId, specId)) do
+		barTargetDefs[#barTargetDefs + 1] = barDef
+	end
+	-- A custom bar's fill tracks its own source, so it takes a flat color but not a curve over the spec's resource.
+	local CustomBars = TRB.Functions.CustomBars
+	for _, bar in ipairs(CustomBars:GetOrdered(spec)) do
+		barTargetDefs[#barTargetDefs + 1] = { key = CustomBars:GetBarKey(bar.guid), label = bar.name, gradientExcluded = { bar = true } }
+	end
+	return barTargetDefs
+end
+
 ---Generates the complete Indicator Colors panel for a specialization.
 ---This centralizes the boilerplate UI for flat indicator rows, gradient indicator rows,
 ---optional EndOf configuration sections, and optional overcap configuration.
@@ -305,15 +327,16 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 	local gradientExcludedElements = config.gradientExcludedElements or {}
 	local ddNamePrefix = config.ddNamePrefix
 
-	-- The spec's own bars, then the health bar and cast bar every spec shares. Built into a new list so the
-	-- caller's config table isn't mutated -- the panel is regenerated each time it's opened.
+	-- Built into a new list so the caller's config table isn't mutated.
 	local barTargetDefs = {}
-	for _, barDef in ipairs(config.barTargetDefs) do
-		barTargetDefs[#barTargetDefs + 1] = barDef
+	---Refills the target list in place: custom bars are added, renamed, and deleted after the panel is built.
+	local function SyncBarTargetDefs()
+		wipe(barTargetDefs)
+		for _, barDef in ipairs(TRB.Functions.OptionsUi.Indicators:BuildBarTargetDefs(spec, classId, specId, config.barTargetDefs)) do
+			barTargetDefs[#barTargetDefs + 1] = barDef
+		end
 	end
-	for _, barDef in ipairs(BuildSharedBarTargetDefs(classId, specId)) do
-		barTargetDefs[#barTargetDefs + 1] = barDef
-	end
+	SyncBarTargetDefs()
 
 	---The bars an indicator's target menu offers: all of them, or only the ones its def names.
 	---@param def TRB.Classes.OptionsUi.IndicatorDef?
@@ -1204,6 +1227,7 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 	end
 
 	local function RefreshAllRows()
+		SyncBarTargetDefs()
 		UpdatePickerBlock()
 		Threshold:SyncIndicatorColors(settingsClassName, settingsSpecName)
 		for rowIndex = 1, #orderedKeys do
@@ -2079,6 +2103,12 @@ function TRB.Functions.OptionsUi.Indicators:GenerateIndicatorColorsPanel(parent,
 			RefreshGradientRow(gradIdx)
 			yCoord = yCoord - 30
 		end
+		-- After the flat rows' own OnShow refresh, which brings the target list up to date.
+		parent:HookScript("OnShow", function()
+			for gradIdx = 1, #orderedGradientKeys do
+				RefreshGradientRow(gradIdx)
+			end
+		end)
 
 		local addGradientButton = Primitives:BuildButton(parent, L["BuiltInGradientAddButton"], oUi.xCoord + customColumnWidth + 46, yCoord, 250, 25)
 		addGradientButton:SetScript("OnClick", function(self)
