@@ -324,7 +324,10 @@ function hooks.afterEvents(ctx)
 			local function Shown(entry)
 				local text = nil
 				if entry ~= nil and entry.initializer ~= nil then
-					entry.initializer({ fontString = { SetTextToFit = function(_, value) text = value end } })
+					-- Inside try, so a throwing initializer can't leave the Glow stub installed for the checks after this block.
+					try("draw a menu row's label", function()
+						entry.initializer({ fontString = { SetTextToFit = function(_, value) text = value end } })
+					end)
 				end
 				return text
 			end
@@ -386,6 +389,13 @@ function hooks.afterEvents(ctx)
 				Kinds(gradient) == "title,button,button,divider,title,button,divider,title,button"
 				and Labels(gradient) == table.concat({ builtIn, "Driver First", "Driver Last", petBars, "Driver Pet", customBars, "Driver Custom" }, "|")
 				and Kinds(gradient.children[2]) == "checkbox,checkbox,checkbox,checkbox,button")
+			local stray = drv.newDesc("root", "root")
+			try("build a target menu with a bar in a group that has no section", function()
+				Indicators:BuildBarTargetMenu(stray, { { key = "driverStray", label = "Driver Stray", group = "driverNoSection" } },
+					function() return false end, true, function(barKey) return targets[barKey] or {} end, function() end)
+			end)
+			check("a bar in a group with no section is listed under Built-in", Kinds(stray) == "title,button"
+				and Labels(stray) == builtIn .. "|Driver Stray")
 
 			-- Every built panel's rows draw their menus the same way.
 			local sectionOrder = { [builtIn] = 1, [castBars] = 2, [petBars] = 3, [customBars] = 4 }
