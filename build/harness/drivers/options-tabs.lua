@@ -537,9 +537,9 @@ function hooks.afterEvents(ctx)
 			check("an empty picker draws nothing", #empty.children == 0 and emptyRows == 0)
 
 			---How a built dropdown's menu breaks the picker layout: a row before any title that isn't the leading screen, a title
-			---out of order or with no row under it, or a title with no divider ahead of it.
+			---out of order or with no row under it, a title with no divider ahead of it, or a submenu that isn't two or more picks.
 			local function Misdrawn(root, screenLabel)
-				local wrong, lastOrder, titles = 0, 0, 0
+				local wrong, lastOrder, titles, submenus = 0, 0, 0, 0
 				local previous, underTitle = nil, 0
 				for index, child in ipairs(root.children) do
 					if child.kind == "title" then
@@ -557,6 +557,20 @@ function hooks.afterEvents(ctx)
 						else
 							underTitle = underTitle + 1
 						end
+					elseif child.kind == "button" then
+						local picks = 0
+						for _, pick in ipairs(child.children) do
+							if pick.kind == "radio" then
+								picks = picks + 1
+							else
+								wrong = wrong + 1
+							end
+						end
+						if titles == 0 or picks < 2 or child.label == nil or child.label == "" then
+							wrong = wrong + 1
+						end
+						underTitle = underTitle + 1
+						submenus = submenus + 1
 					elseif child.kind ~= "divider" then
 						wrong = wrong + 1
 					end
@@ -565,20 +579,21 @@ function hooks.afterEvents(ctx)
 				if titles > 0 and underTitle == 0 then
 					wrong = wrong + 1
 				end
-				return wrong, titles
+				return wrong, titles, submenus
 			end
-			---Opens every built dropdown whose name matches and tallies the menus, the misdrawn ones, and the titles.
+			---Opens every built dropdown whose name matches and tallies the menus, the misdrawn ones, the titled ones, and the submenus.
 			local function Tally(pattern, screenLabel)
-				local menus, misdrawn, titled = 0, 0, 0
+				local menus, misdrawn, titled, submenus = 0, 0, 0, 0
 				for name in pairs(drv.nameCount) do
 					if name:find(pattern) then
 						local dropdown = rawget(G, name)
 						if type(dropdown) == "table" and dropdown.__generator ~= nil then
 							local root = drv.newDesc("root", "root")
 							if try("open " .. name, function() dropdown.__generator(dropdown, root) end) then
-								local wrong, titles = Misdrawn(root, screenLabel)
+								local wrong, titles, folded = Misdrawn(root, screenLabel)
 								menus = menus + 1
 								misdrawn = misdrawn + wrong
+								submenus = submenus + folded
 								if titles > 0 then
 									titled = titled + 1
 								end
@@ -586,13 +601,39 @@ function hooks.afterEvents(ctx)
 						end
 					end
 				end
-				return menus, misdrawn, titled
+				return menus, misdrawn, titled, submenus
 			end
-			local anchorMenus, anchorMisdrawn, anchorTitled = Tally("AnchorTo$", L_["AnchorBarScreen"])
-			check("every built Anchor To dropdown lists the screen, then its bars in titled sections", anchorMenus > 0 and anchorMisdrawn == 0
-				and anchorTitled > 0)
-			local textMenus, textMisdrawn, textTitled = Tally("_barTextRelativeToFrame$", L_["Screen"])
-			check("every built Bound to Bar dropdown for bar text does too", textMenus > 0 and textMisdrawn == 0 and textTitled > 0)
+			local anchorMenus, anchorMisdrawn, anchorTitled, anchorSubmenus = Tally("AnchorTo$", L_["AnchorBarScreen"])
+			check("every built Anchor To dropdown lists the screen, then its bars in titled sections, with no submenus", anchorMenus > 0
+				and anchorMisdrawn == 0 and anchorTitled > 0 and anchorSubmenus == 0)
+
+			-- Bar text anchors: a bar with segments is marked, and its container and segments fold into one submenu.
+			local segmentedBars, loneSegmented, plainSegmented, mostSegments = 0, 0, 0, 0
+			for _, entry in ipairs(TRB_.Functions.Character:GetSpecRegistryEntriesOrdered()) do
+				local counts, marked = {}, {}
+				for _, anchor in ipairs(TRB_.Functions.BarText:GetAnchorCatalog(entry.classId, entry.specId).entries) do
+					counts[anchor.barKey] = (counts[anchor.barKey] or 0) + 1
+					if anchor.segmented then
+						marked[anchor.barKey] = (marked[anchor.barKey] or 0) + 1
+						if anchor.barKey == "screen" or anchor.barKey == "health" or Section(anchor.barKey, entry.classId, entry.specId) == "castBars" then
+							plainSegmented = plainSegmented + 1
+						end
+					end
+				end
+				for barKey, count in pairs(marked) do
+					segmentedBars = segmentedBars + 1
+					mostSegments = math.max(mostSegments, count)
+					-- Every anchor of the bar is marked, and there is more than one.
+					if count ~= counts[barKey] or count < 2 then
+						loneSegmented = loneSegmented + 1
+					end
+				end
+			end
+			check("a bar text anchor is marked when its bar has segments and more than one anchor, and never on the screen, Health, or a cast bar",
+				segmentedBars > 0 and mostSegments >= 4 and loneSegmented == 0 and plainSegmented == 0)
+			local textMenus, textMisdrawn, textTitled, textSubmenus = Tally("_barTextRelativeToFrame$", L_["Screen"])
+			check("every built Bound to Bar dropdown for bar text is titled the same way, with each segmented bar's anchors in a submenu of its own",
+				textMenus > 0 and textMisdrawn == 0 and textTitled > 0 and textSubmenus > 0)
 
 			-- A custom threshold line's targets each say which bar they are on, which is what sections them.
 			local character = TRB_.Data.character
