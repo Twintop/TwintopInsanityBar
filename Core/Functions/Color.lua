@@ -1284,7 +1284,8 @@ end)
 
 ---What a spec's indicator gates were last resolved against, and the result.
 ---@class TRB.IndicatorGateState
----@field unavailable table<string, boolean> # Built-in keys whose spell isn't learned
+---@field unavailable table<string, boolean> # Built-in keys whose spell isn't learned, and the spec's own marks
+---@field gated table<string, boolean> # The gates' result alone, which a mark never clears
 ---@field gates table? # The gates the set was built from
 ---@field spells table?
 ---@field talentTable table? # The talents object's table at build time; GetTalents replaces it on every refresh
@@ -1293,7 +1294,7 @@ end)
 ---A new, empty gate state for a spec to keep.
 ---@return TRB.IndicatorGateState
 function TRB.Functions.Color:NewIndicatorGateState()
-	return { unavailable = {} }
+	return { unavailable = {}, gated = {} }
 end
 
 ---Whether a gate's spell is learned: its talent for a talent, the spellbook for anything else.
@@ -1318,8 +1319,10 @@ end
 ---@return table<string, boolean>
 function TRB.Functions.Color:GetUnavailableIndicators(state, gates, spells, talents)
 	local unavailable = state.unavailable
+	local gated = state.gated
 	if talents == nil or spells == nil then
 		wipe(unavailable)
+		wipe(gated)
 		state.gates = nil
 		return unavailable
 	end
@@ -1327,6 +1330,7 @@ function TRB.Functions.Color:GetUnavailableIndicators(state, gates, spells, tale
 		return unavailable
 	end
 	wipe(unavailable)
+	wipe(gated)
 	for key, gate in pairs(gates) do
 		local learned
 		if gate == false then
@@ -1341,10 +1345,20 @@ function TRB.Functions.Color:GetUnavailableIndicators(state, gates, spells, tale
 		end
 		if not learned then
 			unavailable[key] = true
+			gated[key] = true
 		end
 	end
 	state.gates, state.spells, state.talentTable, state.generation = gates, spells, talents.talents, spellbookGeneration
 	return unavailable
+end
+
+---Marks a built-in unavailable, or available again, for a dependency the gates can't see, such as a set bonus or the
+---Cooldown Manager tracking its buff. Call it after GetUnavailableIndicators each tick; it never clears a gate's mark.
+---@param state TRB.IndicatorGateState
+---@param key string
+---@param isUnavailable boolean
+function TRB.Functions.Color:MarkIndicatorUnavailable(state, key, isUnavailable)
+	state.unavailable[key] = (isUnavailable or state.gated[key]) or nil
 end
 
 ---Whether a gradient row's curve applies right now: its built-in's condition, gated by Only In Combat. A gradient

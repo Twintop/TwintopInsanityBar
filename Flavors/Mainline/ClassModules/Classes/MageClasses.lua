@@ -11,6 +11,8 @@ TRB.Classes.Mainline.Mage = TRB.Classes.Mainline.Mage or {}
 ---@field clearcasting TRB.Classes.SpellBase
 ---@field improvedClearcasting TRB.Classes.SpellBase
 ---@field prismaticBolt TRB.Classes.SpellBase
+---@field prismaticBolt2 TRB.Classes.SpellBase
+---@field prismaticBolt3 TRB.Classes.SpellBase
 ---@field overpoweredMissiles TRB.Classes.SpellBase
 TRB.Classes.Mainline.Mage.ArcaneSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Mainline.Mage.ArcaneSpells.__index = TRB.Classes.Mainline.Mage.ArcaneSpells
@@ -301,6 +303,9 @@ end
 ---@field iceLance TRB.Classes.SpellBase
 ---@field glacialSpike TRB.Classes.SpellBase
 ---@field flashFreeze TRB.Classes.SpellBase
+---@field everlastingFrost TRB.Classes.SpellBase
+---@field crystallineRefraction TRB.Classes.SpellBase
+---@field wintertide TRB.Classes.SpellBase
 ---@field fingersOfFrost TRB.Classes.SpellBase
 ---@field brainFreeze TRB.Classes.SpellBase
 ---@field polishedFocus TRB.Classes.SpellBase
@@ -336,6 +341,21 @@ function TRB.Classes.Mainline.Mage.FrostSpells:New()
     -- Flash Freeze: every Glacial Spike grants a Fingers of Frost charge
     self.flashFreeze = TRB.Classes.SpellBase:New({
         id = 379993,
+        isTalent = true
+    })
+    -- Frozen Orb grants Fingers of Frost.
+    self.everlastingFrost = TRB.Classes.SpellBase:New({
+        id = 385167,
+        isTalent = true
+    })
+    -- Ray of Frost generates Fingers of Frost.
+    self.crystallineRefraction = TRB.Classes.SpellBase:New({
+        id = 1247544,
+        isTalent = true
+    })
+    -- Frozen Orb can grant Brain Freeze.
+    self.wintertide = TRB.Classes.SpellBase:New({
+        id = 378406,
         isTalent = true
     })
     self.fingersOfFrost = TRB.Classes.SpellBase:New({

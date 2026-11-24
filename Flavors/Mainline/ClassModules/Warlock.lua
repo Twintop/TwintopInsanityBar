@@ -1347,18 +1347,17 @@ end
 -- Each spec's built-in indicators by the talent they can't be met without; any one of a list will do.
 local indicatorGates = {
 	affliction = {
-		shardInstability = "shardInstability",
+		shardInstability = { "shardInstability", "seedsOfTheirDemise" },
 	},
-	-- Infernal Bolt and Demonic Art come from the Diabolist hero tree, whose keystone is Diabolic Ritual.
 	demonology = {
 		dominionOfArgusEnd = { "dominionOfArgus", "dominionOfArgus2", "dominionOfArgus3" },
 		dominionOfArgus = { "dominionOfArgus", "dominionOfArgus2", "dominionOfArgus3" },
-		infernalBolt = "diabolicRitual",
+		infernalBolt = "secretsOfTheCoven",
 		ruination = "ruination",
 		demonicArt = "diabolicRitual",
 	},
 	destruction = {
-		infernalBolt = "diabolicRitual",
+		infernalBolt = "secretsOfTheCoven",
 		ruination = "ruination",
 	},
 }
@@ -1724,6 +1723,8 @@ local function UpdateResourceBar()
 			local conditionMap = scratch.conditionMap2
 			wipe(conditionMap)
 			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.demonology, spells, talents)
+			-- Demonic Art is read from the Cooldown Manager, so it is unavailable while it isn't tracked there.
+			Color:MarkIndicatorUnavailable(scratch.gateState1, "demonicArt", snapshotData.attributes.demonicArtTracked ~= true)
 			conditionMap.dominionOfArgusEnd = doaActive and doaEndMet
 			conditionMap.dominionOfArgus = doaActive
 			conditionMap.demonicCore = snapshotData.snapshots[spells.demonicCore.id] ~= nil and snapshotData.snapshots[spells.demonicCore.id].buff.isActive

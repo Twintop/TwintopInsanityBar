@@ -1083,8 +1083,7 @@ local function UpdateEssence(specSettings, specCacheSettings, essenceOverrides)
 end
 
 
--- Each spec's built-in indicators by the talent they can't be met without; false for one that never is.
--- Devastation's Essence Burst is the spec's own.
+-- Each spec's built-in indicators by the talents they can't be met without (any one will do), or false for never.
 local indicatorGates = {
 	devastation = {
 		dragonrageEnd = "dragonrage",
@@ -1092,11 +1091,11 @@ local indicatorGates = {
 	},
 	preservation = {
 		innervate = false,
-		essenceBurst = "essenceBurst",
+		essenceBurst = { "essenceBurst", "sparkOfInsight", "essenceWell" },
 	},
 	augmentation = {
 		ebonMight = "ebonMight",
-		essenceBurst = "essenceBurst",
+		essenceBurst = { "essenceBurst", "anachronism" },
 	},
 }
 
@@ -1372,7 +1371,7 @@ local function UpdateResourceBar()
 			wipe(conditionMap)
 			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.augmentation, spells, talents)
 			-- Ebon Might is read from the Cooldown Manager, so it is unavailable while it isn't tracked there.
-			unavailable.ebonMight = ebonMightTrackedId == nil or nil
+			Color:MarkIndicatorUnavailable(scratch.gateState1, "ebonMight", ebonMightTrackedId == nil)
 			conditionMap.ebonMight = ebonMightActive
 			conditionMap.essenceBurst = snapshots[spells.essenceBurst.id].buff.isActive
 

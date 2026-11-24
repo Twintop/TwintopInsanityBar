@@ -1294,8 +1294,7 @@ local function UpdateSnapshot_Windwalker()
 end
 
 
--- Each spec's built-in indicators by the talent they can't be met without; any one of a list will do, and false
--- marks one that never is.
+-- Each spec's built-in indicators by the talents they can't be met without (any one will do), or false for never.
 local indicatorGates = {
 	brewmaster = {
 		invokeNiuzaoEnd = "invokeNiuzao",
@@ -1309,7 +1308,7 @@ local indicatorGates = {
 	windwalker = {
 		heartOfTheJadeSerpentReady = "heartOfTheJadeSerpent",
 		heartOfTheJadeSerpent = "heartOfTheJadeSerpent",
-		danceOfChiJi = "danceOfChiJi",
+		danceOfChiJi = { "danceOfChiJi", "revolvingWhirl" },
 		hitCombo = "hitCombo",
 	},
 }

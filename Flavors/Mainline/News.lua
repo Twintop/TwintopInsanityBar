@@ -12,12 +12,16 @@ TRB.Flavor.newsContent = [====[
 ## General
 ### Color Indicators
 
-- [#1035](#1035) A built-in Color Indicator for a talent you haven't taken stays off, including with Not Active. So does one that needs a set bonus you aren't wearing, or a buff the Cooldown Manager isn't tracking.
-- [#1035](#1035) Preservation's Innervate and Mistweaver's Heart of the Jade Serpent indicators, which never turn on, stay off with Not Active too.
+- [#1035](#1035) A built-in Color Indicator stays off, including with Not Active, without the talent, set bonus, or Cooldown Manager tracking it needs.
 
 ## Druid
 
 - [#1028](#1028) Fix Color Indicators on the health bar, cast bars, and combo points stopping while the resource bar is set to Never Show, and in other forms as Feral or Restoration.
+
+## Evoker
+### Preservation
+
+- [#1035](#1035) The Innervate Color Indicator stays off with Not Active.
 
 ## Mage
 ### Frost
@@ -25,6 +29,11 @@ TRB.Flavor.newsContent = [====[
 - [#1024](#1024) Add a Show Ice Lance charges option to the Shatter bar, showing one node per Ice Lance instead of one per stack: 5 stacks each, or 6 with Polished Focus.
 - [#1024](#1024) With Ice Lance charges shown, a full charge takes the Shatter thresholds color, and a Shatter custom indicator recolors the charge holding its stack once reached.
 - [#1024](#1024) Ice Lance charges are on by default for new installs, while existing settings keep one node per stack.
+
+## Monk
+### Mistweaver
+
+- [#1035](#1035) The Heart of the Jade Serpent and Heart of the Jade Serpent Ready Color Indicators stay off with Not Active.
 
 ## Priest
 ### Holy

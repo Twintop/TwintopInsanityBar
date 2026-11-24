@@ -441,6 +441,7 @@ TRB.Classes.Mainline.Druid.BalanceSpells.thresholdSnowflakes = {
 
 ---@class TRB.Classes.Mainline.Druid.FeralSpells : TRB.Classes.Mainline.Druid.DruidBaseSpells
 ---@field public clearcasting TRB.Classes.SpellBase
+---@field public omenOfClarity TRB.Classes.SpellBase
 ---@field public lunarInspiration TRB.Classes.SpellBase
 ---@field public berserk TRB.Classes.SpellBase
 ---@field public incarnationAvatarOfAshamane TRB.Classes.SpellBase
@@ -1078,8 +1079,10 @@ TRB.Classes.Mainline.Druid.GuardianSpells.thresholdSnowflakes = {
 ---@field public lifetreading TRB.Classes.SpellBase
 ---@field public lifebloom TRB.Classes.SpellBase
 ---@field public incarnationTreeOfLife TRB.Classes.SpellBase
+---@field public reforestation TRB.Classes.SpellBase
 ---@field public cenariusGuidance TRB.Classes.SpellBase
 ---@field public clearcasting TRB.Classes.SpellBase
+---@field public omenOfClarity TRB.Classes.SpellBase
 TRB.Classes.Mainline.Druid.RestorationSpells = setmetatable({}, {__index = TRB.Classes.Mainline.Druid.DruidBaseSpells})
 TRB.Classes.Mainline.Druid.RestorationSpells.__index = TRB.Classes.Mainline.Druid.RestorationSpells
 
@@ -1124,6 +1127,11 @@ function TRB.Classes.Mainline.Druid.RestorationSpells:New()
     })
     self.cenariusGuidance = TRB.Classes.SpellBase:New({
         id = 393371,
+        isTalent = true
+    })
+    -- Every few Swiftmends grant Incarnation: Tree of Life.
+    self.reforestation = TRB.Classes.SpellBase:New({
+        id = 392356,
         isTalent = true
     })
     self.clearcasting = TRB.Classes.SpellBase:New({

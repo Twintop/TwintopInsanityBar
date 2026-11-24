@@ -979,7 +979,7 @@ local function GetDeathKnightIndicatorState(specSettings)
 
 	local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates, spells, talents)
 	-- Runic Corruption is read from the Cooldown Manager, so it is unavailable while it isn't tracked there.
-	unavailable.runicCorruption = TRB.Data.character.specId == 3 and TRB.Data.snapshotData.attributes.runicCorruptionTracked ~= true or nil
+	Color:MarkIndicatorUnavailable(scratch.gateState1, "runicCorruption", TRB.Data.character.specId == 3 and TRB.Data.snapshotData.attributes.runicCorruptionTracked ~= true)
 
 	return conditionMap, sharedColors, unavailable
 end

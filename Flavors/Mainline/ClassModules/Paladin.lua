@@ -821,14 +821,14 @@ end
 -- Each spec's built-in indicators by the talent they can't be met without; any one of a list will do.
 local indicatorGates = {
 	holy = {
-		infusionOfLight = "infusionOfLight",
-		divinePurpose = { "divinePurpose", "divinePurposeAlt" },
+		infusionOfLight = { "infusionOfLight", "layingDownArms" },
+		divinePurpose = { "divinePurpose", "divinePurposeAlt", "aurora" },
 	},
 	protection = {
 		divinePurpose = { "divinePurpose", "divinePurposeAlt" },
 	},
 	retribution = {
-		divinePurpose = { "divinePurpose", "divinePurposeAlt" },
+		divinePurpose = { "divinePurpose", "divinePurposeAlt", "aurora" },
 		executionSentence = "executionSentence",
 		avengingWrath = { "avengingWrath", "radiantGlory" },
 		avengingWrathEnd = { "avengingWrath", "radiantGlory" },

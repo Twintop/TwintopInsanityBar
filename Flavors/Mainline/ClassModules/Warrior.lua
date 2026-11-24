@@ -991,6 +991,7 @@ local function UpdateSnapshot_Fury()
 
 	-- Plain (non-secret) up/down flag for everything downstream that has to branch on Enrage.
 	TRB.Data.snapshotData.attributes.enrageActive = enrageBuff.isActive == true
+	TRB.Data.snapshotData.attributes.enrageTracked = cdm:ResolveTrackedSpellId(cdm.SourceGroup.BUFF, spells.enrage.id) ~= nil
 
 	if wasEnrageActive ~= enrageBuff.isActive then
 		TRB.Data.lookupDirty = true
@@ -1499,6 +1500,8 @@ local function UpdateResourceBar()
 			barColorMap.rageBar = rageColors
 			barColorMap.whirlwindBar = whirlwindColors
 			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.fury, spells, talents)
+			-- Enrage is read from the Cooldown Manager, so it is unavailable while it isn't tracked there.
+			Color:MarkIndicatorUnavailable(scratch.gateState1, "enrage", snapshotData.attributes.enrageTracked ~= true)
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 			-- Flat indicators settle the base colors; the overcap gradient below curves from them.
 			barColor = rageColors.bar

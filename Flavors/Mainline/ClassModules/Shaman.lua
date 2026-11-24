@@ -358,10 +358,12 @@ local function UpdateTempest(spells, attributes, currentTime)
 	attributes.tempestRemaining = nil
 	attributes.tempestRemainingText = nil
 
+	-- Pinned to the buff viewers, which describe the aura.
+	local cdm = TRB.Functions.CooldownManager
+	local trackedId = cdm:ResolveTrackedSpellId(cdm.SourceGroup.BUFF, spells.tempest.attributes.cdmSpellId)
+	attributes.tempestTracked = trackedId ~= nil
+
 	if attributes.tempestActive then
-		-- Pinned to the buff viewers, which describe the aura.
-		local cdm = TRB.Functions.CooldownManager
-		local trackedId = cdm:ResolveTrackedSpellId(cdm.SourceGroup.BUFF, spells.tempest.attributes.cdmSpellId)
 		if trackedId == nil then
 			attributes.tempestStacks = nil
 		else
@@ -1020,8 +1022,6 @@ local function UpdateSnapshot_Restoration()
 end
 
 
--- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
--- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
 -- Each spec's built-in indicators by the talent they can't be met without; any one of a list will do.
 local indicatorGates = {
 	elemental = {
@@ -1045,6 +1045,8 @@ local indicatorGates = {
 	},
 }
 
+-- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
+-- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
 local scratch = {
 	-- Shared by the three specs' indicator calls; only one runs per tick.
 	gateState1 = Color:NewIndicatorGateState(),
@@ -1185,6 +1187,8 @@ local function UpdateResourceBar()
 			local conditionMap = scratch.conditionMap1
 			wipe(conditionMap)
 			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.elemental, spells, talents)
+			-- Tempest's second charge is read from the Cooldown Manager, so it is unavailable while it isn't tracked there.
+			Color:MarkIndicatorUnavailable(scratch.gateState1, "tempest2", snapshotData.attributes.tempestTracked ~= true)
 			conditionMap.ascendanceEnd = ascendanceActive and ascendanceEndMet
 			conditionMap.earthShock = earthShockUsable
 			conditionMap.earthquake = earthquakeUsable
@@ -1391,6 +1395,8 @@ local function UpdateResourceBar()
 			local conditionMap = scratch.conditionMap3
 			wipe(conditionMap)
 			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.enhancement, spells, talents)
+			-- Tempest's second charge is read from the Cooldown Manager, so it is unavailable while it isn't tracked there.
+			Color:MarkIndicatorUnavailable(scratch.gateState1, "tempest2", snapshotData.attributes.tempestTracked ~= true)
 			conditionMap.ascendanceEnd = ascendanceActive and ascendanceEndMet
 			conditionMap.ascendance = ascendanceActive
 			conditionMap.tempest = snapshotData.attributes.tempestActive == true

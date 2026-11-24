@@ -1530,8 +1530,7 @@ local function UpdateArcaneSalvo(specSettings, specCacheSettings, barColors, fil
 end
 
 
--- Each spec's built-in indicators, by specId, and the talent they can't be met without; any one of a list will do.
--- Arcane's first Clearcasting, Hot Streak, and Heating Up are the specs' own.
+-- Each spec's built-in indicators, by specId, and the talents they can't be met without; any one of a list will do.
 local indicatorGates = {
 	-- Arcane
 	[1] = {
@@ -1548,11 +1547,11 @@ local indicatorGates = {
 		combustionEnd = "combustion",
 		frostfireEmpowerment = "frostfireEmpowerment",
 	},
-	-- Frost: Flash Freeze also grants Fingers of Frost.
+	-- Frost
 	[3] = {
-		brainFreeze = "brainFreeze",
-		fingersOfFrost = { "fingersOfFrost", "flashFreeze" },
-		fingersOfFrost2 = { "fingersOfFrost", "flashFreeze" },
+		brainFreeze = { "brainFreeze", "wintertide" },
+		fingersOfFrost = { "fingersOfFrost", "flashFreeze", "everlastingFrost", "crystallineRefraction" },
+		fingersOfFrost2 = { "fingersOfFrost", "flashFreeze", "everlastingFrost", "crystallineRefraction" },
 		frostfireEmpowerment = "frostfireEmpowerment",
 	},
 }

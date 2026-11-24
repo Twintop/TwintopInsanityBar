@@ -1891,8 +1891,7 @@ local thresholdBar = TRB.Classes.ThresholdBar:New()
 local thresholdState = TRB.Classes.ThresholdState:New() --[[@as TRB.Classes.Mainline.Druid.ThresholdState]]
 local thresholdData = TRB.Classes.ThresholdData:New()
 
--- Each spec's built-in indicators by the talent they can't be met without; any one of a list will do. Balance has
--- none: two Eclipses at once, and free Starsurges and Starfalls, have more than one source.
+-- Each spec's built-in indicators by the talents they can't be met without; any one of a list will do.
 local indicatorGates = {
 	feral = {
 		apexPredator = "apexPredatorsCraving",
@@ -1904,8 +1903,8 @@ local indicatorGates = {
 		berserk = { "berserk", "incarnationGuardianOfUrsoc" },
 	},
 	restoration = {
-		incarnationEnd = "incarnationTreeOfLife",
-		incarnation = "incarnationTreeOfLife",
+		incarnationEnd = { "incarnationTreeOfLife", "reforestation" },
+		incarnation = { "incarnationTreeOfLife", "reforestation" },
 		noEfflorescence = "efflorescence",
 		clearcasting = "omenOfClarity",
 	},
@@ -2453,7 +2452,7 @@ local function UpdateResourceBar()
 			-- Apply flat indicator colors (priority order, last writer wins)
 			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.feral, spells, talents)
 			-- Halazzi's Fury comes from the Midnight Season 2 two-piece set bonus.
-			unavailable.halazzisFury = not TRB.Functions.Item:HasSetBonus(TRB.Classes.Mainline.Druid.FeralSpells.midnightSeason2SetKey, 2) or nil
+			Color:MarkIndicatorUnavailable(scratch.gateState1, "halazzisFury", not TRB.Functions.Item:HasSetBonus(TRB.Classes.Mainline.Druid.FeralSpells.midnightSeason2SetKey, 2))
 			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 			comboPointOverrides = comboPointColors
 

@@ -286,6 +286,15 @@ function hooks.afterEvents(ctx)
 		check("and so does a new spell set", not set.one and not set.either and set.never and set.missing)
 		check("no talents or spells leaves nothing unavailable", next(Color:GetUnavailableIndicators(gateState, gates, nil, gateTalents)) == nil)
 
+		-- A spec's own mark adds a key, and clearing it never clears a gate's.
+		local markState = Color:NewIndicatorGateState()
+		set = Color:GetUnavailableIndicators(markState, gates, gateSpells, Talents:New())
+		Color:MarkIndicatorUnavailable(markState, "one", false)
+		Color:MarkIndicatorUnavailable(markState, "tracked", true)
+		check("a mark adds its own key and leaves a gate's alone", set.one == true and set.tracked == true)
+		Color:MarkIndicatorUnavailable(markState, "tracked", false)
+		check("and clearing it removes only its own", set.tracked == nil and set.one == true)
+
 		-- Only In Combat keeps a row off out of combat, and in combat leaves its condition and Not Active as they are.
 		local character = TRB.Data.character
 		local wasInCombat = character.inCombat

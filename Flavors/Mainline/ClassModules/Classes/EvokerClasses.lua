@@ -112,6 +112,9 @@ end
 
 
 ---@class TRB.Classes.Mainline.Evoker.PreservationSpells : TRB.Classes.Mainline.Healer.HealerSpells
+---@field public essenceBurst TRB.Classes.SpellBase
+---@field public sparkOfInsight TRB.Classes.SpellBase
+---@field public essenceWell TRB.Classes.SpellBase
 TRB.Classes.Mainline.Evoker.PreservationSpells = setmetatable({}, {__index = TRB.Classes.Mainline.Healer.HealerSpells})
 TRB.Classes.Mainline.Evoker.PreservationSpells.__index = TRB.Classes.Mainline.Evoker.PreservationSpells
 
@@ -126,6 +129,16 @@ function TRB.Classes.Mainline.Evoker.PreservationSpells:New()
 		isBuff = true,
 		duration = 15,
 		maxStacks = 2
+    })
+    -- A full Temporal Compression grants Essence Burst.
+    self.sparkOfInsight = TRB.Classes.SpellBase:New({
+        id = 377099,
+        isTalent = true
+    })
+    -- Flameshaper: Dream Breath and Fire Breath can generate Essence Burst.
+    self.essenceWell = TRB.Classes.SpellBase:New({
+        id = 1265993,
+        isTalent = true
     })
 	
     --[[self.eruption = TRB.Classes.SpellBase:New({
@@ -191,6 +204,8 @@ end
 
 ---@class TRB.Classes.Mainline.Evoker.AugmentationSpells : TRB.Classes.SpecializationSpellsBase
 ---@field public ebonMight TRB.Classes.SpellBase
+---@field public essenceBurst TRB.Classes.SpellBase
+---@field public anachronism TRB.Classes.SpellBase
 TRB.Classes.Mainline.Evoker.AugmentationSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Mainline.Evoker.AugmentationSpells.__index = TRB.Classes.Mainline.Evoker.AugmentationSpells
 
@@ -205,6 +220,11 @@ function TRB.Classes.Mainline.Evoker.AugmentationSpells:New()
 		isBuff = true,
 		duration = 15,
 		maxStacks = 2
+    })
+    -- Prescience can grant Essence Burst.
+    self.anachronism = TRB.Classes.SpellBase:New({
+        id = 407869,
+        isTalent = true
     })
 
     self.ebonMight = TRB.Classes.SpellBase:New({
