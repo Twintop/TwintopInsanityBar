@@ -9,6 +9,12 @@ TRB.Flavor.newsContent = [====[
 ---
 
 # 12.1.5.16-release (2026-11-21)
+## General
+### Color Indicators
+
+- [#1035](#1035) A built-in Color Indicator for a talent you haven't taken stays off, including with Not Active. So does one that needs a set bonus you aren't wearing, or a buff the Cooldown Manager isn't tracking.
+- [#1035](#1035) Preservation's Innervate and Mistweaver's Heart of the Jade Serpent indicators, which never turn on, stay off with Not Active too.
+
 ## Druid
 
 - [#1028](#1028) Fix Color Indicators on the health bar, cast bars, and combo points stopping while the resource bar is set to Never Show, and in other forms as Feral or Restoration.
@@ -25,6 +31,11 @@ TRB.Flavor.newsContent = [====[
 
 - [#1027](#1027) Add Prayer of Mending charge tracking, with the `$pomCharges`, `$pomMaxCharges`, `$pomTime`, and `$pomFullTime` bar text variables and the `#pom` icon.
 - [#1027](#1027) Add Epiphany tracking, with a Color Indicator, an audio cue, the `$epiphany` and `$epiphanyTime` bar text variables, and the `#epiphany` icon. The indicator isn't listed by default; add it with Add Built-in Color Indicator.
+
+## Warrior
+### Fury
+
+- [#1035](#1035) Fix the Whirlwind zero-stack Color Indicator turning on without Improved Whirlwind.
 
 ---
 
