@@ -19,8 +19,8 @@ TRB.Flavor.newsContent = [====[
 ## Priest
 ### Holy
 
-- Add Prayer of Mending charge tracking, with the `$pomCharges`, `$pomMaxCharges`, `$pomTime`, and `$pomFullTime` bar text variables and the `#pom` icon.
-- Add Epiphany tracking, with a Color Indicator, an audio cue, the `$epiphany` and `$epiphanyTime` bar text variables, and the `#epiphany` icon. The indicator isn't listed by default; add it with Add Built-in Color Indicator.
+- [#1027](#1027) Add Prayer of Mending charge tracking, with the `$pomCharges`, `$pomMaxCharges`, `$pomTime`, and `$pomFullTime` bar text variables and the `#pom` icon.
+- [#1027](#1027) Add Epiphany tracking, with a Color Indicator, an audio cue, the `$epiphany` and `$epiphanyTime` bar text variables, and the `#epiphany` icon. The indicator isn't listed by default; add it with Add Built-in Color Indicator.
 
 ---
 
