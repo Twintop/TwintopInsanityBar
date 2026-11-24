@@ -1294,9 +1294,30 @@ local function UpdateSnapshot_Windwalker()
 end
 
 
+-- Each spec's built-in indicators by the talents they can't be met without (any one will do), or false for never.
+local indicatorGates = {
+	brewmaster = {
+		invokeNiuzaoEnd = "invokeNiuzao",
+		invokeNiuzao = "invokeNiuzao",
+	},
+	mistweaver = {
+		vivaciousVivification = { "vivaciousVivification", "sereneSurge" },
+		heartOfTheJadeSerpent = false,
+		heartOfTheJadeSerpentReady = false,
+	},
+	windwalker = {
+		heartOfTheJadeSerpentReady = "heartOfTheJadeSerpent",
+		heartOfTheJadeSerpent = "heartOfTheJadeSerpent",
+		danceOfChiJi = { "danceOfChiJi", "revolvingWhirl" },
+		hitCombo = "hitCombo",
+	},
+}
+
 -- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
 -- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
 local scratch = {
+	-- Shared by the specs' indicator calls; only one runs per tick.
+	gateState1 = Color:NewIndicatorGateState(),
 	conditionMap1 = {},
 	energyBarColors1 = {},
 	barColorMap1 = {},
@@ -1444,6 +1465,7 @@ local function UpdateResourceBar()
 
 			local conditionMap = scratch.conditionMap1
 			wipe(conditionMap)
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.brewmaster, spells, talents)
 			conditionMap.invokeNiuzaoEnd = invokeNiuzaoActive and invokeNiuzaoEndMet
 			conditionMap.invokeNiuzao = invokeNiuzaoActive
 			-- Overcap's combat gate is its Only In Combat modifier.
@@ -1470,7 +1492,7 @@ local function UpdateResourceBar()
 				barColorMap[brew.targetKey] = nodeColors
 			end
 
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
@@ -1680,6 +1702,7 @@ local function UpdateResourceBar()
 			local indicatorColors = sharedColors and sharedColors.indicatorColors
 			local conditionMap = scratch.conditionMap2
 			wipe(conditionMap)
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.mistweaver, spells, talents)
 			conditionMap.vivaciousVivification = snapshots[spells.vivaciousVivification.id].buff.isActive or snapshots[spells.sereneSurge.id].buff.isActive
 			conditionMap.heartOfTheJadeSerpent = false
 			conditionMap.heartOfTheJadeSerpentReady = false
@@ -1692,7 +1715,7 @@ local function UpdateResourceBar()
 			wipe(barColorMap)
 			barColorMap.manaBar = manaBarColors
 
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
@@ -1732,6 +1755,7 @@ local function UpdateResourceBar()
 		local sharedColors = specSettings.colors.shared
 		local conditionMap = scratch.conditionMap3
 		wipe(conditionMap)
+		local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.windwalker, spells, talents)
 		conditionMap.heartOfTheJadeSerpentReady = heartOfTheJadeSerpentReady
 		conditionMap.heartOfTheJadeSerpent = heartOfTheJadeSerpentActive
 		conditionMap.danceOfChiJi = danceOfChiJiActive
@@ -1760,7 +1784,7 @@ local function UpdateResourceBar()
 		local indicatorTargets = scratch.indicatorTargets1
 		wipe(indicatorTargets)
 		indicatorTargets.chiBar = chiBarOverrides
-		TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, indicatorTargets)
+		TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, indicatorTargets, unavailable)
 
 		local energyGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "energyBar", scratch.energyGradients2)
 		local chiGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "chiBar", scratch.chiGradients1)

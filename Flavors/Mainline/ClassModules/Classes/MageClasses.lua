@@ -11,6 +11,8 @@ TRB.Classes.Mainline.Mage = TRB.Classes.Mainline.Mage or {}
 ---@field clearcasting TRB.Classes.SpellBase
 ---@field improvedClearcasting TRB.Classes.SpellBase
 ---@field prismaticBolt TRB.Classes.SpellBase
+---@field prismaticBolt2 TRB.Classes.SpellBase
+---@field prismaticBolt3 TRB.Classes.SpellBase
 ---@field overpoweredMissiles TRB.Classes.SpellBase
 TRB.Classes.Mainline.Mage.ArcaneSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Mainline.Mage.ArcaneSpells.__index = TRB.Classes.Mainline.Mage.ArcaneSpells
@@ -61,12 +63,25 @@ function TRB.Classes.Mainline.Mage.ArcaneSpells:New()
         maxStacksMod = 2
     })
     -- Glows on the Arcane Blast button it replaces.
+    -- One talent node with three entries; any of them grants the proc.
     self.prismaticBolt = TRB.Classes.SpellBase:New({
         id = 1295924,
+        talentId = 1295923,
+        duration = 60
+    })
+    self.prismaticBolt2 = TRB.Classes.SpellBase:New({
+        id = 1295924,
+        talentId = 1295944,
+        duration = 60
+    })
+    self.prismaticBolt3 = TRB.Classes.SpellBase:New({
+        id = 1295924,
+        talentId = 1295946,
         duration = 60
     })
     self.overpoweredMissiles = TRB.Classes.SpellBase:New({
-        id = 1277009
+        id = 1277009,
+        talentId = 1244329
     })
 
     return self
@@ -227,6 +242,7 @@ function TRB.Classes.Mainline.Mage.FireSpells:New()
     })
     self.frostfireEmpowerment = TRB.Classes.SpellBase:New({
         id = 431177,
+        talentId = 431176,
         duration = 20
     })
 
@@ -287,6 +303,9 @@ end
 ---@field iceLance TRB.Classes.SpellBase
 ---@field glacialSpike TRB.Classes.SpellBase
 ---@field flashFreeze TRB.Classes.SpellBase
+---@field everlastingFrost TRB.Classes.SpellBase
+---@field crystallineRefraction TRB.Classes.SpellBase
+---@field wintertide TRB.Classes.SpellBase
 ---@field fingersOfFrost TRB.Classes.SpellBase
 ---@field brainFreeze TRB.Classes.SpellBase
 ---@field polishedFocus TRB.Classes.SpellBase
@@ -324,13 +343,30 @@ function TRB.Classes.Mainline.Mage.FrostSpells:New()
         id = 379993,
         isTalent = true
     })
+    -- Frozen Orb grants Fingers of Frost.
+    self.everlastingFrost = TRB.Classes.SpellBase:New({
+        id = 385167,
+        isTalent = true
+    })
+    -- Ray of Frost generates Fingers of Frost.
+    self.crystallineRefraction = TRB.Classes.SpellBase:New({
+        id = 1247544,
+        isTalent = true
+    })
+    -- Frozen Orb can grant Brain Freeze.
+    self.wintertide = TRB.Classes.SpellBase:New({
+        id = 378406,
+        isTalent = true
+    })
     self.fingersOfFrost = TRB.Classes.SpellBase:New({
         id = 44544,
+        talentId = 112965,
         duration = 15,
         maxStacks = 2
     })
     self.brainFreeze = TRB.Classes.SpellBase:New({
-        id = 190446
+        id = 190446,
+        talentId = 190447
     })
     self.polishedFocus = TRB.Classes.SpellBase:New({
         id = 1261082,
@@ -354,6 +390,7 @@ function TRB.Classes.Mainline.Mage.FrostSpells:New()
     -- Frostfire Empowerment glows on the Frostfire Bolt button.
     self.frostfireEmpowerment = TRB.Classes.SpellBase:New({
         id = 431177,
+        talentId = 431176,
         duration = 20
     })
 

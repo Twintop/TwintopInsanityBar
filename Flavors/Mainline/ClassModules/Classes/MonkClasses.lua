@@ -383,6 +383,7 @@ end
 ---@field public ancientArts TRB.Classes.SpellBase
 ---@field public strikeOfTheWindlord TRB.Classes.SpellBase
 ---@field public danceOfChiJi TRB.Classes.SpellBase
+---@field public revolvingWhirl TRB.Classes.SpellBase
 ---@field public combatWisdom TRB.Classes.SpellBase
 ---@field public heartOfTheJadeSerpent TRB.Classes.SpellBase
 ---@field public communionWithWind TRB.Classes.SpellBase
@@ -548,6 +549,11 @@ function TRB.Classes.Mainline.Monk.WindwalkerSpells:New()
 	self.danceOfChiJi = TRB.Classes.SpellBase:New({
 		id = 322729,
 		talentId = 325201,
+		isTalent = true
+	})
+	-- Strike of the Windlord and Whirling Dragon Punch can activate Dance of Chi-Ji.
+	self.revolvingWhirl = TRB.Classes.SpellBase:New({
+		id = 451524,
 		isTalent = true
 	})
 	self.hitCombo = TRB.Classes.SpellBase:New({

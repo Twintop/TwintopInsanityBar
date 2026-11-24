@@ -93,6 +93,15 @@ function hooks.afterLoad(ctx)
 		end
 		return applyIndicators(self, sharedColors, conditionMap, ...)
 	end
+	-- The harness has no talents or spellbook; a forced condition stands for a learned spell.
+	local getUnavailable = Color.GetUnavailableIndicators
+	local noneUnavailable = {}
+	Color.GetUnavailableIndicators = function(...)
+		if drv.force ~= nil then
+			return noneUnavailable
+		end
+		return getUnavailable(...)
+	end
 
 	local Tabs = TRB.Functions.OptionsUi.Tabs
 	local buildTabGroup = Tabs.BuildTabGroup
@@ -247,6 +256,44 @@ function hooks.afterEvents(ctx)
 		local map = { builtIn = false }
 		check("IsIndicatorMet flips a built-in", Color:IsIndicatorMet(map, "builtIn", shared.indicatorColors.builtIn) == true)
 		check("and reads a row without modifiers as is", not Color:IsIndicatorMet({ builtIn = false }, "copy_1", shared.indicatorColors.copy_1))
+
+		-- A built-in whose spell isn't learned stays off, Not Active included, and so do its copies.
+		local unlearned = { builtIn = true }
+		check("an unlearned built-in stays off under Not Active", Color:IsIndicatorMet({ builtIn = false }, "builtIn", shared.indicatorColors.builtIn, unlearned) == false)
+		check("and its copy stays off while met", Color:IsIndicatorMet({ builtIn = true, copy_1 = true }, "copy_1", shared.indicatorColors.copy_1, unlearned) == false)
+		check("a learned built-in still flips", Color:IsIndicatorMet({ builtIn = false }, "builtIn", shared.indicatorColors.builtIn, {}) == true)
+		---The test bar's colors after a resolve with this condition and the unlearned set.
+		local function ResolveUnlearned(met)
+			local barColorMap = { testBar = {}, otherBar = {} }
+			try("resolve unlearned", function() Color:ApplyIndicatorColors(shared, { builtIn = met }, barColorMap, nil, unlearned) end)
+			return barColorMap.testBar
+		end
+		check("and the resolve paints neither while it isn't met", ResolveUnlearned(false).border == nil)
+		check("or while it is, when the copy would paint", ResolveUnlearned(true).background == nil)
+
+		-- Gates resolve against the talents, take a list or false, and rebuild once the talent table or spell set is replaced.
+		local Talents = TRB.Classes.Talents
+		local gateTalents = Talents:New()
+		local gateSpells = { first = { id = 9101, isTalent = true }, second = { id = 9102, isTalent = true } }
+		local gates = { one = "first", either = { "first", "second" }, never = false, missing = "absent" }
+		local gateState = Color:NewIndicatorGateState()
+		local set = Color:GetUnavailableIndicators(gateState, gates, gateSpells, gateTalents)
+		check("with no talents every gate is unavailable", set.one and set.either and set.never and set.missing)
+		gateTalents.talents = { [9102] = TRB.Classes.Talent:New(9102, 1, 1) }
+		set = Color:GetUnavailableIndicators(gateState, gates, gateSpells, gateTalents)
+		check("a replaced talent table rebuilds the set: either of a list will do", not set.either and set.one and set.never)
+		set = Color:GetUnavailableIndicators(gateState, gates, { first = { id = 9102, isTalent = true }, second = gateSpells.second }, gateTalents)
+		check("and so does a new spell set", not set.one and not set.either and set.never and set.missing)
+		check("no talents or spells leaves nothing unavailable", next(Color:GetUnavailableIndicators(gateState, gates, nil, gateTalents)) == nil)
+
+		-- A spec's own mark adds a key, and clearing it never clears a gate's.
+		local markState = Color:NewIndicatorGateState()
+		set = Color:GetUnavailableIndicators(markState, gates, gateSpells, Talents:New())
+		Color:MarkIndicatorUnavailable(markState, "one", false)
+		Color:MarkIndicatorUnavailable(markState, "tracked", true)
+		check("a mark adds its own key and leaves a gate's alone", set.one == true and set.tracked == true)
+		Color:MarkIndicatorUnavailable(markState, "tracked", false)
+		check("and clearing it removes only its own", set.tracked == nil and set.one == true)
 
 		-- Only In Combat keeps a row off out of combat, and in combat leaves its condition and Not Active as they are.
 		local character = TRB.Data.character

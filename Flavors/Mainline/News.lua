@@ -9,9 +9,19 @@ TRB.Flavor.newsContent = [====[
 ---
 
 # 12.1.5.16-release (2026-11-21)
+## General
+### Color Indicators
+
+- [#1035](#1035) A built-in Color Indicator stays off, including with Not Active, without the talent, set bonus, or Cooldown Manager tracking it needs.
+
 ## Druid
 
 - [#1028](#1028) Fix Color Indicators on the health bar, cast bars, and combo points stopping while the resource bar is set to Never Show, and in other forms as Feral or Restoration.
+
+## Evoker
+### Preservation
+
+- [#1035](#1035) The Innervate Color Indicator stays off with Not Active.
 
 ## Mage
 ### Frost
@@ -20,11 +30,21 @@ TRB.Flavor.newsContent = [====[
 - [#1024](#1024) With Ice Lance charges shown, a full charge takes the Shatter thresholds color, and a Shatter custom indicator recolors the charge holding its stack once reached.
 - [#1024](#1024) Ice Lance charges are on by default for new installs, while existing settings keep one node per stack.
 
+## Monk
+### Mistweaver
+
+- [#1035](#1035) The Heart of the Jade Serpent and Heart of the Jade Serpent Ready Color Indicators stay off with Not Active.
+
 ## Priest
 ### Holy
 
 - [#1027](#1027) Add Prayer of Mending charge tracking, with the `$pomCharges`, `$pomMaxCharges`, `$pomTime`, and `$pomFullTime` bar text variables and the `#pom` icon.
 - [#1027](#1027) Add Epiphany tracking, with a Color Indicator, an audio cue, the `$epiphany` and `$epiphanyTime` bar text variables, and the `#epiphany` icon. The indicator isn't listed by default; add it with Add Built-in Color Indicator.
+
+## Warrior
+### Fury
+
+- [#1035](#1035) Fix the Whirlwind zero-stack Color Indicator turning on without Improved Whirlwind.
 
 ---
 

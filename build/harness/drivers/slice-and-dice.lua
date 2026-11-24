@@ -10,7 +10,7 @@ local NETHERBLADE = { [1] = 29044, [3] = 29047, [5] = 29045, [7] = 29046, [10] =
 local ACTIVE_COLOR, ENDING_COLOR = "FFFF0000", "FFFF8000"
 
 -- The test clock, the frames the addon made, the fill colors a draw painted, and worn gear by slot.
-local drv = { now = 1000, frames = {}, fills = {}, gear = {} }
+local drv = { now = 1000, frames = {}, fills = {}, gear = {}, known = {} }
 
 function hooks.afterInstall(ctx)
 	parity.Install(ctx, { spec = 1, holdDeferredSetup = true })
@@ -33,6 +33,7 @@ function hooks.afterInstall(ctx)
 		local itemId = drv.gear[slot]
 		return itemId ~= nil and ("|cffa335ee|Hitem:" .. itemId .. "::::::::70:::::|h[Item]|h|r") or nil
 	end
+	G.C_SpellBook.IsSpellKnown = function(spellId) return drv.known[spellId] == true end
 end
 
 function hooks.afterLoad(ctx)
@@ -265,9 +266,18 @@ function hooks.afterEvents(ctx)
 		try("draw", function() triggerUpdates() end)
 		return drv.fills[ACTIVE_COLOR] == true, drv.fills[ENDING_COLOR] == true
 	end
+	---Learns or unlearns both Slice and Dice ranks, as a level-up or a respec does.
+	local function Learn(learned)
+		drv.known[SLICE_AND_DICE_RANK_1], drv.known[SLICE_AND_DICE_RANK_2] = learned or nil, learned or nil
+		stubs.fireEvents("SPELLS_CHANGED", ctx.addonName)
+	end
 	local character = TRB.Data.character
-	character.inCombat = false
+	character.inCombat = true
 	local painted, endingPainted = Draw()
+	check("in combat before Slice and Dice is learned, Active stays off", not painted and not endingPainted)
+	Learn(true)
+	character.inCombat = false
+	painted, endingPainted = Draw()
 	check("out of combat with Slice and Dice down, neither paints", not painted and not endingPainted)
 	character.inCombat = true
 	painted, endingPainted = Draw()

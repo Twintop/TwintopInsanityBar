@@ -441,6 +441,7 @@ TRB.Classes.Mainline.Druid.BalanceSpells.thresholdSnowflakes = {
 
 ---@class TRB.Classes.Mainline.Druid.FeralSpells : TRB.Classes.Mainline.Druid.DruidBaseSpells
 ---@field public clearcasting TRB.Classes.SpellBase
+---@field public omenOfClarity TRB.Classes.SpellBase
 ---@field public lunarInspiration TRB.Classes.SpellBase
 ---@field public berserk TRB.Classes.SpellBase
 ---@field public incarnationAvatarOfAshamane TRB.Classes.SpellBase
@@ -482,6 +483,11 @@ function TRB.Classes.Mainline.Druid.FeralSpells:New()
     -- Feral Spec Talents
     self.clearcasting = TRB.Classes.SpellBase:New({
         id = 135700
+    })
+    -- The talent that grants Feral's Clearcasting.
+    self.omenOfClarity = TRB.Classes.SpellBase:New({
+        id = 16864,
+        isTalent = true
     })
     self.primalWrath = TRB.Classes.SpellComboPointThreshold:New({
         id = 285381,
@@ -556,7 +562,9 @@ function TRB.Classes.Mainline.Druid.FeralSpells:New()
         modifier = 0.75
     })
     self.apexPredatorsCraving = TRB.Classes.SpellBase:New({
-        id = 391882
+        id = 391882,
+        talentId = 391881,
+        isTalent = true
     })
     -- Druid of the Claw
     self.empoweredShapeshifting = TRB.Classes.SpellBase:New({
@@ -1071,8 +1079,10 @@ TRB.Classes.Mainline.Druid.GuardianSpells.thresholdSnowflakes = {
 ---@field public lifetreading TRB.Classes.SpellBase
 ---@field public lifebloom TRB.Classes.SpellBase
 ---@field public incarnationTreeOfLife TRB.Classes.SpellBase
+---@field public reforestation TRB.Classes.SpellBase
 ---@field public cenariusGuidance TRB.Classes.SpellBase
 ---@field public clearcasting TRB.Classes.SpellBase
+---@field public omenOfClarity TRB.Classes.SpellBase
 TRB.Classes.Mainline.Druid.RestorationSpells = setmetatable({}, {__index = TRB.Classes.Mainline.Druid.DruidBaseSpells})
 TRB.Classes.Mainline.Druid.RestorationSpells.__index = TRB.Classes.Mainline.Druid.RestorationSpells
 
@@ -1110,6 +1120,7 @@ function TRB.Classes.Mainline.Druid.RestorationSpells:New()
     })
     self.incarnationTreeOfLife = TRB.Classes.SpellBase:New({
         id = 117679,
+        talentId = 33891,
         castId = 33891,
         isTalent = true,
         duration = 30
@@ -1118,8 +1129,18 @@ function TRB.Classes.Mainline.Druid.RestorationSpells:New()
         id = 393371,
         isTalent = true
     })
+    -- Every few Swiftmends grant Incarnation: Tree of Life.
+    self.reforestation = TRB.Classes.SpellBase:New({
+        id = 392356,
+        isTalent = true
+    })
     self.clearcasting = TRB.Classes.SpellBase:New({
         id = 16870
+    })
+    -- The talent that grants Restoration's Clearcasting.
+    self.omenOfClarity = TRB.Classes.SpellBase:New({
+        id = 113043,
+        isTalent = true
     })
 
     return self

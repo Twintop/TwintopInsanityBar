@@ -102,6 +102,15 @@ function hooks.afterLoad(ctx)
 		end
 		return applyIndicators(self, sharedColors, conditionMap, ...)
 	end
+	-- The harness has no talents or spellbook; a forced condition stands for a learned spell.
+	local getUnavailable = Color.GetUnavailableIndicators
+	local noneUnavailable = {}
+	Color.GetUnavailableIndicators = function(...)
+		if drv.force ~= nil then
+			return noneUnavailable
+		end
+		return getUnavailable(...)
+	end
 
 	local Tabs = TRB.Functions.OptionsUi.Tabs
 	local buildTabGroup = Tabs.BuildTabGroup

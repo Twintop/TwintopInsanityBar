@@ -980,9 +980,18 @@ local function UpdateSnapshot_Devourer()
 end
 
 
+-- Each spec's built-in indicators by the talent they can't be met without.
+local indicatorGates = {
+	devourer = {
+		collapsingStarReady = "collapsingStar",
+		voidRayReady = "voidRay",
+	},
+}
+
 -- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
 -- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
 local scratch = {
+	gateState1 = Color:NewIndicatorGateState(),
 	conditionMap1 = {},
 	furyBarColors1 = {},
 	barColorMap1 = {},
@@ -1409,6 +1418,7 @@ local function UpdateResourceBar()
 			conditionMap.voidRayReady = voidRayUsable
 			-- Overcap's combat gate is its Only In Combat modifier.
 			conditionMap.borderOvercap = true
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.devourer, spells, talents)
 
 			-- Color targets: barKey -> elementKey -> current color
 			local furyBarColors = scratch.furyBarColors3
@@ -1425,7 +1435,7 @@ local function UpdateResourceBar()
 			barColorMap.soulFragmentsBar = soulFragmentsIndicated
 
 			-- Apply flat indicator colors (priority order, last writer wins)
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true

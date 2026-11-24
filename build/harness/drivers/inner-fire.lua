@@ -8,7 +8,7 @@ local hooks = {}
 local INNER_FIRE_RANK_1, INNER_FIRE_RANK_6, IMPROVED_INNER_FIRE, OTHER_SPELL = 588, 10952, 14747, 2052
 
 -- The test clock, the frames the addon made, the border colors a draw painted, the combat text unit, and the auras.
-local drv = { now = 1000, frames = {}, printed = {}, borders = {}, combatTextUnit = nil, auras = {}, aurasSecret = false, inCombat = false }
+local drv = { now = 1000, frames = {}, printed = {}, borders = {}, combatTextUnit = nil, auras = {}, aurasSecret = false, inCombat = false, known = {} }
 
 function hooks.afterInstall(ctx)
 	parity.Install(ctx, { spec = 1, holdDeferredSetup = true })
@@ -37,6 +37,7 @@ function hooks.afterInstall(ctx)
 	G.issecrettable = function(t) return type(t) == "table" and rawget(t, "secret") == true end
 	G.C_Secrets = { ShouldAurasBeSecret = function() return drv.aurasSecret end }
 	G.InCombatLockdown = function() return drv.inCombat end
+	G.C_SpellBook.IsSpellKnown = function(spellId) return drv.known[spellId] == true end
 end
 
 function hooks.afterLoad(ctx)
@@ -168,6 +169,21 @@ function hooks.afterEvents(ctx)
 		try("draw", function() triggerUpdates() end)
 		return drv.borders[INNER_FIRE_COLOR] == true
 	end
+	---Learns or unlearns every Inner Fire rank, as a level-up or a respec does.
+	local function Learn(learned)
+		for _, rankId in ipairs(TRB.Data.spellsData.spells.innerFire.rankIds) do
+			drv.known[rankId] = learned or nil
+		end
+		stubs.fireEvents("SPELLS_CHANGED", ctx.addonName)
+	end
+	Learn(true)
+	---Whether an unlearned Inner Fire keeps its Not Active row off; leaves it learned.
+	local function UnlearnedStaysOff()
+		Learn(false)
+		local painted = Draw()
+		Learn(true)
+		return not painted and Draw()
+	end
 
 	if TRB.Flavor.id ~= "forever" then
 		-- Classic and TBC: auras are never secret, so the charges and time are the aura's own.
@@ -275,6 +291,7 @@ function hooks.afterEvents(ctx)
 			check("and stops once its aura is gone", not buff.isActive and not Draw())
 			indicator.modifiers = { notActive = true }
 			check("Not Active paints it while Inner Fire is down", Draw())
+			check("but not while Inner Fire isn't learned", UnlearnedStaysOff())
 			indicator.modifiers = nil
 			indicator.targets = {}
 		end
@@ -374,6 +391,7 @@ function hooks.afterEvents(ctx)
 		check("and not once it is cast", not Draw())
 		Tick(600)
 		check("and again when its 10 minutes run out", Draw())
+		check("but not while Inner Fire isn't learned", UnlearnedStaysOff())
 		indicator.modifiers = nil
 		indicator.targets = {}
 	end

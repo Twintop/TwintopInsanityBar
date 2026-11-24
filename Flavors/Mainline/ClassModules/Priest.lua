@@ -2614,9 +2614,44 @@ local function UpdateSnapshot_Shadow()
 end
 
 
+-- Each spec's built-in indicators by the talent they can't be met without; any one of a list will do.
+local indicatorGates = {
+	discipline = {
+		surgeOfLight = "surgeOfLight",
+		surgeOfLight2 = "surgeOfLight",
+		voidShield = { "masterTheDarkness", "masterTheDarkness2", "masterTheDarkness3" },
+	},
+	holy = {
+		benediction = { "benediction", "benediction2", "benediction3" },
+		holyWordSerenity = "holyWordSerenity",
+		holyWordSanctify = "holyWordSanctify",
+		holyWordChastise = "holyWordChastise",
+		apotheosisEnd = "apotheosis",
+		apotheosis = "apotheosis",
+		-- Archon's Manifested Power grants Surge of Light with each Halo.
+		surgeOfLight = { "surgeOfLight", "manifestedPower" },
+		surgeOfLight2 = { "surgeOfLight", "manifestedPower" },
+		lightweaver = "lightweaver",
+		epiphany = "epiphany",
+	},
+	shadow = {
+		instantMindBlast = { "shadowyInsight", "voidEmpowerment" },
+		voidformEnd = "voidform",
+		voidform = "voidform",
+		mindDevourer = "mindDevourer",
+		entropicRift = "voidTorrent",
+		resonantEnergy = "resonantEnergy",
+		borderMindFlayInsanity = { "surgeOfInsanity", "manifestedPower" },
+		shadowWordMadnessUsable = "shadowWordMadness",
+	},
+}
+
 -- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
 -- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
 local scratch = {
+	gateState1 = Color:NewIndicatorGateState(),
+	gateState2 = Color:NewIndicatorGateState(),
+	gateState3 = Color:NewIndicatorGateState(),
 	conditionMap1 = {},
 	manaBarColors1 = {},
 	powerWordsBarColors1 = {},
@@ -2701,6 +2736,7 @@ local function UpdateResourceBar()
 			conditionMap.surgeOfLight = surgeOfLightStacks >= 1
 			conditionMap.surgeOfLight2 = surgeOfLightStacks >= 2
 			conditionMap.voidShield = snapshotData.snapshots[spells.masterTheDarkness.id].buff.isActive
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.discipline, spells, talents)
 
 			-- Color targets: barKey -> elementKey -> current color
 			local manaBarColors = scratch.manaBarColors1
@@ -2719,7 +2755,7 @@ local function UpdateResourceBar()
 			barColorMap.powerWordsBar = powerWordsBarColors
 
 			-- Apply flat indicator colors (priority order, last writer wins)
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
@@ -2901,6 +2937,7 @@ local function UpdateResourceBar()
 			conditionMap.surgeOfLight2 = surgeOfLightStacks >= 2
 			conditionMap.lightweaver = snapshots[spells.lightweaver.id].buff.isActive
 			conditionMap.epiphany = snapshots[spells.epiphany.id].buff.isActive
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState2, indicatorGates.holy, spells, talents)
 
 			-- Color targets: barKey -> elementKey -> current color
 			local manaBarColors = scratch.manaBarColors2
@@ -2921,7 +2958,7 @@ local function UpdateResourceBar()
 			-- Holy's own bars are resolved by the node-aware walk below, not the shared resolver: several of
 			-- its indicators apply to one node of a bar rather than the whole bar. The shared health/cast bar
 			-- have no such nuance, so they still resolve the standard way.
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, nil)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, nil, nil, unavailable)
 
 			-- Apply flat indicator colors (priority order, last writer wins)
 			local holyWordNodeColors = scratch.holyWordNodeColors1
@@ -2933,7 +2970,7 @@ local function UpdateResourceBar()
 				for i = #nodeOrder, 1, -1 do
 					local key = nodeOrder[i]
 					local indicator = indicatorColors[key]
-					if indicator and indicator.enabled and Color:IsIndicatorMet(conditionMap, key, indicator) then
+					if indicator and indicator.enabled and Color:IsIndicatorMet(conditionMap, key, indicator, unavailable) then
 						if indicator.targets then
 							local indicatorKey = indicator.copyOf or key
 							local holyWordColors = holyWordNodeColors[indicatorKey]
@@ -3235,6 +3272,7 @@ local function UpdateResourceBar()
 			conditionMap.voidform = voidformActive
 			-- Overcap's combat gate is its Only In Combat modifier.
 			conditionMap.borderOvercap = true
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState3, indicatorGates.shadow, spells, talents)
 
 			-- Color targets: barKey -> elementKey -> current color
 			local insanityBarColors = scratch.insanityBarColors1
@@ -3253,7 +3291,7 @@ local function UpdateResourceBar()
 			barColorMap.manaBar = manaBarColors
 
 			-- Apply flat indicator colors (priority order, last writer wins)
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true

@@ -26,8 +26,14 @@ local thresholdBar = TRB.Classes.ThresholdBar:New()
 local thresholdState = TRB.Classes.ThresholdState:New()
 local thresholdData = TRB.Classes.ThresholdData:New()
 
+-- Built-in indicators by the talent they can't be met without, for every specialization.
+local indicatorGates = {
+	vampiricStrike = "vampiricStrike",
+}
+
 -- Per-tick scratch tables, reused so the color resolution path allocates nothing.
 local scratch = {
+	gateState1 = Color:NewIndicatorGateState(),
 	-- Consumed within the call that fills it.
 	barGradients1 = {},
 	runicPowerBarColors1 = {},
@@ -971,7 +977,11 @@ local function GetDeathKnightIndicatorState(specSettings)
 	conditionMap.runicCorruption = TRB.Data.character.specId == 3 and TRB.Data.snapshotData.attributes.runicCorruptionActive == true
 	conditionMap.vampiricStrike = vampiricStrikeTalented and TRB.Data.snapshotData.attributes.vampiricStrikeActive == true
 
-	return conditionMap, sharedColors
+	local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates, spells, talents)
+	-- Runic Corruption is read from the Cooldown Manager, so it is unavailable while it isn't tracked there.
+	Color:MarkIndicatorUnavailable(scratch.gateState1, "runicCorruption", TRB.Data.character.specId == 3 and TRB.Data.snapshotData.attributes.runicCorruptionTracked ~= true)
+
+	return conditionMap, sharedColors, unavailable
 end
 
 ---Fills a caller's scratch table with each gradient-targeted element's curve for one bar.
@@ -1012,7 +1022,7 @@ end
 ---@return table<string, boolean> conditionMap
 ---@return table sharedColors
 local function ResolveIndicatorColors(specSettings, bloodBars)
-	local conditionMap, sharedColors = GetDeathKnightIndicatorState(specSettings)
+	local conditionMap, sharedColors, unavailable = GetDeathKnightIndicatorState(specSettings)
 	local colors = specSettings.colors
 	local barColorMap = scratch.barColorMap1
 	wipe(barColorMap)
@@ -1056,7 +1066,7 @@ local function ResolveIndicatorColors(specSettings, bloodBars)
 		end
 	end
 
-	Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+	Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 
 	return conditionMap, sharedColors
 end

@@ -8,6 +8,14 @@ TRB.Flavor.newsContent = [====[
 
 ---
 
+# 2.5.6.5-release (2026-11-24)
+## General
+### Color Indicators
+
+- [#1034](#1034) A built-in Color Indicator for a spell you haven't learned stays off, including with Not Active.
+
+---
+
 # 2.5.6.4-release (2026-11-19)
 ## General
 ### Bar Visibility

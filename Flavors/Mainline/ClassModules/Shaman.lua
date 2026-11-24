@@ -358,10 +358,12 @@ local function UpdateTempest(spells, attributes, currentTime)
 	attributes.tempestRemaining = nil
 	attributes.tempestRemainingText = nil
 
+	-- Pinned to the buff viewers, which describe the aura.
+	local cdm = TRB.Functions.CooldownManager
+	local trackedId = cdm:ResolveTrackedSpellId(cdm.SourceGroup.BUFF, spells.tempest.attributes.cdmSpellId)
+	attributes.tempestTracked = trackedId ~= nil
+
 	if attributes.tempestActive then
-		-- Pinned to the buff viewers, which describe the aura.
-		local cdm = TRB.Functions.CooldownManager
-		local trackedId = cdm:ResolveTrackedSpellId(cdm.SourceGroup.BUFF, spells.tempest.attributes.cdmSpellId)
 		if trackedId == nil then
 			attributes.tempestStacks = nil
 		else
@@ -1020,9 +1022,34 @@ local function UpdateSnapshot_Restoration()
 end
 
 
+-- Each spec's built-in indicators by the talent they can't be met without; any one of a list will do.
+local indicatorGates = {
+	elemental = {
+		ascendanceEnd = "ascendance",
+		ascendance = "ascendance",
+		earthShock = { "earthShock", "elementalBlast" },
+		earthquake = { "earthquake", "earthquakeTargeted" },
+		tempest = "tempest",
+		tempest2 = "tempest",
+	},
+	-- Doom Winds also starts Ascendance.
+	enhancement = {
+		ascendanceEnd = { "ascendance", "doomWinds" },
+		ascendance = { "ascendance", "doomWinds" },
+		tempest = "tempest",
+		tempest2 = "tempest",
+	},
+	restoration = {
+		ascendanceEnd = "ascendance",
+		ascendance = "ascendance",
+	},
+}
+
 -- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
 -- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
 local scratch = {
+	-- Shared by the three specs' indicator calls; only one runs per tick.
+	gateState1 = Color:NewIndicatorGateState(),
 	conditionMap1 = {},
 	maelstromBarColors1 = {},
 	barColorMap1 = {},
@@ -1159,6 +1186,9 @@ local function UpdateResourceBar()
 
 			local conditionMap = scratch.conditionMap1
 			wipe(conditionMap)
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.elemental, spells, talents)
+			-- Tempest's second charge is read from the Cooldown Manager, so it is unavailable while it isn't tracked there.
+			Color:MarkIndicatorUnavailable(scratch.gateState1, "tempest2", snapshotData.attributes.tempestTracked ~= true)
 			conditionMap.ascendanceEnd = ascendanceActive and ascendanceEndMet
 			conditionMap.earthShock = earthShockUsable
 			conditionMap.earthquake = earthquakeUsable
@@ -1195,7 +1225,7 @@ local function UpdateResourceBar()
 				barColorMap[node.targetKey] = nodeColors
 			end
 
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
@@ -1364,6 +1394,9 @@ local function UpdateResourceBar()
 
 			local conditionMap = scratch.conditionMap3
 			wipe(conditionMap)
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.enhancement, spells, talents)
+			-- Tempest's second charge is read from the Cooldown Manager, so it is unavailable while it isn't tracked there.
+			Color:MarkIndicatorUnavailable(scratch.gateState1, "tempest2", snapshotData.attributes.tempestTracked ~= true)
 			conditionMap.ascendanceEnd = ascendanceActive and ascendanceEndMet
 			conditionMap.ascendance = ascendanceActive
 			conditionMap.tempest = snapshotData.attributes.tempestActive == true
@@ -1381,7 +1414,7 @@ local function UpdateResourceBar()
 			wipe(maelstromWeaponIndicated)
 			barColorMap.maelstromWeaponBar = maelstromWeaponIndicated
 
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
@@ -1586,6 +1619,7 @@ local function UpdateResourceBar()
 
 			local conditionMap = scratch.conditionMap5
 			wipe(conditionMap)
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.restoration, spells, talents)
 			conditionMap.ascendanceEnd = ascendanceActive and ascendanceEndMet
 			conditionMap.ascendance = ascendanceActive
 			local manaBarColors = scratch.manaBarColors3
@@ -1597,7 +1631,7 @@ local function UpdateResourceBar()
 			wipe(barColorMap)
 			barColorMap.manaBar = manaBarColors
 
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true

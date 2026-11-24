@@ -6,7 +6,11 @@ TRB.Classes.Mainline.Paladin = TRB.Classes.Mainline.Paladin or {}
 
 ---@class TRB.Classes.Mainline.Paladin.HolySpells : TRB.Classes.Mainline.Healer.HealerSpells
 ---@field flashOfLight TRB.Classes.SpellBase
+---@field infusionOfLight TRB.Classes.SpellBase
+---@field layingDownArms TRB.Classes.SpellBase
 ---@field divinePurpose TRB.Classes.SpellBase
+---@field divinePurposeAlt TRB.Classes.SpellBase
+---@field aurora TRB.Classes.SpellBase
 ---@field holyLight TRB.Classes.SpellBase
 TRB.Classes.Mainline.Paladin.HolySpells = setmetatable({}, {__index = TRB.Classes.Mainline.Healer.HealerSpells})
 TRB.Classes.Mainline.Paladin.HolySpells.__index = TRB.Classes.Mainline.Paladin.HolySpells
@@ -22,11 +26,34 @@ function TRB.Classes.Mainline.Paladin.HolySpells:New()
 		resource = 1
     })
 
+    -- The talent that makes Flash of Light instant.
+    self.infusionOfLight = TRB.Classes.SpellBase:New({
+        id = 54149,
+        talentId = 53576,
+        isTalent = true
+    })
+    -- Lightsmith: an Armament fading grants Infusion of Light.
+    self.layingDownArms = TRB.Classes.SpellBase:New({
+        id = 432866,
+        isTalent = true
+    })
+
     self.divinePurpose = TRB.Classes.SpellBase:New({
         id = 223819,
+        talentId = 223817,
         spellId = 223819, -- Id the proc's activation overlay is announced under
         isBuff = true,
         duration = 12
+    })
+    -- Divine Purpose's other class talent node; either one grants the proc.
+    self.divinePurposeAlt = TRB.Classes.SpellBase:New({
+        id = 408459,
+        isTalent = true
+    })
+    -- Herald of the Sun: Holy Prism and Divine Toll grant Divine Purpose.
+    self.aurora = TRB.Classes.SpellBase:New({
+        id = 439760,
+        isTalent = true
     })
 
 	self.holyLight = TRB.Classes.SpellBase:New({
@@ -82,6 +109,7 @@ end
 ---@class TRB.Classes.Mainline.Paladin.ProtectionSpells : TRB.Classes.SpecializationSpellsBase
 ---@field flashOfLight TRB.Classes.SpellBase
 ---@field divinePurpose TRB.Classes.SpellBase
+---@field divinePurposeAlt TRB.Classes.SpellBase
 TRB.Classes.Mainline.Paladin.ProtectionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Mainline.Paladin.ProtectionSpells.__index = TRB.Classes.Mainline.Paladin.ProtectionSpells
 
@@ -97,9 +125,15 @@ function TRB.Classes.Mainline.Paladin.ProtectionSpells:New()
 
 	self.divinePurpose = TRB.Classes.SpellBase:New({
 		id = 223819,
+		talentId = 223817,
 		spellId = 223819, -- Id the proc's activation overlay is announced under
 		isBuff = true,
 		duration = 12
+	})
+	-- Divine Purpose's other class talent node; either one grants the proc.
+	self.divinePurposeAlt = TRB.Classes.SpellBase:New({
+		id = 408459,
+		isTalent = true
 	})
 
     return self
@@ -143,6 +177,8 @@ end
 
 ---@class TRB.Classes.Mainline.Paladin.RetributionSpells : TRB.Classes.SpecializationSpellsBase
 ---@field divinePurpose TRB.Classes.SpellBase
+---@field divinePurposeAlt TRB.Classes.SpellBase
+---@field aurora TRB.Classes.SpellBase
 ---@field executionSentence TRB.Classes.SpellBase
 ---@field judgeJuryAndExecutioner TRB.Classes.SpellBase
 ---@field avengingWrath TRB.Classes.SpellBase
@@ -159,9 +195,20 @@ function TRB.Classes.Mainline.Paladin.RetributionSpells:New()
 
     self.divinePurpose = TRB.Classes.SpellBase:New({
         id = 223819,
+        talentId = 408459,
         spellId = 408458, -- Id the proc's activation overlay is announced under
         isBuff = true,
         duration = 12
+    })
+    -- Divine Purpose's other class talent node; either one grants the proc.
+    self.divinePurposeAlt = TRB.Classes.SpellBase:New({
+        id = 223817,
+        isTalent = true
+    })
+    -- Herald of the Sun: Wake of Ashes grants Divine Purpose.
+    self.aurora = TRB.Classes.SpellBase:New({
+        id = 439760,
+        isTalent = true
     })
 
     self.executionSentence = TRB.Classes.SpellBase:New({

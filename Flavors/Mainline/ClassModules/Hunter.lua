@@ -816,9 +816,28 @@ local function UpdateSnapshot_Survival()
 end
 
 
+-- Each spec's built-in indicators by the talent they can't be met without.
+local indicatorGates = {
+	beastMastery = {
+		bestialWrath = "bestialWrath",
+		bestialWrathEnd = "bestialWrath",
+		beastCleave = "beastCleave",
+	},
+	marksmanship = {
+		trueshot = "trueshot",
+		trueshotEnd = "trueshot",
+	},
+	survival = {
+		takedown = "takedown",
+		takedownEnd = "takedown",
+	},
+}
+
 -- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
 -- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
 local scratch = {
+	-- Shared by the specs' indicator calls; only one runs per tick.
+	gateState1 = Color:NewIndicatorGateState(),
 	conditionMap1 = {},
 	focusBarColors1 = {},
 	barColorMap1 = {},
@@ -889,6 +908,7 @@ local function UpdateResourceBar()
 			local sharedColors = specSettings.colors.shared
 			local conditionMap = scratch.conditionMap1
 			wipe(conditionMap)
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.beastMastery, spells, talents)
 			conditionMap.bestialWrath = snapshots[spells.bestialWrath.id].buff.isActive
 			conditionMap.bestialWrathEnd = snapshots[spells.bestialWrath.id].buff.isActive
 					and specSettings.endOf.bestialWrath.enabled
@@ -908,7 +928,7 @@ local function UpdateResourceBar()
 			wipe(barColorMap)
 			barColorMap.focusBar = focusBarColors
 
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
@@ -1001,6 +1021,7 @@ local function UpdateResourceBar()
 			local sharedColors = specSettings.colors.shared
 			local conditionMap = scratch.conditionMap2
 			wipe(conditionMap)
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.marksmanship, spells, talents)
 			conditionMap.trueshot = snapshots[spells.trueshot.id].buff.isActive
 			conditionMap.trueshotEnd = snapshots[spells.trueshot.id].buff.isActive
 					and specSettings.endOf.trueshot.enabled
@@ -1019,7 +1040,7 @@ local function UpdateResourceBar()
 			wipe(barColorMap)
 			barColorMap.focusBar = focusBarColors
 
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
@@ -1097,6 +1118,7 @@ local function UpdateResourceBar()
 			local sharedColors = specSettings.colors.shared
 			local conditionMap = scratch.conditionMap3
 			wipe(conditionMap)
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.survival, spells, talents)
 			conditionMap.takedown = snapshots[spells.takedown.id].buff.isActive
 			conditionMap.takedownEnd = snapshots[spells.takedown.id].buff.isActive
 					and specSettings.endOf.takedown.enabled
@@ -1127,7 +1149,7 @@ local function UpdateResourceBar()
 			local indicatorTargets = scratch.indicatorTargets1
 			wipe(indicatorTargets)
 			indicatorTargets.tipOfTheSpearBar = tipOfTheSpearOverrides
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, indicatorTargets)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, indicatorTargets, unavailable)
 
 			local focusGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "focusBar", scratch.focusGradients3)
 			local tipOfTheSpearGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "tipOfTheSpearBar", scratch.tipOfTheSpearGradients1)

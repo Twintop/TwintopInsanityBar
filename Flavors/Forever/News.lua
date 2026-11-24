@@ -9,6 +9,11 @@ TRB.Flavor.newsContent = [====[
 ---
 
 # 1.60.1.22-release (2026-11-23)
+## General
+### Color Indicators
+
+- [#1034](#1034) A built-in Color Indicator for a spell or talent you haven't learned stays off, including with Not Active.
+
 ## Priest
 
 - [#1026](#1026) Add Dark Inspiration tracking, with a Color Indicator and the `$darkInspirationTime` and `#darkInspiration` bar text variables. The indicator isn't listed by default; add it with Add Built-in Color Indicator.

@@ -818,9 +818,28 @@ function TRB.Functions.Class:DisableEvents()
 end
 
 
+-- Each spec's built-in indicators by the talent they can't be met without; any one of a list will do.
+local indicatorGates = {
+	holy = {
+		infusionOfLight = { "infusionOfLight", "layingDownArms" },
+		divinePurpose = { "divinePurpose", "divinePurposeAlt", "aurora" },
+	},
+	protection = {
+		divinePurpose = { "divinePurpose", "divinePurposeAlt" },
+	},
+	retribution = {
+		divinePurpose = { "divinePurpose", "divinePurposeAlt", "aurora" },
+		executionSentence = "executionSentence",
+		avengingWrath = { "avengingWrath", "radiantGlory" },
+		avengingWrathEnd = { "avengingWrath", "radiantGlory" },
+	},
+}
+
 -- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
 -- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
 local scratch = {
+	-- Shared by the three specs' indicator calls; only one runs per tick.
+	gateState1 = Color:NewIndicatorGateState(),
 	overrides1 = {},
 	overrideFlags1 = {},
 	manaBarColors1 = {},
@@ -901,7 +920,7 @@ local function UpdateHolyPower(specSettings, specCacheSettings, holyPowerColors,
 end
 
 ---Resolves flat indicator colors into a bar color map, marking each bar whose fill an indicator claimed.
-local function ApplyFlatIndicatorColors(sharedColors, conditionMap, barColorMap)
+local function ApplyFlatIndicatorColors(sharedColors, conditionMap, barColorMap, gates)
 	-- barOverridden tells the render below to skip the resource-threshold fill curve: once an indicator
 	-- owns the fill, its flat color has to survive rather than being recomputed from the resource.
 	-- Inner flag tables are pooled by barKey and wiped: ApplyIndicatorColors only writes true.
@@ -919,7 +938,8 @@ local function ApplyFlatIndicatorColors(sharedColors, conditionMap, barColorMap)
 		overrides[barKey] = flags
 	end
 
-	TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, overrides)
+	local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, gates, TRB.Data.spellsData.spells, talents)
+	TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, overrides, unavailable)
 
 	for barKey, colorEntry in pairs(barColorMap) do
 		if overrides[barKey].bar then
@@ -981,7 +1001,7 @@ local function UpdateResourceBar()
 		local barColorMap = scratch.barColorMap1
 		barColorMap.manaBar = manaBarColors
 		barColorMap.holyPowerBar = holyPowerColors
-		ApplyFlatIndicatorColors(specSettings.colors.shared, conditionMap, barColorMap)
+		ApplyFlatIndicatorColors(specSettings.colors.shared, conditionMap, barColorMap, indicatorGates.holy)
 		TRB.Functions.AudioCues:Fire(specSettings, snapshotData, "infusionOfLight", infusionOfLightActive)
 		if snapshotData.attributes.isTracking then
 			if not specSettings.displayBar.primary.neverShow then
@@ -1039,7 +1059,7 @@ local function UpdateResourceBar()
 		local barColorMap = scratch.barColorMap1
 		barColorMap.manaBar = manaBarColors
 		barColorMap.holyPowerBar = holyPowerColors
-		ApplyFlatIndicatorColors(specSettings.colors.shared, conditionMap, barColorMap)
+		ApplyFlatIndicatorColors(specSettings.colors.shared, conditionMap, barColorMap, indicatorGates.protection)
 		if snapshotData.attributes.isTracking then
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true
@@ -1114,7 +1134,7 @@ local function UpdateResourceBar()
 		local barColorMap = scratch.barColorMap1
 		barColorMap.manaBar = manaBarColors
 		barColorMap.holyPowerBar = holyPowerColors
-		ApplyFlatIndicatorColors(specSettings.colors.shared, conditionMap, barColorMap)
+		ApplyFlatIndicatorColors(specSettings.colors.shared, conditionMap, barColorMap, indicatorGates.retribution)
 		if snapshotData.attributes.isTracking then
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true

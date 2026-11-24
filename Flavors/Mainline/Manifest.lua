@@ -212,7 +212,9 @@ TRB.Flavor = {
 						local definitionInfo = C_Traits.GetDefinitionInfo(entryInfo.definitionID)
 						if definitionInfo ~= nil then
 							local spellId = definitionInfo.spellID or definitionInfo.overriddenSpellID
-							if spellId ~= nil then
+							-- Another specialization's node can share the spell, so keep the one this character has ranks in.
+							local existing = spellId ~= nil and ranks[spellId] or nil
+							if spellId ~= nil and (existing == nil or (node.currentRank or 0) > (existing.currentRank or 0)) then
 								ranks[spellId] = { currentRank = node.currentRank, maxRank = node.maxRanks, subTreeActive = node.subTreeActive }
 							end
 						end

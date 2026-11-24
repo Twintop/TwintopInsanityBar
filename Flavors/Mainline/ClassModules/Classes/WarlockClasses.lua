@@ -8,6 +8,7 @@ TRB.Classes.Mainline.Warlock = TRB.Classes.Mainline.Warlock or {}
 ---@field public darkHarvest TRB.Classes.SpellBase
 ---@field public shadowOfDeath TRB.Classes.SpellBase
 ---@field public shardInstability TRB.Classes.SpellBase
+---@field public seedsOfTheirDemise TRB.Classes.SpellBase
 TRB.Classes.Mainline.Warlock.AfflictionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Mainline.Warlock.AfflictionSpells.__index = TRB.Classes.Mainline.Warlock.AfflictionSpells
 
@@ -40,6 +41,11 @@ function TRB.Classes.Mainline.Warlock.AfflictionSpells:New()
         isTalent = true,
         buffId = 1260269,
         maxStacks = 3
+    })
+    -- Hellcaller: Blackened Soul damage can grant Shard Instability.
+    self.seedsOfTheirDemise = TRB.Classes.SpellBase:New({
+        id = 440055,
+        isTalent = true
     })
 
     return self
@@ -122,6 +128,7 @@ end
 ---@field public demonicCore TRB.Classes.SpellBase
 ---@field public diabolicRitual TRB.Classes.SpellBase
 ---@field public demonicArt TRB.Classes.SpellBase
+---@field public secretsOfTheCoven TRB.Classes.SpellBase
 TRB.Classes.Mainline.Warlock.DemonologySpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Mainline.Warlock.DemonologySpells.__index = TRB.Classes.Mainline.Warlock.DemonologySpells
 
@@ -148,6 +155,7 @@ function TRB.Classes.Mainline.Warlock.DemonologySpells:New()
     })
     self.ruination = TRB.Classes.SpellBase:New({
         id = 434635,
+        talentId = 428522,
         isTalent = true,
         duration = 20
     })
@@ -216,6 +224,11 @@ function TRB.Classes.Mainline.Warlock.DemonologySpells:New()
         id = 428514,
         isTalent = true,
         buffIds = { 431944, 432815, 432816 }
+    })
+    -- Diabolist: Mother of Chaos turns the next Shadow Bolt into Infernal Bolt.
+    self.secretsOfTheCoven = TRB.Classes.SpellBase:New({
+        id = 428518,
+        isTalent = true
     })
     self.demonicArt = TRB.Classes.SpellBase:New({
         id = 428524,
@@ -303,6 +316,7 @@ end
 ---@field public infernalBolt TRB.Classes.SpellBase
 ---@field public chaosBolt TRB.Classes.SpellBase
 ---@field public ruination TRB.Classes.SpellBase
+---@field public secretsOfTheCoven TRB.Classes.SpellBase
 TRB.Classes.Mainline.Warlock.DestructionSpells = setmetatable({}, {__index = TRB.Classes.SpecializationSpellsBase})
 TRB.Classes.Mainline.Warlock.DestructionSpells.__index = TRB.Classes.Mainline.Warlock.DestructionSpells
 
@@ -339,8 +353,14 @@ function TRB.Classes.Mainline.Warlock.DestructionSpells:New()
     })
     self.ruination = TRB.Classes.SpellBase:New({
         id = 434635,
+        talentId = 428522,
         isTalent = true,
         duration = 20
+    })
+    -- Diabolist: Mother of Chaos turns the next Incinerate into Infernal Bolt.
+    self.secretsOfTheCoven = TRB.Classes.SpellBase:New({
+        id = 428518,
+        isTalent = true
     })
 
     return self

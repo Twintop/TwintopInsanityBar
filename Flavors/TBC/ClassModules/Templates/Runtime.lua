@@ -328,6 +328,19 @@ function TRB.TBC.Templates.Runtime:Install(className)
 		claimed = { comboPointsBar = {} },
 	}
 
+	-- Each spec's built-in indicators by the buff they follow, which they can't be met without.
+	local indicatorGates = {}
+	for _, spec in ipairs(classDef.specOrder) do
+		if spec.indicators ~= nil then
+			local gates = {}
+			for _, indicator in ipairs(spec.indicators) do
+				gates[indicator.key] = indicator.buff
+			end
+			indicatorGates[spec] = gates
+		end
+	end
+	local indicatorGateState = Color:NewIndicatorGateState()
+
 	local thresholdBar = TRB.Classes.ThresholdBar:New()
 	local thresholdState = TRB.Classes.ThresholdState:New()
 	local thresholdData = TRB.Classes.ThresholdData:New()
@@ -385,8 +398,10 @@ function TRB.TBC.Templates.Runtime:Install(className)
 			conditionMap.borderStealth = isStealthed
 			-- Overcap's combat gate is its Only In Combat modifier.
 			conditionMap.borderOvercap = not isStealthed and IsOvercapped(spec, specSettings)
+			local unavailable = nil
 			if spec.indicators ~= nil then
 				local spells = TRB.Data.spellsData.spells
+				unavailable = Color:GetUnavailableIndicators(indicatorGateState, indicatorGates[spec], spells, runtime.talents)
 				for i = 1, #spec.indicators do
 					local indicator = spec.indicators[i]
 					local snapshot = snapshotData.snapshots[spells[indicator.buff].id]
@@ -416,7 +431,7 @@ function TRB.TBC.Templates.Runtime:Install(className)
 			local claimed = scratch.claimed
 			wipe(claimed.comboPointsBar)
 
-			Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, claimed)
+			Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, claimed, unavailable)
 
 			if not specSettings.displayBar.primary.neverShow then
 				refreshText = true

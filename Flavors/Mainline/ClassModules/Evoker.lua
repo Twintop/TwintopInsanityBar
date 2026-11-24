@@ -1083,9 +1083,27 @@ local function UpdateEssence(specSettings, specCacheSettings, essenceOverrides)
 end
 
 
+-- Each spec's built-in indicators by the talents they can't be met without (any one will do), or false for never.
+local indicatorGates = {
+	devastation = {
+		dragonrageEnd = "dragonrage",
+		dragonrage = "dragonrage",
+	},
+	preservation = {
+		innervate = false,
+		essenceBurst = { "essenceBurst", "sparkOfInsight", "essenceWell" },
+	},
+	augmentation = {
+		ebonMight = "ebonMight",
+		essenceBurst = { "essenceBurst", "anachronism" },
+	},
+}
+
 -- Reused per-tick scratch tables for UpdateResourceBar (see conditionMap/barColorMap sites).
 -- Held in one table so UpdateResourceBar gains a single upvalue rather than one per site.
 local scratch = {
+	-- Shared by the specs' indicator calls; only one runs per tick.
+	gateState1 = Color:NewIndicatorGateState(),
 	conditionMap1 = {},
 	manaBarColors1 = {},
 	essenceColors1 = {},
@@ -1172,6 +1190,7 @@ local function UpdateResourceBar()
 
 			local conditionMap = scratch.conditionMap1
 			wipe(conditionMap)
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.devastation, spells, talents)
 			conditionMap.dragonrageEnd = dragonrageActive and dragonrageEndMet
 			conditionMap.dragonrage = dragonrageActive
 			conditionMap.essenceBurst = snapshots[spells.essenceBurst.id].buff.isActive
@@ -1196,7 +1215,7 @@ local function UpdateResourceBar()
 			barColorMap.dragonrageBar = dragonrageColors
 
 			-- Apply flat indicator colors (priority order, last writer wins)
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 
 			-- Read final mana bar colors from the color map
 			barColor = manaBarColors.bar
@@ -1273,6 +1292,7 @@ local function UpdateResourceBar()
 
 			local conditionMap = scratch.conditionMap2
 			wipe(conditionMap)
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.preservation, spells, talents)
 			conditionMap.innervate = false
 			conditionMap.essenceBurst = snapshots[spells.essenceBurst.id].buff.isActive
 
@@ -1290,7 +1310,7 @@ local function UpdateResourceBar()
 			barColorMap.essences = essenceColors
 
 			-- Apply flat indicator colors (priority order, last writer wins)
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 
 			-- Read final mana bar colors from the color map
 			barColor = manaBarColors.bar
@@ -1349,6 +1369,9 @@ local function UpdateResourceBar()
 
 			local conditionMap = scratch.conditionMap3
 			wipe(conditionMap)
+			local unavailable = Color:GetUnavailableIndicators(scratch.gateState1, indicatorGates.augmentation, spells, talents)
+			-- Ebon Might is read from the Cooldown Manager, so it is unavailable while it isn't tracked there.
+			Color:MarkIndicatorUnavailable(scratch.gateState1, "ebonMight", ebonMightTrackedId == nil)
 			conditionMap.ebonMight = ebonMightActive
 			conditionMap.essenceBurst = snapshots[spells.essenceBurst.id].buff.isActive
 
@@ -1372,7 +1395,7 @@ local function UpdateResourceBar()
 			barColorMap.ebonMight = ebonMightColors
 
 			-- Apply flat indicator colors (priority order, last writer wins)
-			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, nil, unavailable)
 
 			-- Read final mana bar colors from the color map
 			barColor = manaBarColors.bar

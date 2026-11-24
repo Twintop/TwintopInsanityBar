@@ -61,6 +61,7 @@ function TRB.Classes.Mainline.Priest.HealerSpells:New()
 	})
 	self.surgeOfLight = TRB.Classes.SpellBase:New({
 		id = 114255,
+		talentId = 109186,
 		isBuff = true,
 		duration = 20,
 		maxStacks = 2,
@@ -108,6 +109,8 @@ end
 ---@field public evangelism TRB.Classes.SpellBase
 ---@field public harshDiscipline TRB.Classes.SpellBase
 ---@field public masterTheDarkness TRB.Classes.SpellBase
+---@field public masterTheDarkness2 TRB.Classes.SpellBase
+---@field public masterTheDarkness3 TRB.Classes.SpellBase
 TRB.Classes.Mainline.Priest.DisciplineSpells = setmetatable({}, {__index = TRB.Classes.Mainline.Priest.HealerSpells})
 TRB.Classes.Mainline.Priest.DisciplineSpells.__index = TRB.Classes.Mainline.Priest.DisciplineSpells
 
@@ -153,8 +156,24 @@ function TRB.Classes.Mainline.Priest.DisciplineSpells:New()
 
 	-- Voidweaver
 	
+	-- One talent node with three entries; any of them grants Void Shield.
 	self.masterTheDarkness = TRB.Classes.SpellBase:New({
 		id = 1253593,
+		talentId = 1253590,
+		buffId = 1253591,
+		isBuff = true,
+		duration = 60
+	})
+	self.masterTheDarkness2 = TRB.Classes.SpellBase:New({
+		id = 1253593,
+		talentId = 1253827,
+		buffId = 1253591,
+		isBuff = true,
+		duration = 60
+	})
+	self.masterTheDarkness3 = TRB.Classes.SpellBase:New({
+		id = 1253593,
+		talentId = 1253845,
 		buffId = 1253591,
 		isBuff = true,
 		duration = 60
@@ -272,6 +291,8 @@ end
 ---@field public lightOfTheNaaru TRB.Classes.Mainline.Priest.HolyWordSpell
 ---@field public energyCycle TRB.Classes.Mainline.Priest.HolyWordSpell
 ---@field public benediction TRB.Classes.Mainline.Priest.HolyWordSpell
+---@field public benediction2 TRB.Classes.SpellBase
+---@field public benediction3 TRB.Classes.SpellBase
 ---@field public holyWordSerenity TRB.Classes.SpellBase
 ---@field public holyWordChastise TRB.Classes.SpellBase
 ---@field public holyWordSanctify TRB.Classes.SpellBase
@@ -388,6 +409,15 @@ function TRB.Classes.Mainline.Priest.HolySpells:New()
 		holyWordKey = "holyWordSerenity",
 		holyWordReduction = 6,
 		duration = 30,
+	})
+	-- Benediction's apex node keeps a separate entry for ranks 2-3 and for rank 4; only the active one is recorded.
+	self.benediction2 = TRB.Classes.SpellBase:New({
+		id = 1262758,
+		isTalent = true
+	})
+	self.benediction3 = TRB.Classes.SpellBase:New({
+		id = 1262760,
+		isTalent = true
 	})
 
 	-- Holy Baseline Abilities
@@ -624,6 +654,7 @@ end
 ---@field public sustainedPotency TRB.Classes.SpellBase
 ---@field public resonantEnergy TRB.Classes.SpellBase
 ---@field public shadowyInsight TRB.Classes.SpellBase
+---@field public voidEmpowerment TRB.Classes.SpellBase
 ---@field public mindDevourer TRB.Classes.SpellBase
 ---@field public midnightSeason2SetKey string # Key the set's pieces are registered under in TRB.Data.itemSetRegistry
 ---@field public shadowWordMadness TRB.Classes.SpellThreshold
@@ -774,6 +805,12 @@ function TRB.Classes.Mainline.Priest.ShadowSpells:New()
 	})
 	self.shadowyInsight = TRB.Classes.SpellBase:New({
 		id = 375981,
+		talentId = 375888,
+		isTalent = true
+	})
+	-- Voidweaver: summoning an Entropic Rift grants Shadowy Insight.
+	self.voidEmpowerment = TRB.Classes.SpellBase:New({
+		id = 450138,
 		isTalent = true
 	})
 
