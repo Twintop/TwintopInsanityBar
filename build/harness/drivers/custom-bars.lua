@@ -136,6 +136,8 @@ function hooks.afterEvents(ctx)
 	end
 
 	TRB.Functions.Bar.UpdateHealthBar = function() end
+	-- Only the Druid's Never Show check runs the real update.
+	local triggerUpdates = TRB.Functions.Class.TriggerResourceBarUpdates
 	TRB.Functions.Class.TriggerResourceBarUpdates = function() end
 	stubs.fireEvents(parity.releaseEvent, ctx.addonName)
 	Drain("SETUP")
@@ -2125,6 +2127,31 @@ function hooks.afterEvents(ctx)
 		end
 		try("recompose Feral with no custom bars", RecomposeFeral)
 		timerBuff.endTime = desktop.GetTime() - 1
+
+		-- Custom bars have their own visibility, so a live Druid's indicators resolve with the resource bar set to Never Show.
+		local Color = TRB.Functions.Color
+		local applyIndicators, resolves = Color.ApplyIndicatorColors, 0
+		Color.ApplyIndicatorColors = function(...)
+			resolves = resolves + 1
+			return applyIndicators(...)
+		end
+		local function ResolvesOnUpdate()
+			resolves = 0
+			local transition = TRB.Functions.Bar.IsRenderTransitionActive
+			TRB.Functions.Bar.IsRenderTransitionActive = function() return false end
+			try("run the Druid's update", function() triggerUpdates() end)
+			TRB.Functions.Bar.IsRenderTransitionActive = transition
+			return resolves > 0
+		end
+		-- The update reads the composed visibility, which a Use Global bar takes from the global settings.
+		local primaryVisibility = TRB.Data.specCache[character.compositeKey].settings.displayBar.primary
+		local shownResolves = ResolvesOnUpdate()
+		local neverShow = primaryVisibility.neverShow
+		primaryVisibility.neverShow = true
+		local hiddenResolves = ResolvesOnUpdate()
+		primaryVisibility.neverShow = neverShow
+		Color.ApplyIndicatorColors = applyIndicators
+		check("a Druid's indicators resolve with the resource bar shown and set to Never Show", shownResolves and hiddenResolves)
 	end
 
 	-- Color Indicators: a displayed custom bar is a target, painted over its own colors while a row is met.
@@ -2250,6 +2277,60 @@ function hooks.afterEvents(ctx)
 				and claimed.color == ROW_COLOR and claimed.glows.driverGlow == true and fills[paintedNode] == own.bar.color)
 			Resolve(false)
 			Render("render after the glow's row ends")
+
+			-- A met row reads no default colors, which are a fresh table per call, since the bar's data holds them all.
+			local Settings = TRB.Functions.Settings
+			local defaultColors, defaultReads = Settings.DefaultCustomBarColors, 0
+			Settings.DefaultCustomBarColors = function(...)
+				defaultReads = defaultReads + 1
+				return defaultColors(...)
+			end
+			row.targets[paintedKey] = { bar = true }
+			Resolve(true)
+			Render("render a met row reading the bar's own colors")
+			Settings.DefaultCustomBarColors = defaultColors
+			check("a met row builds no default colors on a bar whose data holds them", defaultReads == 0)
+
+			-- An aura bar's fill is drawn by the aura engine, which re-reads the new color in the same frame.
+			local AuraEngine = TRB.Functions.AuraEngine
+			local reattach, reattached = AuraEngine.Reattach, {}
+			rawset(AuraEngine, "Reattach", function(_, node) reattached[node] = true end)
+			paintedNode.engineDriven = true
+			Resolve(true)
+			Render("render a met row on an engine-filled bar")
+			paintedNode.engineDriven = nil
+			AuraEngine.Reattach = reattach
+			check("painting an engine-filled bar's fill hands the new color to the aura engine", reattached[paintedNode] == true)
+			Resolve(false)
+			Render("render after the fill's row ends")
+
+			-- An End Cap that follows the border takes the border's color back once the row on it ends.
+			own.endCap.enabled = true
+			own.endCap.useBorderColor = true
+			try("apply the indicated bar's End Cap", function() TRB.Functions.Bar:ApplyBarGroupsAppearance(Relayout(), TRB.Frames.barGroups) end)
+			barGroups = TRB.Frames.barGroups
+			local cappedNode = barGroups[paintedKey] ~= nil and barGroups[paintedKey].nodes[1] or nil
+			local capSlot = cappedNode ~= nil and cappedNode.overlaySlots.endCap or nil
+			local OverlaySlot = TRB.Classes.OverlaySlot
+			local setCap, capColors = OverlaySlot.SetEndCapColor, {}
+			OverlaySlot.SetEndCapColor = function(self, color, ...)
+				capColors[self] = color
+				return setCap(self, color, ...)
+			end
+			row.targets[paintedKey] = { endCap = true }
+			Resolve(true)
+			Render("render a met row on a border-following End Cap")
+			local capWhileMet = capSlot ~= nil and capColors[capSlot] or nil
+			Resolve(false)
+			Render("render after the End Cap's row ends")
+			Render("and again")
+			OverlaySlot.SetEndCapColor = setCap
+			check("a border-following End Cap takes the row's color, then the border's back once the row ends", capSlot ~= nil
+				and capWhileMet == ROW_COLOR and capColors[capSlot] == own.border.color)
+			own.endCap.enabled = false
+			own.endCap.useBorderColor = false
+			try("take the indicated bar's End Cap off", function() TRB.Functions.Bar:ApplyBarGroupsAppearance(Relayout(), TRB.Frames.barGroups) end)
+			barGroups = TRB.Frames.barGroups
 
 			-- A deleted bar leaves no row pointing at it.
 			if type(spec.colors.shared) == "table" and type(spec.colors.shared.indicatorColors) == "table" then
