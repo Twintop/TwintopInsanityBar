@@ -379,6 +379,7 @@ function TRB.Classes.Mainline.Priest.HolySpells:New()
 		hasCharges = true,
 		isHasted = true,
 		maxCharges = 1,
+		chargeSettleDelay = 0.3, -- How long after a charge event the game's count is trusted
 	})
 	self.benediction = TRB.Classes.Mainline.Priest.HolyWordSpell:New({
 		id = 1262763,

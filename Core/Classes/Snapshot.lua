@@ -1630,6 +1630,12 @@ function TRB.Classes.SnapshotCooldown:InitializeManualCharges(maxCharges, curren
 	self.charges = self.manualCharges
 	self.maxCharges = self.manualMaxCharges
 	self.onCooldown = self.manualCharges < self.manualMaxCharges
+	if not self.onCooldown then
+		-- A recharge left from before, such as a talent swap down to a full count, would time a charge that is already up.
+		self.manualCooldownStart = nil
+		self.manualCooldownDuration = nil
+		self.manualCooldownExpires = nil
+	end
 
 	-- If on cooldown, try to bootstrap a recharge timer from the API so charges
 	-- aren't permanently stuck after /reload.

@@ -877,6 +877,26 @@ local function ReadPrayerOfMendingCharges(maxCharges)
 	return nil
 end
 
+---The count to start Prayer of Mending's hand count from. A secret count that reads as recharging above one
+---charge is at least one short of full, so it starts there.
+---@param maxCharges integer # Without Epiphany's
+---@return integer? # nil to let the count start full
+local function SeedPrayerOfMendingCharges(maxCharges)
+	local charges = ReadPrayerOfMendingCharges(maxCharges)
+	if charges ~= nil or maxCharges <= 1 then
+		return charges
+	end
+	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
+	local info = C_Spell.GetSpellCharges(spells.prayerOfMending.id)
+	if info ~= nil and info["isActive"] == true then
+		return maxCharges - 1
+	end
+	return nil
+end
+
+-- When the game's count is next read; a read in the same moment as a cast can still show the charge it spent.
+local prayerOfMendingSettleAt = nil
+
 ---Raises Prayer of Mending's hand count to the game's when a charge event shows more.
 local function SyncPrayerOfMendingCharges()
 	local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
@@ -1846,6 +1866,7 @@ function TRB.Functions.Class:SpellCast(event, spellId)
 				if not snapshots[spells.epiphany.id].buff.isActive then
 					snapshots[spells.prayerOfMending.id].cooldown:SpendCharge(CalculatePrayerOfMendingRecharge())
 				end
+				prayerOfMendingSettleAt = GetTime() + spells.prayerOfMending.attributes.chargeSettleDelay
 			end
 
 			-- Holy Word cooldown reduction from supporting spells
@@ -2290,7 +2311,8 @@ local function HandleSpellEvents(self, event, ...)
 		HandleEpiphanyRefreshEvent(spellId)
 	elseif event == "SPELL_UPDATE_CHARGES" then
 		if TRB.Data.character.specId == 2 then
-			SyncPrayerOfMendingCharges()
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Priest.HolySpells]]
+			prayerOfMendingSettleAt = GetTime() + spells.prayerOfMending.attributes.chargeSettleDelay
 		end
 	elseif event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW" or event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" then
 		local spellId = ...
@@ -2541,6 +2563,10 @@ local function UpdateSnapshot_Holy()
 	snapshots[spells.holyWordSerenity.id].cooldown:Refresh(true)
 	snapshots[spells.holyWordSanctify.id].cooldown:Refresh(true)
 	snapshots[spells.holyWordChastise.id].cooldown:Refresh()
+	if prayerOfMendingSettleAt ~= nil and currentTime >= prayerOfMendingSettleAt then
+		prayerOfMendingSettleAt = nil
+		SyncPrayerOfMendingCharges()
+	end
 	snapshots[spells.prayerOfMending.id].cooldown:Refresh(true)
 
 	-- Voidbinding buff natural expiry
@@ -3540,7 +3566,7 @@ local function SwitchSpec()
 
 		-- Prayer of Mending's charge count is secret in combat too, so it is hand-counted the same way.
 		local prayerOfMendingMaxCharges = GetPrayerOfMendingMaxCharges()
-		holySnapshots[spells.prayerOfMending.id].cooldown:InitializeManualCharges(prayerOfMendingMaxCharges, ReadPrayerOfMendingCharges(prayerOfMendingMaxCharges))
+		holySnapshots[spells.prayerOfMending.id].cooldown:InitializeManualCharges(prayerOfMendingMaxCharges, SeedPrayerOfMendingCharges(prayerOfMendingMaxCharges))
 
 		-- Initialize manual charge tracking for Angelic Feather
 		local afSnapshot = holySnapshots[spells.angelicFeather.id]
