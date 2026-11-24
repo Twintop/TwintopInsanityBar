@@ -2219,23 +2219,77 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			local comboPointOverrides = nil
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.BalanceSpells]]
+			-- Indicators resolve ahead of the primary bar's visibility guard: the health, cast, and custom bars have
+			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
+			local barColor = specSettings.colors.bar.base
+			local barBorderColor = specSettings.colors.bar.border.color
+			-- Use simple colors when in non-native form
+			if displaySpecId ~= TRB.Data.character.specId then
+				barColor = formSpecSettings.colors.bar.base
+				barBorderColor = formSpecSettings.colors.bar.border.color
+			end
+			local barBackgroundColor = specSettings.colors.bar.background.color
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+
+			-- Precompute eclipse end timing threshold
+			local eclipseActive = snapshots[spells.eclipseSolar.id].buff.isActive or snapshots[spells.eclipseLunar.id].buff.isActive or snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive
+			local eclipseEndMet = false
+			if eclipseActive then
+				local timeThreshold = 0
+				if (not specSettings.endOf.eclipse.celestialAlignmentOnly or snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive) then
+					if specSettings.endOf.eclipse.mode == "gcd" then
+						local gcd = Character:GetCurrentGCDTime()
+						timeThreshold = gcd * specSettings.endOf.eclipse.gcdsMax
+					elseif specSettings.endOf.eclipse.mode == "time" then
+						timeThreshold = specSettings.endOf.eclipse.timeMax
+					end
+					eclipseEndMet = GetEclipseRemainingTime() <= timeThreshold
+				end
+			end
+
+			local celestialActive = snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive or (snapshots[spells.eclipseSolar.id].buff.isActive and snapshots[spells.eclipseLunar.id].buff.isActive)
+
+			-- IsFree only updates on a cost read, which the threshold lines skip when off or in Cat or Bear form.
+			spells.starsurge:GetPrimaryResourceCost()
+			spells.starfall:GetPrimaryResourceCost()
+
+			local conditionMap = scratch.conditionMap1
+			wipe(conditionMap)
+			conditionMap.eclipseEnd = eclipseActive and eclipseEndMet
+			conditionMap.celestial = celestialActive
+			conditionMap.solar = snapshots[spells.eclipseSolar.id].buff.isActive and not celestialActive
+			conditionMap.lunar = snapshots[spells.eclipseLunar.id].buff.isActive and not celestialActive and not snapshots[spells.eclipseSolar.id].buff.isActive
+			conditionMap.touchTheCosmos = (spells.starsurge:IsUsable() and spells.starsurge:IsFree()) or (spells.starfall:IsUsable() and spells.starfall:IsFree())
+			conditionMap.borderOvercap = displaySpecId == TRB.Data.character.specId
+
+			local astralPowerBarColors = scratch.astralPowerBarColors1
+			wipe(astralPowerBarColors)
+			astralPowerBarColors.bar = barColor
+			astralPowerBarColors.border = barBorderColor
+			astralPowerBarColors.background = barBackgroundColor
+			local comboPointColors = scratch.comboPointColors1
+			wipe(comboPointColors)
+			local barColorMap = scratch.barColorMap1
+			wipe(barColorMap)
+			barColorMap.astralPowerBar = astralPowerBarColors
+			barColorMap.comboPoints = comboPointColors
+
+			-- Apply flat indicator colors (priority order, last writer wins)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			comboPointOverrides = comboPointColors
+
 			if IsFormBarVisible(formSpecCacheSettings, "primary") then
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.BalanceSpells]]
 				local flashBar = false
-				local barBorderColor = specSettings.colors.bar.border.color
-
 
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
 				Bar:ApplyNodeIndicators(primaryNode, "astralPowerBar")
 
-				local barColor = specSettings.colors.bar.base
-				-- Use simple colors when in non-native form
 				if displaySpecId ~= TRB.Data.character.specId then
-					barColor = formSpecSettings.colors.bar.base
-					barBorderColor = formSpecSettings.colors.bar.border.color
 					ConstructPrimaryGeneric(formSpecCacheSettings, primaryNode, displayResourceType, maxPrimaryBarResource, curveMaxResource)
 				else
 					thresholdBar:Set(primaryNode, maxPrimaryBarResource, displayResourceType)
@@ -2247,57 +2301,6 @@ local function UpdateResourceBar()
 						flashBar = true
 					end
 				end
-
-				-- Indicator color system
-				local barBackgroundColor = specSettings.colors.bar.background.color
-				local sharedColors = specSettings.colors.shared
-				local indicatorColors = sharedColors and sharedColors.indicatorColors
-
-				-- Precompute eclipse end timing threshold
-				local eclipseActive = snapshots[spells.eclipseSolar.id].buff.isActive or snapshots[spells.eclipseLunar.id].buff.isActive or snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive
-				local eclipseEndMet = false
-				if eclipseActive then
-					local timeThreshold = 0
-					if (not specSettings.endOf.eclipse.celestialAlignmentOnly or snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive) then
-						if specSettings.endOf.eclipse.mode == "gcd" then
-							local gcd = Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOf.eclipse.gcdsMax
-						elseif specSettings.endOf.eclipse.mode == "time" then
-							timeThreshold = specSettings.endOf.eclipse.timeMax
-						end
-						eclipseEndMet = GetEclipseRemainingTime() <= timeThreshold
-					end
-				end
-
-				local celestialActive = snapshots[spells.celestialAlignment.id].buff.isActive or snapshots[spells.incarnationChosenOfElune.id].buff.isActive or (snapshots[spells.eclipseSolar.id].buff.isActive and snapshots[spells.eclipseLunar.id].buff.isActive)
-
-				-- IsFree only updates on a cost read, which the threshold lines skip when off or in Cat or Bear form.
-				spells.starsurge:GetPrimaryResourceCost()
-				spells.starfall:GetPrimaryResourceCost()
-
-				local conditionMap = scratch.conditionMap1
-				wipe(conditionMap)
-				conditionMap.eclipseEnd = eclipseActive and eclipseEndMet
-				conditionMap.celestial = celestialActive
-				conditionMap.solar = snapshots[spells.eclipseSolar.id].buff.isActive and not celestialActive
-				conditionMap.lunar = snapshots[spells.eclipseLunar.id].buff.isActive and not celestialActive and not snapshots[spells.eclipseSolar.id].buff.isActive
-				conditionMap.touchTheCosmos = (spells.starsurge:IsUsable() and spells.starsurge:IsFree()) or (spells.starfall:IsUsable() and spells.starfall:IsFree())
-				conditionMap.borderOvercap = displaySpecId == TRB.Data.character.specId
-
-				local astralPowerBarColors = scratch.astralPowerBarColors1
-				wipe(astralPowerBarColors)
-				astralPowerBarColors.bar = barColor
-				astralPowerBarColors.border = barBorderColor
-				astralPowerBarColors.background = barBackgroundColor
-				local comboPointColors = scratch.comboPointColors1
-				wipe(comboPointColors)
-				local barColorMap = scratch.barColorMap1
-				wipe(barColorMap)
-				barColorMap.astralPowerBar = astralPowerBarColors
-				barColorMap.comboPoints = comboPointColors
-
-				-- Apply flat indicator colors (priority order, last writer wins)
-				TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 				-- Find active gradient indicators
 				local astralGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "astralPowerBar", scratch.astralPowerGradients1)
@@ -2342,7 +2345,6 @@ local function UpdateResourceBar()
 					Bar:ClearPrimaryPulse(barGroups)
 				end
 				Bar:UpdateCastingResourceOverlay(primaryNode, snapshotData, specCacheSettings)
-				comboPointOverrides = comboPointColors
 			end
 			
 			local refreshTextFromComboPoints = ConstructComboPointsGeneric(formSpecCacheSettings, barGroups, snapshotData, isInEditMode, activeSpecId, displaySpecId, classSettings, comboPointOverrides)
@@ -2387,18 +2389,56 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			local comboPointOverrides = nil
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
+			-- Indicators resolve ahead of the primary bar's visibility guard: the health, cast, and custom bars have
+			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
+			local barColor = specSettings.colors.bar.base
+			local barBorderColor = specSettings.colors.bar.border.color
+			local barBackgroundColor = specSettings.colors.bar.background.color
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+
+			local isStealthed = TRB.Data.character.isStealthed == true
+
+			local conditionMap = scratch.conditionMap2
+			wipe(conditionMap)
+			conditionMap.apexPredator = apcActive
+			conditionMap.ravage = snapshots[spells.ravageMinimum.id].buff.isActive
+			conditionMap.clearcasting = snapshotData.attributes.clearcastingActive
+			conditionMap.borderStealth = isStealthed
+			conditionMap.halazzisFury = snapshots[spells.halazzisFury.id].buff.isActive
+			conditionMap.maxBite = snapshotData.attributes.resource2 == 5 and not apcActive
+			conditionMap.borderOvercap = not isStealthed and displaySpecId == TRB.Data.character.specId
+			-- The shared bars and End Caps step Max Bite at its cost, not at the overcap threshold.
+			local maxBitePercent = nil
+			if conditionMap.maxBite then
+				maxBitePercent = spells.ferociousBiteMaximum:GetPrimaryResourceCost() / (TRB.Data.character.maxEnergy or 100)
+				Color:SetGradientStep("maxBite", maxBitePercent)
+			end
+
+			local energyBarColors = scratch.energyBarColors1
+			wipe(energyBarColors)
+			energyBarColors.bar = barColor
+			energyBarColors.border = barBorderColor
+			energyBarColors.background = barBackgroundColor
+			local comboPointColors = scratch.comboPointColors2
+			wipe(comboPointColors)
+			local barColorMap = scratch.barColorMap2
+			wipe(barColorMap)
+			barColorMap.energyBar = energyBarColors
+			barColorMap.comboPoints = comboPointColors
+
+			-- Apply flat indicator colors (priority order, last writer wins)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			comboPointOverrides = comboPointColors
+
 			if IsFormBarVisible(formSpecCacheSettings, "primary") then
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
 				Bar:ApplyNodeIndicators(primaryNode, "energyBar")
-
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border.color
-				local barBackgroundColor = specSettings.colors.bar.background.color
 
 				local barColorCurveResult = nil
 
@@ -2414,45 +2454,6 @@ local function UpdateResourceBar()
 					thresholdState.apexPredatorsCraving = apcActive
 					thresholdData:Refresh(talents)
 					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Druid.FeralSpells.thresholdSnowflakes)
-
-					-- Indicator color system
-					barBorderColor = specSettings.colors.bar.border.color
-					barBackgroundColor = specSettings.colors.bar.background.color
-					local sharedColors = specSettings.colors.shared
-					local indicatorColors = sharedColors and sharedColors.indicatorColors
-
-					local isStealthed = TRB.Data.character.isStealthed == true
-
-					local conditionMap = scratch.conditionMap2
-					wipe(conditionMap)
-					conditionMap.apexPredator = apcActive
-					conditionMap.ravage = snapshots[spells.ravageMinimum.id].buff.isActive
-					conditionMap.clearcasting = snapshotData.attributes.clearcastingActive
-					conditionMap.borderStealth = isStealthed
-					conditionMap.halazzisFury = snapshots[spells.halazzisFury.id].buff.isActive
-					conditionMap.maxBite = snapshotData.attributes.resource2 == 5 and not apcActive
-					conditionMap.borderOvercap = not isStealthed and displaySpecId == TRB.Data.character.specId
-					-- The shared bars and End Caps step Max Bite at its cost, not at the overcap threshold.
-					local maxBitePercent = nil
-					if conditionMap.maxBite then
-						maxBitePercent = spells.ferociousBiteMaximum:GetPrimaryResourceCost() / (TRB.Data.character.maxEnergy or 100)
-						Color:SetGradientStep("maxBite", maxBitePercent)
-					end
-
-					local energyBarColors = scratch.energyBarColors1
-					wipe(energyBarColors)
-					energyBarColors.bar = barColor
-					energyBarColors.border = barBorderColor
-					energyBarColors.background = barBackgroundColor
-					local comboPointColors = scratch.comboPointColors2
-					wipe(comboPointColors)
-					local barColorMap = scratch.barColorMap2
-					wipe(barColorMap)
-					barColorMap.energyBar = energyBarColors
-					barColorMap.comboPoints = comboPointColors
-
-					-- Apply flat indicator colors (priority order, last writer wins)
-					TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 					-- Apply gradient indicators
 					do
@@ -2561,7 +2562,6 @@ local function UpdateResourceBar()
 					barColor = energyBarColors.bar
 					barBorderColor = energyBarColors.border
 					barBackgroundColor = energyBarColors.background
-					comboPointOverrides = comboPointColors
 
 					Bar:ClearPrimaryPulse(barGroups)
 
@@ -2588,7 +2588,6 @@ local function UpdateResourceBar()
 			-- Visibility check reads from specCache so the "Use global settings" toggle is honored.
 			if (currentForm == "cat" or displaySpecId == 2) and IsFormBarVisible(formSpecCacheSettings, "secondary") then
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.FeralSpells]]
 				local cpBackgroundRed, cpBackgroundGreen, cpBackgroundBlue, cpBackgroundAlpha = Color:GetRGBAFromString(specSettings.colors.comboPoints.background.color, true)
 				local berserkTotalCps = snapshots[spells.berserk.id].attributes.ticks
 				local berserkNextTick = snapshots[spells.berserk.id].attributes.tickRate - snapshots[spells.berserk.id].attributes.untilNextTick
@@ -2692,23 +2691,71 @@ local function UpdateResourceBar()
 			ironfurColors.bar = ironfurBarColors and ironfurBarColors.bar
 			ironfurColors.border = ironfurBarColors and ironfurBarColors.border.color
 			ironfurColors.background = ironfurBarColors and ironfurBarColors.background.color
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
+			-- Indicators resolve ahead of the primary bar's visibility guard: the health, cast, and custom bars have
+			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
+			local barColor = specSettings.colors.bar.base
+			local barBorderColor = specSettings.colors.bar.border.color
+			local guardianBerserkEndMet = false
+			-- Use simple colors when in non-native form
+			if displaySpecId ~= TRB.Data.character.specId then
+				barColor = formSpecSettings.colors.bar.base
+				barBorderColor = formSpecSettings.colors.bar.border.color
+			elseif snapshots[spells.berserk.id].buff.isActive or snapshots[spells.incarnationGuardianOfUrsoc.id].buff.isActive then
+				local snapshotBuff = snapshots[spells.berserk.id].buff
+
+				if not snapshotBuff.isActive then
+					snapshotBuff = snapshots[spells.incarnationGuardianOfUrsoc.id].buff
+				end
+
+				local timeThreshold = 0
+				if specSettings.endOf.berserk.mode == "gcd" then
+					local gcd = Character:GetCurrentGCDTime()
+					timeThreshold = gcd * specSettings.endOf.berserk.gcdsMax
+				elseif specSettings.endOf.berserk.mode == "time" then
+					timeThreshold = specSettings.endOf.berserk.timeMax
+				end
+				guardianBerserkEndMet = snapshotBuff.remaining <= timeThreshold
+			end
+
+			local barBackgroundColor = specSettings.colors.bar.background.color
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+
+			local berserkActive = snapshots[spells.berserk.id].buff.isActive or snapshots[spells.incarnationGuardianOfUrsoc.id].buff.isActive
+
+			local conditionMap = scratch.conditionMap3
+			wipe(conditionMap)
+			conditionMap.berserkEnd = berserkActive and guardianBerserkEndMet
+			conditionMap.berserk = berserkActive
+			conditionMap.borderOvercap = displaySpecId == TRB.Data.character.specId
+
+			local rageBarColors = scratch.rageBarColors1
+			wipe(rageBarColors)
+			rageBarColors.bar = barColor
+			rageBarColors.border = barBorderColor
+			rageBarColors.background = barBackgroundColor
+			local comboPointColors = scratch.comboPointColors3
+			wipe(comboPointColors)
+			local barColorMap = scratch.barColorMap3
+			wipe(barColorMap)
+			barColorMap.rageBar = rageBarColors
+			barColorMap.comboPoints = comboPointColors
+			barColorMap.ironfurBar = ironfurColors
+
+			-- Apply flat indicator colors (priority order, last writer wins)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			comboPointOverrides = comboPointColors
+
 			if IsFormBarVisible(formSpecCacheSettings, "primary") then
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.GuardianSpells]]
 
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
 				Bar:ApplyNodeIndicators(primaryNode, "rageBar")
 
-				local barColor = specSettings.colors.bar.base
-				local barBorderColor = specSettings.colors.bar.border.color
-				local guardianBerserkEndMet = false
-
-				-- Use simple colors when in non-native form
 				if displaySpecId ~= TRB.Data.character.specId then
-					barColor = formSpecSettings.colors.bar.base
-					barBorderColor = formSpecSettings.colors.bar.border.color
 					ConstructPrimaryGeneric(formSpecCacheSettings, primaryNode, displayResourceType, maxPrimaryBarResource, curveMaxResource)
 					primaryNode:SetBorderColor(barBorderColor)
 				else
@@ -2716,53 +2763,7 @@ local function UpdateResourceBar()
 					thresholdState:Refresh(specCacheSettings)
 					thresholdData:Refresh(talents)
 					Threshold:UpdateSpellThresholds(thresholdBar, thresholdState, thresholdData, TRB.Classes.Mainline.Druid.GuardianSpells.thresholdSnowflakes)
-				
-					if snapshots[spells.berserk.id].buff.isActive or snapshots[spells.incarnationGuardianOfUrsoc.id].buff.isActive then
-						local snapshotBuff = snapshots[spells.berserk.id].buff
-
-						if not snapshotBuff.isActive then
-							snapshotBuff = snapshots[spells.incarnationGuardianOfUrsoc.id].buff
-						end
-
-						local timeThreshold = 0
-						if specSettings.endOf.berserk.mode == "gcd" then
-							local gcd = Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOf.berserk.gcdsMax
-						elseif specSettings.endOf.berserk.mode == "time" then
-							timeThreshold = specSettings.endOf.berserk.timeMax
-						end
-						guardianBerserkEndMet = snapshotBuff.remaining <= timeThreshold
-					end
 				end
-
-				-- Indicator color system
-				local barBackgroundColor = specSettings.colors.bar.background.color
-				local sharedColors = specSettings.colors.shared
-				local indicatorColors = sharedColors and sharedColors.indicatorColors
-
-				local berserkActive = snapshots[spells.berserk.id].buff.isActive or snapshots[spells.incarnationGuardianOfUrsoc.id].buff.isActive
-
-				local conditionMap = scratch.conditionMap3
-				wipe(conditionMap)
-				conditionMap.berserkEnd = berserkActive and guardianBerserkEndMet
-				conditionMap.berserk = berserkActive
-				conditionMap.borderOvercap = displaySpecId == TRB.Data.character.specId
-
-				local rageBarColors = scratch.rageBarColors1
-				wipe(rageBarColors)
-				rageBarColors.bar = barColor
-				rageBarColors.border = barBorderColor
-				rageBarColors.background = barBackgroundColor
-				local comboPointColors = scratch.comboPointColors3
-				wipe(comboPointColors)
-				local barColorMap = scratch.barColorMap3
-				wipe(barColorMap)
-				barColorMap.rageBar = rageBarColors
-				barColorMap.comboPoints = comboPointColors
-				barColorMap.ironfurBar = ironfurColors
-
-				-- Apply flat indicator colors (priority order, last writer wins)
-				TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
 
 				-- Apply gradient indicators
 				local rageGradients = Color:ResolveGradientTargets(sharedColors, conditionMap, "rageBar", scratch.rageGradients1)
@@ -2789,7 +2790,6 @@ local function UpdateResourceBar()
 				barColor = rageBarColors.bar
 				barBorderColor = rageBarColors.border
 				barBackgroundColor = rageBarColors.background
-				comboPointOverrides = comboPointColors
 
 				Bar:ClearPrimaryPulse(barGroups)
 
@@ -2826,73 +2826,73 @@ local function UpdateResourceBar()
 
 		if snapshotData.attributes.isTracking then
 			local comboPointOverrides = nil
+			local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.RestorationSpells]]
+			-- Indicators resolve ahead of the primary bar's visibility guard: the health, cast, and custom bars have
+			-- their own visibility, so they still need coloring when the resource bar is set to Never Show.
+			local barBorderColor = formSpecSettings.colors.bar.border.color
+			local barColor = specSettings.colors.bar.base
+			-- Precompute incarnation end timing threshold
+			local incarnationActive = snapshots[spells.incarnationTreeOfLife.id].buff.isActive and (talents:IsTalentActive(spells.cenariusGuidance) or snapshots[spells.clearcasting.id].buff.isActive)
+			local incarnationEndMet = false
+			if incarnationActive then
+				local timeThreshold = 0
+				if specSettings.endOf.incarnation.mode == "gcd" then
+					local gcd = Character:GetCurrentGCDTime()
+					timeThreshold = gcd * specSettings.endOf.incarnation.gcdsMax
+				elseif specSettings.endOf.incarnation.mode == "time" then
+					timeThreshold = specSettings.endOf.incarnation.timeMax
+				end
+				incarnationEndMet = snapshots[spells.incarnationTreeOfLife.id].buff.remaining <= timeThreshold
+			end
+
+			local isNativeForm = (currentForm == "humanoid" or currentForm == "treeOfLife" or currentForm == "treant")
+
+			local barBackgroundColor = specSettings.colors.bar.background.color
+			local sharedColors = specSettings.colors.shared
+			local indicatorColors = sharedColors and sharedColors.indicatorColors
+
+			local clearcastingActive = snapshotData.attributes.clearcastingActive
+
+			local conditionMap = scratch.conditionMap4
+			wipe(conditionMap)
+			conditionMap.incarnationEnd = isNativeForm and incarnationActive and incarnationEndMet
+			conditionMap.incarnation = isNativeForm and incarnationActive
+			conditionMap.noEfflorescence = isNativeForm and talents:IsTalentActive(spells.efflorescence) and not snapshots[spells.efflorescence.id].buff.isActive
+			conditionMap.clearcasting = isNativeForm and clearcastingActive
+
+			local manaBarColors = scratch.manaBarColors1
+			wipe(manaBarColors)
+			manaBarColors.bar = barColor
+			manaBarColors.border = barBorderColor
+			manaBarColors.background = barBackgroundColor
+			local comboPointColors = scratch.comboPointColors4
+			wipe(comboPointColors)
+			local barColorMap = scratch.barColorMap4
+			wipe(barColorMap)
+			barColorMap.manaBar = manaBarColors
+			barColorMap.comboPoints = comboPointColors
+
+			-- Apply flat indicator colors (priority order, last writer wins)
+			TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
+			comboPointOverrides = comboPointColors
+
 			if IsFormBarVisible(formSpecCacheSettings, "primary") then
 				refreshText = true
-				local spells = TRB.Data.spellsData.spells --[[@as TRB.Classes.Mainline.Druid.RestorationSpells]]
 
 				-- Set min/max before setting value to ensure correct scaling
 				primaryNode:SetMinMax(0, maxPrimaryBarResourceUnnormalized)
 				Bar:SetBarNodeValue(specCacheSettings, "resource", primaryNode, currentResource, maxPrimaryBarResourceUnnormalized)
 				Bar:ApplyNodeIndicators(primaryNode, "manaBar")
 
-				local barBorderColor = formSpecSettings.colors.bar.border.color
-				local barColor = specSettings.colors.bar.base
-
 				-- Use simple colors when in non-native form
 				if displaySpecId ~= TRB.Data.character.specId then
 					barColor = formSpecSettings.colors.bar.base
 					ConstructPrimaryGeneric(formSpecCacheSettings, primaryNode, displayResourceType, maxPrimaryBarResource, curveMaxResource)
 				else
-					-- Precompute incarnation end timing threshold
-					local incarnationActive = snapshots[spells.incarnationTreeOfLife.id].buff.isActive and (talents:IsTalentActive(spells.cenariusGuidance) or snapshots[spells.clearcasting.id].buff.isActive)
-					local incarnationEndMet = false
-					if incarnationActive then
-						local timeThreshold = 0
-						if specSettings.endOf.incarnation.mode == "gcd" then
-							local gcd = Character:GetCurrentGCDTime()
-							timeThreshold = gcd * specSettings.endOf.incarnation.gcdsMax
-						elseif specSettings.endOf.incarnation.mode == "time" then
-							timeThreshold = specSettings.endOf.incarnation.timeMax
-						end
-						incarnationEndMet = snapshots[spells.incarnationTreeOfLife.id].buff.remaining <= timeThreshold
-					end
-
-					local isNativeForm = (currentForm == "humanoid" or currentForm == "treeOfLife" or currentForm == "treant")
-
-					-- Indicator color system
-					local barBackgroundColor = specSettings.colors.bar.background.color
-					local sharedColors = specSettings.colors.shared
-					local indicatorColors = sharedColors and sharedColors.indicatorColors
-
-					local clearcastingActive = snapshotData.attributes.clearcastingActive
-
-					local conditionMap = scratch.conditionMap4
-					wipe(conditionMap)
-					conditionMap.incarnationEnd = isNativeForm and incarnationActive and incarnationEndMet
-					conditionMap.incarnation = isNativeForm and incarnationActive
-					conditionMap.noEfflorescence = isNativeForm and talents:IsTalentActive(spells.efflorescence) and not snapshots[spells.efflorescence.id].buff.isActive
-					conditionMap.clearcasting = isNativeForm and clearcastingActive
-
-					local manaBarColors = scratch.manaBarColors1
-					wipe(manaBarColors)
-					manaBarColors.bar = barColor
-					manaBarColors.border = barBorderColor
-					manaBarColors.background = barBackgroundColor
-					local comboPointColors = scratch.comboPointColors4
-					wipe(comboPointColors)
-					local barColorMap = scratch.barColorMap4
-					wipe(barColorMap)
-					barColorMap.manaBar = manaBarColors
-					barColorMap.comboPoints = comboPointColors
-
-					-- Apply flat indicator colors (priority order, last writer wins)
-					TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap)
-
 					-- Read final colors
 					barColor = manaBarColors.bar
 					barBorderColor = manaBarColors.border
 					barBackgroundColor = manaBarColors.background
-					comboPointOverrides = comboPointColors
 
 					if barBackgroundColor then
 						primaryNode:SetBackgroundColorFromString(barBackgroundColor)
