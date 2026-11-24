@@ -104,8 +104,7 @@ function hooks.afterLoad(ctx)
 	end
 	-- The harness has no talents or spellbook; a forced condition stands for a learned spell.
 	local getUnavailable = Color.GetUnavailableIndicators
-	-- Drops the keys a spec adds for its own dependencies, such as Cooldown Manager tracking.
-	local noneUnavailable = setmetatable({}, { __newindex = function() end })
+	local noneUnavailable = {}
 	Color.GetUnavailableIndicators = function(...)
 		if drv.force ~= nil then
 			return noneUnavailable

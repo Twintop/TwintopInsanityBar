@@ -1310,7 +1310,7 @@ local function IsGateSpellLearned(spell, talents)
 end
 
 ---The built-in indicators whose spell isn't learned, for ApplyIndicatorColors. Rebuilt only when the talents, the
----spellbook, the spell set, or the gates change; a caller may add keys of its own after each call.
+---spellbook, the spell set, or the gates change.
 ---@param state TRB.IndicatorGateState
 ---@param gates table<string, string|string[]|false> # Built-in key -> the `spells` key it can't be met without, a list of which any one will do, or false for never
 ---@param spells table
