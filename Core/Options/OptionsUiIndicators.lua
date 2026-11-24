@@ -24,6 +24,26 @@ local defaultElementDefs = {
 	{ key = "endCap", label = L["EndCap"] },
 }
 
+-- The sections a row's target menu lists its bars under, in order; a bar target with no group is Built-in.
+local builtInTargetGroup = "builtIn"
+local barTargetGroups = {
+	{ key = builtInTargetGroup, label = L["IndicatorTargetGroupBuiltIn"] },
+	{ key = "castBars", label = L["TabCastbars"] },
+	{ key = "petBars", label = L["TabPetBars"] },
+	{ key = "customBars", label = L["TabCustomBars"] },
+}
+
+---A target menu entry's name with how many of its targets are on, tinted once any is.
+---@param label string
+---@param count integer
+---@return string
+local function TargetCountLabel(label, count)
+	if count > 0 then
+		return string.format(L["IndicatorTargetCountActiveFormat"], label, count)
+	end
+	return string.format(L["IndicatorTargetCountFormat"], label, count)
+end
+
 -- Every flat and gradient row leaves room for the Remove and Edit buttons, so all the arrows line up.
 local customColumnWidth = 46
 local targetsDropdownWidth = 254
@@ -115,7 +135,7 @@ local function CreateBorderGlowSubmenu(rootDescription, getTargets, onChanged)
 				end
 			end
 		end
-		button.fontString:SetTextToFit(L["BarElementBorderGlow"] .. " (" .. count .. ")")
+		button.fontString:SetTextToFit(TargetCountLabel(L["BarElementBorderGlow"], count))
 	end)
 
 	if #glows == 0 then
@@ -171,8 +191,42 @@ local function CountBarTargets(barDef, isExcluded, targets)
 	return count
 end
 
----Fills a row's target menu. Each bar is a submenu named with how many of its targets the row has on, holding
----the bar's elements and its Border Glows.
+---Adds one bar to a target menu: a submenu named with how many of its targets the row has on, holding the bar's
+---elements and its Border Glows.
+---@param rootDescription table The root menu description being populated
+---@param barDef TRB.Classes.OptionsUi.BarTargetDef
+---@param isExcluded fun(barDef: table, elemKey: string): boolean Whether an element is omitted from the menu
+---@param getTargets fun(barKey: string): table? Resolves the row's target table for a bar, live
+---@param onChanged fun() Runs after a pick, to resync the row's summary and enabled state
+local function CreateBarTargetSubmenu(rootDescription, barDef, isExcluded, getTargets, onChanged)
+	local submenu = rootDescription:CreateButton(barDef.label)
+	local function getBarTargets()
+		return getTargets(barDef.key)
+	end
+	-- Blizzard bakes the label in at creation; a pick's Refresh re-runs this, keeping the count live.
+	submenu:AddInitializer(function(button)
+		button.fontString:SetTextToFit(TargetCountLabel(barDef.label, CountBarTargets(barDef, isExcluded, getBarTargets())))
+	end)
+
+	for _, elemDef in ipairs(barDef.elements or defaultElementDefs) do
+		if not isExcluded(barDef, elemDef.key) then
+			submenu:CreateCheckbox(elemDef.label, function()
+				local targets = getBarTargets()
+				return (targets ~= nil and targets[elemDef.key]) or false
+			end, function()
+				local targets = getBarTargets()
+				if targets == nil then
+					return
+				end
+				targets[elemDef.key] = not targets[elemDef.key]
+				onChanged()
+			end)
+		end
+	end
+	CreateBorderGlowSubmenu(submenu, getBarTargets, onChanged)
+end
+
+---Fills a row's target menu: its bars under a title per kind of bar, each bar a submenu of its own.
 ---@param rootDescription table The root menu description being populated
 ---@param barTargetDefs TRB.Classes.OptionsUi.BarTargetDef[] The bars the row can target
 ---@param isExcluded fun(barDef: table, elemKey: string): boolean Whether an element is omitted from the menu
@@ -180,7 +234,8 @@ end
 ---@param getTargets fun(barKey: string): table? Resolves the row's target table for a bar, live
 ---@param onChanged fun() Runs after a pick, to resync the row's summary and enabled state
 function TRB.Functions.OptionsUi.Indicators:BuildBarTargetMenu(rootDescription, barTargetDefs, isExcluded, offersEveryBar, getTargets, onChanged)
-	local offered = {}
+	local offeredByGroup = {}
+	local rows = 0
 	for _, barDef in ipairs(barTargetDefs) do
 		local offersElement = offersEveryBar
 		if not offersElement then
@@ -192,37 +247,33 @@ function TRB.Functions.OptionsUi.Indicators:BuildBarTargetMenu(rootDescription, 
 			end
 		end
 		if offersElement then
+			local groupKey = barDef.group or builtInTargetGroup
+			local offered = offeredByGroup[groupKey]
+			if offered == nil then
+				offered = {}
+				offeredByGroup[groupKey] = offered
+				-- The section's title, and the divider ahead of every section but the first.
+				rows = rows + (rows > 0 and 2 or 1)
+			end
 			offered[#offered + 1] = barDef
+			rows = rows + 1
 		end
 	end
-	TRB.Functions.OptionsUi.Primitives:LimitMenuRows(rootDescription, #offered)
+	TRB.Functions.OptionsUi.Primitives:LimitMenuRows(rootDescription, rows)
 
-	for _, barDef in ipairs(offered) do
-		local submenu = rootDescription:CreateButton(barDef.label)
-		local function getBarTargets()
-			return getTargets(barDef.key)
-		end
-		-- Blizzard bakes the label in at creation; a pick's Refresh re-runs this, keeping the count live.
-		submenu:AddInitializer(function(button)
-			button.fontString:SetTextToFit(barDef.label .. " (" .. CountBarTargets(barDef, isExcluded, getBarTargets()) .. ")")
-		end)
-
-		for _, elemDef in ipairs(barDef.elements or defaultElementDefs) do
-			if not isExcluded(barDef, elemDef.key) then
-				submenu:CreateCheckbox(elemDef.label, function()
-					local targets = getBarTargets()
-					return (targets ~= nil and targets[elemDef.key]) or false
-				end, function()
-					local targets = getBarTargets()
-					if targets == nil then
-						return
-					end
-					targets[elemDef.key] = not targets[elemDef.key]
-					onChanged()
-				end)
+	local firstGroup = true
+	for _, group in ipairs(barTargetGroups) do
+		local offered = offeredByGroup[group.key]
+		if offered ~= nil then
+			if not firstGroup then
+				rootDescription:CreateDivider()
+			end
+			firstGroup = false
+			rootDescription:CreateTitle(group.label)
+			for _, barDef in ipairs(offered) do
+				CreateBarTargetSubmenu(rootDescription, barDef, isExcluded, getTargets, onChanged)
 			end
 		end
-		CreateBorderGlowSubmenu(submenu, getBarTargets, onChanged)
 	end
 end
 
@@ -262,6 +313,7 @@ local function BuildSharedBarTargetDefs(classId, specId)
 		{
 			key = "castbar",
 			label = L["ResourcePlayerCastbar"],
+			group = "castBars",
 			elements = castbarElements,
 			gradientExcluded = { bar = true, channel = true, tick = true }
 		},
@@ -270,6 +322,7 @@ local function BuildSharedBarTargetDefs(classId, specId)
 		{
 			key = "targetCastbar",
 			label = L["BarVisibilityBarNameTargetCastbar"],
+			group = "castBars",
 			elements = {
 				{ key = "border", label = L["BarElementBorder"] },
 				{ key = "background", label = L["BarElementBackground"] },
@@ -279,6 +332,7 @@ local function BuildSharedBarTargetDefs(classId, specId)
 		{
 			key = "focusCastbar",
 			label = L["BarVisibilityBarNameFocusCastbar"],
+			group = "castBars",
 			elements = {
 				{ key = "border", label = L["BarElementBorder"] },
 				{ key = "background", label = L["BarElementBackground"] },
@@ -293,6 +347,7 @@ local function BuildSharedBarTargetDefs(classId, specId)
 		defs[#defs + 1] = {
 			key = "petCastbar",
 			label = L["ResourcePetCastbar"],
+			group = "castBars",
 			elements = {
 				{ key = "bar", label = L["BarElementBarHardcast"] },
 				{ key = "channel", label = L["BarElementBarChanneled"] },
@@ -306,6 +361,7 @@ local function BuildSharedBarTargetDefs(classId, specId)
 		defs[#defs + 1] = {
 			key = "petPowerBar",
 			label = L["ResourcePetPower"],
+			group = "petBars",
 			elements = {
 				{ key = "bar", label = L["BarElementBar"] },
 				{ key = "border", label = L["BarElementBorder"] },
@@ -316,6 +372,7 @@ local function BuildSharedBarTargetDefs(classId, specId)
 		defs[#defs + 1] = {
 			key = "petHealthBar",
 			label = L["ResourcePetHealth"],
+			group = "petBars",
 			elements = {
 				{ key = "border", label = L["BarElementBorder"] },
 				{ key = "background", label = L["BarElementBackground"] },
@@ -324,7 +381,8 @@ local function BuildSharedBarTargetDefs(classId, specId)
 		}
 	end
 
-	-- The Totems bar on specs with it. Its fill is per slot (element colors and Ending), so it offers no Bar element.
+	-- The Totems bar on specs with it, Built-in whichever tab a spec's Totems options sit on. Its fill is per slot
+	-- (element colors and Ending), so it offers no Bar element.
 	if TRB.Classes.BarTypeRegistry:SpecHasTotems(classId, specId) then
 		defs[#defs + 1] = {
 			key = "totemsBar",
@@ -357,7 +415,7 @@ function TRB.Functions.OptionsUi.Indicators:BuildBarTargetDefs(spec, classId, sp
 	-- A custom bar's fill tracks its own source, so it takes a flat color but not a curve over the spec's resource.
 	local CustomBars = TRB.Functions.CustomBars
 	for _, bar in ipairs(CustomBars:GetOrdered(spec)) do
-		barTargetDefs[#barTargetDefs + 1] = { key = CustomBars:GetBarKey(bar.guid), label = bar.name, gradientExcluded = { bar = true } }
+		barTargetDefs[#barTargetDefs + 1] = { key = CustomBars:GetBarKey(bar.guid), label = bar.name, group = "customBars", gradientExcluded = { bar = true } }
 	end
 	return barTargetDefs
 end

@@ -4565,3 +4565,6 @@ L["PriestHolyAudioCheckboxEpiphanyTooltip"] = "Play audio cue when Epiphany proc
 L["PriestHolyCheckboxEpiphany"] = "Epiphany"
 L["PriestHolyIndicatorEpiphanyTooltip"] = "Changes to this color while Epiphany is active, from its proc until you cast Prayer of Mending or its time runs out."
 L["PriestHolyIndicatorEpiphanyColor"] = "Epiphany is active"
+L["IndicatorTargetGroupBuiltIn"] = "Built-in"
+L["IndicatorTargetCountFormat"] = "%s (%d)"
+L["IndicatorTargetCountActiveFormat"] = "|cFFAAFFAA%s (%d)|r"
