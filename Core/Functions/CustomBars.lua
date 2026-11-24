@@ -2247,10 +2247,12 @@ local function RenderIndicators(entry, group, settings, redraw)
 	if colors == nil then
 		return
 	end
-	local defaults = entry.definition:GetDefaultColors() or {}
-	local ownBorder = colors.border or defaults.border
-	local ownBackground = colors.background or defaults.background
-	local fill = (indicators ~= nil and indicators.bar) or colors.bar or defaults.bar
+	-- The defaults are a fresh table per call, and the bar's data already holds every color, so only a gap reads them.
+	local defaults = (colors.bar == nil or colors.border == nil or colors.background == nil)
+		and entry.definition:GetDefaultColors() or nil
+	local ownBorder = colors.border or (defaults ~= nil and defaults.border) or nil
+	local ownBackground = colors.background or (defaults ~= nil and defaults.background) or nil
+	local fill = (indicators ~= nil and indicators.bar) or colors.bar or (defaults ~= nil and defaults.bar) or nil
 	local border = (indicators ~= nil and indicators.border) or (ownBorder ~= nil and ownBorder.color) or nil
 	local background = (indicators ~= nil and indicators.background) or (ownBackground ~= nil and ownBackground.color) or nil
 	for i = 1, group.nodeCount do
@@ -2258,6 +2260,10 @@ local function RenderIndicators(entry, group, settings, redraw)
 		if node ~= nil then
 			if fill ~= nil then
 				Color:ApplyFillColor(node, fill)
+				if node.engineDriven then
+					-- The aura engine draws an aura bar's fill, and takes a new color only from a container built for it.
+					TRB.Functions.AuraEngine:Reattach(node)
+				end
 			end
 			Color:ApplyResolvedBorderOrBackground(node, key, "border", border)
 			Color:ApplyResolvedBorderOrBackground(node, key, "background", background)

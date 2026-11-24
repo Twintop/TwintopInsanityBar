@@ -1306,15 +1306,11 @@ local gradientsWritten = true
 local glowsWritten = true
 local gradientGlowsWritten = true
 
----Resolves the indicator colors for a spec's own bars plus the shared health bar and cast bar. Walks
----nodeOrder back to front so earlier (higher-priority) entries overwrite later ones. The spec's bars are
----written back into barColorMap in place; the shared bars are parked in TRB.Data.resolvedIndicators.
----Pass a nil barColorMap when the spec colors its own bars itself and only needs the shared ones.
----
----Every call recomputes the shared bars, so more than one call a frame needs equivalent conditionMaps.
+---Writes a spec's own bars into barColorMap in place and parks the shared ones (health, cast, pet, and custom) in
+---TRB.Data.resolvedIndicators; earlier nodeOrder entries win, and every call recomputes the shared bars.
 ---@param sharedColors table? # spec.colors.shared -- indicatorColors + nodeOrder
 ---@param conditionMap table<string, boolean> # Indicator key -> whether its condition is met right now; custom indicator keys are written into it
----@param barColorMap table<string, table>? # barKey -> { bar =, border =, background = }, seeded with the spec's unindicated colors
+---@param barColorMap table<string, table>? # barKey -> { bar =, border =, background = }, seeded with the spec's unindicated colors; nil when the spec colors its own bars
 ---@param overrides table<string, table<string, boolean>>? # Optional: for each barKey the caller seeds here, records which elements an indicator claimed (specs that render an element differently once an indicator owns it)
 function TRB.Functions.Color:ApplyIndicatorColors(sharedColors, conditionMap, barColorMap, overrides)
 	local resolved = TRB.Data.resolvedIndicators
@@ -1505,8 +1501,8 @@ function TRB.Functions.Color:SetResolvedEndCap(barKey, color)
 	resolved.barEndCaps[barKey] = color
 end
 
----Returns the resolved indicator colors for a shared bar ("healthBar" or "castbar") or a custom bar, or nil when
----the active spec hasn't resolved any (it has no indicators, or hasn't run its update yet this spec).
+---Returns the resolved indicator colors for a shared bar ("healthBar" or "castbar"), or nil when the active spec
+---hasn't resolved any. A custom bar something targets gets a table even while no indicator colors it.
 ---@param barKey string
 ---@return table<string, string|table>?
 function TRB.Functions.Color:GetResolvedIndicators(barKey)

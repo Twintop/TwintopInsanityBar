@@ -463,6 +463,17 @@ function AuraEngine:Attach(node, unit, filter, ...)
 	return entry.wireError == nil
 end
 
+---Re-reads a driven node's look after its fill was repainted, so the engine's fill takes the new color this frame.
+---@param node TRB.Classes.BarNode
+function AuraEngine:Reattach(node)
+	local record = records[node]
+	local active = record ~= nil and record.active or nil
+	if active == nil or active.appearanceVersion == node.appearanceVersion then
+		return
+	end
+	self:Attach(node, active.unit, active.filter, unpack(record.ids, 1, record.idCount))
+end
+
 ---Doubles pipes so a texture path can never open an escape sequence. An unterminated "|H" wedges the
 ---chat renderer on every redraw, and the message survives in history, so the hang outlives a reload.
 ---@param text string
