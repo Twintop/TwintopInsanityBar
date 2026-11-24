@@ -2127,6 +2127,152 @@ function hooks.afterEvents(ctx)
 		timerBuff.endTime = desktop.GetTime() - 1
 	end
 
+	-- Color Indicators: a displayed custom bar is a target, painted over its own colors while a row is met.
+	do
+		local Color = TRB.Functions.Color
+		local Glow = TRB.Functions.Glow
+		local BarGroup = TRB.Classes.BarGroup
+		local ROW_COLOR = "FF112233"
+		-- Charges a class module counts by hand, as Prayer of Mending's are.
+		local countedSpell = TRB.Classes.SpellBase:New({
+			id = 990040,
+			duration = 30
+		})
+		countedSpell.name = "Driver Indicated Charges"
+		snapshots[countedSpell.id] = TRB.Classes.Snapshot:New(countedSpell)
+		local countedCooldown = snapshots[countedSpell.id].cooldown
+		countedCooldown:InitializeManualCharges(2, 2)
+		local countedSource = FindSource("charges", countedSpell.id)
+		check("hand-counted charges are offered for the indicated bar", countedSource ~= nil)
+		local paintedGuid = CustomBars:Add(spec, classId, specId, timerSource)
+		local countedGuid = countedSource ~= nil and CustomBars:Add(spec, classId, specId, countedSource) or nil
+		local paintedKey = CustomBars:GetBarKey(paintedGuid)
+		local countedKey = countedGuid ~= nil and CustomBars:GetBarKey(countedGuid) or nil
+		try("lay out the indicated bars", Relayout)
+		barGroups = TRB.Frames.barGroups
+		try("render the indicated bars", function() CustomBars:Render() end)
+		local userBars = TRB.Data.resolvedIndicators.userBars
+		local paintedGroup = barGroups[paintedKey]
+		local countedGroup = countedKey ~= nil and barGroups[countedKey] or nil
+		check("each displayed custom bar is a Color Indicator target, and no other key is", userBars[paintedKey] ~= nil
+			and countedKey ~= nil and userBars[countedKey] ~= nil and userBars.primary == nil and Color:GetResolvedIndicators("primary") == nil)
+
+		local targetDefs = TRB.Functions.OptionsUi.Indicators:BuildBarTargetDefs(spec, classId, specId, { { key = "driverOwnBar", label = "Own" } })
+		local paintedDef, paintedIndex = nil, nil
+		for index, barDef in ipairs(targetDefs) do
+			if barDef.key == paintedKey then
+				paintedDef, paintedIndex = barDef, index
+			end
+		end
+		check("the target menus list it by name, after the spec's own and the shared bars, with no gradient on its fill", paintedDef ~= nil
+			and paintedDef.label == spec.customBars.bars[paintedGuid].name and paintedDef.elements == nil and paintedDef.gradientExcluded.bar == true
+			and paintedDef.gradientExcluded.border == nil and targetDefs[1].key == "driverOwnBar" and paintedIndex > 2)
+		check("settings with no custom bars list only the shared bars", #TRB.Functions.OptionsUi.Indicators:BuildBarTargetDefs({}, classId, specId, {})
+			== #targetDefs - 1 - #CustomBars:GetOrdered(spec))
+
+		if paintedGroup ~= nil and countedGroup ~= nil and countedKey ~= nil then
+			local fills, borders, backgrounds, glowed = {}, {}, {}, {}
+			local rechargeFill = nil
+			local setColor, setBorder, setBackground = BarNode.SetColor, BarNode.SetBorderColor, BarNode.SetBackgroundColorFromString
+			local setRechargeAppearance, applyGlow = BarGroup.SetChargeRechargeAppearance, Glow.ApplyIndicatorGlow
+			BarNode.SetColor = function(self, color, ...)
+				fills[self] = color
+				return setColor(self, color, ...)
+			end
+			BarNode.SetBorderColor = function(self, color, ...)
+				borders[self] = color
+				return setBorder(self, color, ...)
+			end
+			BarNode.SetBackgroundColorFromString = function(self, color, ...)
+				backgrounds[self] = color
+				return setBackground(self, color, ...)
+			end
+			BarGroup.SetChargeRechargeAppearance = function(self, texture, colorEntries)
+				if self == countedGroup and colorEntries ~= nil then
+					rechargeFill = colorEntries[1]
+				end
+				return setRechargeAppearance(self, texture, colorEntries)
+			end
+			Glow.ApplyIndicatorGlow = function(self, node, barKey)
+				glowed[barKey] = (glowed[barKey] or 0) + 1
+				return applyGlow(self, node, barKey)
+			end
+
+			local row = { color = ROW_COLOR, color2 = ROW_COLOR, gradientDirection = "disabled", enabled = true, targets = {
+				[paintedKey] = { bar = true, border = true, background = true },
+				[countedKey] = { bar = true },
+			} }
+			local shared = { nodeOrder = { "driverRow" }, gradientOrder = {}, indicatorColors = { driverRow = row } }
+			---What the spec's update does each tick, with the row met or not.
+			local function Resolve(met)
+				try("resolve the Color Indicators", function() Color:ApplyIndicatorColors(shared, { driverRow = met }, nil) end)
+			end
+			local function Render(label)
+				try(label, function() CustomBars:Render() end)
+			end
+			local own, ownCounted = spec.colors.bars[paintedKey], spec.colors.bars[countedKey]
+			local paintedNode = paintedGroup.nodes[1]
+			local firstCharge, secondCharge = countedGroup.nodes[1], countedGroup.nodes[2]
+
+			timerBuff:InitializeCustom(10)
+			Render("render before any row is met")
+			check("with no row met, the bars are left alone", glowed[paintedKey] == nil and glowed[countedKey] == nil)
+			Resolve(true)
+			Render("render a met row")
+			check("a met row paints the fill, border, and background it targets", fills[paintedNode] == ROW_COLOR and borders[paintedNode] == ROW_COLOR
+				and backgrounds[paintedNode] == ROW_COLOR)
+			check("on a segmented bar it paints every node, and only the element it targets", firstCharge ~= nil and secondCharge ~= nil
+				and fills[firstCharge] == ROW_COLOR and fills[secondCharge] == ROW_COLOR and borders[firstCharge] == ownCounted.border.color
+				and backgrounds[secondCharge] == ownCounted.background.color)
+			countedCooldown.manualCharges = 1
+			countedCooldown.manualCooldownDuration = 30
+			countedCooldown.manualCooldownExpires = desktop.GetTime() + 12
+			Resolve(true)
+			Render("render a recharging charge under a met row")
+			check("and the recharging charge's fill", rechargeFill ~= nil and rechargeFill.color == ROW_COLOR)
+
+			Resolve(false)
+			Render("render an unmet row")
+			check("an unmet row gives every element its own color back", fills[paintedNode] == own.bar.color and borders[paintedNode] == own.border.color
+				and backgrounds[paintedNode] == own.background.color and fills[firstCharge] == ownCounted.bar.color
+				and rechargeFill ~= nil and rechargeFill.color == ownCounted.bar.color)
+			local settled = (glowed[paintedKey] or 0) + (glowed[countedKey] or 0)
+			Resolve(false)
+			Render("render with nothing targeting them")
+			Render("and again")
+			check("then a bar no row targets isn't painted again", (glowed[paintedKey] or 0) + (glowed[countedKey] or 0) == settled)
+
+			row.targets[paintedKey] = { glows = { driverGlow = true } }
+			Resolve(true)
+			Render("render a row with a Border Glow")
+			local claimed = Color:GetResolvedGlow(paintedKey)
+			check("a row's Border Glows reach the bar's node, with the row's color", (glowed[paintedKey] or 0) > 0 and claimed ~= nil
+				and claimed.color == ROW_COLOR and claimed.glows.driverGlow == true and fills[paintedNode] == own.bar.color)
+			Resolve(false)
+			Render("render after the glow's row ends")
+
+			-- A deleted bar leaves no row pointing at it.
+			if type(spec.colors.shared) == "table" and type(spec.colors.shared.indicatorColors) == "table" then
+				spec.colors.shared.indicatorColors.driverRow = row
+				CustomBars:Delete(spec, classId, specId, paintedGuid)
+				check("deleting a bar takes it out of every row's targets, and leaves the other bars'", row.targets[paintedKey] == nil
+					and row.targets[countedKey] ~= nil)
+				spec.colors.shared.indicatorColors.driverRow = nil
+				try("lay out without the deleted bar", Relayout)
+				Render("render without the deleted bar")
+				check("and it stops being a target", userBars[paintedKey] == nil and userBars[countedKey] ~= nil)
+			end
+
+			BarNode.SetColor, BarNode.SetBorderColor, BarNode.SetBackgroundColorFromString = setColor, setBorder, setBackground
+			BarGroup.SetChargeRechargeAppearance, Glow.ApplyIndicatorGlow = setRechargeAppearance, applyGlow
+		end
+		if countedGuid ~= nil then
+			CustomBars:Delete(spec, classId, specId, countedGuid)
+		end
+		timerBuff.endTime = desktop.GetTime() - 1
+		snapshots[countedSpell.id] = nil
+	end
+
 	-- Clean up, so nothing custom is left for a later check.
 	for guid in pairs(spec.customBars.bars) do
 		CustomBars:Delete(spec, classId, specId, guid)

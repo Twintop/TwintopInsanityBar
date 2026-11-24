@@ -29,8 +29,8 @@
 	gate, cast-tracked stacks and timer, node fill, bar text, and audio counter; it runs once per class. spell-data checks that every
 	filled specialization's spellsById lists each spell once under each of its ids and ranks through loading screens, talent changes, and
 	specialization changes; it runs once per class.
-	custom-bars checks Custom Bars: an added bar's sources, registry scope, group, fill, visibility entry, bar text anchor, and the
-	options tab's add, edit, and delete; it runs once per class.
+	custom-bars checks Custom Bars: an added bar's sources, registry scope, group, fill, visibility entry, bar text anchor, Color
+	Indicator targets, and the options tab's add, edit, and delete; it runs once per class.
 	eclipse checks the Forever Druid's Eclipse bar: its talent gate, cast-tracked charges and timer, node fill, bar text, and
 	audio counter; it runs once per class.
 	elemental-shield checks the Forever Shaman's Elemental Shield bar: its gate, casts, orb spends and their lockout, Water
